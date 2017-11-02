@@ -19,3 +19,4 @@ ASCOEL LoRaWan Wireless Infrared SensorIR868LR | [lib/ir868lr.ex](lib/ir868lr.ex
 Lobaro GPS Button | [lib/lobaro-gps-button.ex](lib/lobaro-gps-button.ex)
 SmartWaste UltraSonic | [lib/smart-waste-ultrasonic.ex](lib/smart-waste-ultrasonic.ex)
 ZENNER Water Meter (v1.9) | [lib/zenner-water-meter-v1.9.ex](lib/zenner-water-meter-v1.9.ex)
+GWF Gas Meter Pulse Bridge | [lib/GWF_Gas_Meter.ex](lib/GWF_Gas_Meter.ex)
