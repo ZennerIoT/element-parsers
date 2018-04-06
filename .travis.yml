@@ -1,6 +1,6 @@
 language: 'elixir'
 sudo: false
 elixir: '1.6'
-otp_release: '20'
+otp_release: '20.2'
 script:
   - 'sh test.sh'
