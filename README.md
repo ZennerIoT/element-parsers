@@ -1,5 +1,7 @@
 # Parsers for Sensors on ELEMENT
 
+[![Build Status](https://travis-ci.org/ZennerIoT/element-parsers.svg?branch=master)](https://travis-ci.org/ZennerIoT/element-parsers)
+
 This repository contains Elixir code templates for IoT devices such as sensors to be used on the [ELEMENT](https://element-iot.com) platform provided by [ZENNER IoT Solutions](https://zenner-iot.com/).
 
 For more information on the inner workings of the parsers, please check the [ELEMENT Documentation](https://docs.element-iot.com/parsers/overview/).
