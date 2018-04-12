@@ -1,6 +1,11 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
+  # ELEMENT IoT Parser for comtac LPN CM1
+  # According to documentation provided ThingPark Market
+  # Link: http://www.comtac.ch/de/produkte/lora/condition-monitoring/lpn-cm-1.html
+  # Documentation: https://drive.google.com/file/d/0B6TBYAxODZHHa29GVWFfN0tIYjQ/view
+
   def parse(<<
               status::binary-1,
               mintemp::signed-8,

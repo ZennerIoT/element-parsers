@@ -8,11 +8,14 @@ For more information on the inner workings of the parsers, please check the [ELE
 
 Device Name | Parser File
 ------------|-------------
-ADEUNIS FIELD TEST DEVICE LORAWAN ARF8123AA EU868 | [lib/adeunis.ex](lib/adeunis.ex)
-LPN CM-1 SENSOR | [lib/cm-1.ex](lib/cm-1.ex)
+ADEUNIS FIELD TEST DEVICE LORAWAN ARF8123AA EU868 | [lib/adeunis_ftd.ex](lib/adeunis_ftd.ex)
+ADEUNIS TEMP ARF8180BA | [lib/adeunis_temp.ex](lib/adeunis_temp.ex)
 ASCOEL LoRaWan Magnetic Contact Sensor CM868LR | [lib/cm868lr.ex](lib/cm868lr.ex)
 ASCOEL LoRaWan Magnetic Contact Sensor CM868LR (Temperature/Humidity) | [lib/cm868lmrth.ex](lib/cm868lmrth.ex)
 DHT22 Digital Temperature and Humidity Sensor Module | [lib/dht-22.ex](lib/dht-22.ex)
+ELSYS LoRaWAN Payload v8 | [lib/elsys_v8.ex](lib/elsys_v8.ex)
+LPN CM-1 SENSOR | [lib/cm-1.ex](lib/cm-1.ex)
+
 eMeter | [lib/e-meter.ex](lib/e-meter.ex)
 GlobalSat LT-100 Series Tracker | [lib/globalsat-tracker.ex](lib/globalsat-tracker.ex)
 Gupsy | [lib/gupsy.ex](lib/gupsy.ex)

@@ -1,6 +1,9 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
+  # ELEMENT IoT Parser for Holley e-meter
+  # According to documentation provided by Holley
+
   # Test hex payload: "03000005"
   def parse(<<version::2, qualifier::5, status::1, register_value::24>>, _meta) do
     %{
