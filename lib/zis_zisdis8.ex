@@ -1,0 +1,36 @@
+defmodule Parser do
+  use Platform.Parsing.Behaviour
+
+  # ELEMENT IoT Parser for ZIS DigitalInputSurveillance 8
+  # According to self developed devices
+  # not commercially available
+  
+  def parse(event, _meta) do
+    << stat_foo::6, stat_heartbeat::1, stat_change::1, in1::integer-8, in2::integer-8,in3::integer-8,in4::integer-8,in5::integer-8,in6::integer-8,in7::integer-8,in8::integer-8>> = event
+
+    trigger_txt=[]
+
+    trigger_txt = cond do
+      stat_heartbeat==1 -> ["heartbeat"|trigger_txt]
+      true -> trigger_txt
+    end
+
+    trigger_txt = cond do
+      stat_change==1 -> ["change"|trigger_txt]
+      true -> trigger_txt
+    end
+
+
+    %{
+        trigger: Enum.join(trigger_txt, " , "),
+        input1: in1,
+        input2: in2,
+        input3: in3,
+        input4: in4,
+        input5: in5,
+        input6: in6,
+        input7: in7,
+        input8: in8
+    }
+  end
+end
