@@ -1,6 +1,11 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
+  # ELEMENT IoT Parser for Adeunis Field Test Device
+  # According zu documentation provided by Adeunis
+  # Link: https://www.adeunis.com/en/produit/ftd-868-915-2/
+  # Documentation: https://www.adeunis.com/wp-content/uploads/2017/08/FTD_LoRaWAN_EU863-870_UG_FR_GB_V1.2.1.pdf
+
   def parse(event, _meta) do
     << status :: binary-1, rest :: binary >> = event
     {fields, status_data} = parse_status(status)
