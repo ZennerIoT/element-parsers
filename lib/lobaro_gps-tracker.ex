@@ -1,7 +1,11 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
-  # Parser for meter reading of Lobaro GPS Button Sensor
+  # ELEMENT IoT Parser for Lobaro LoRaWAN GPS Tracker v5.0
+  # According to documentation provided by Lobaro
+  # Link: https://www.lobaro.com/portfolio/lorawan-gps-tracker/
+  # Documentation: https://www.lobaro.com/download/7315/
+
   def parse(<<button::big-8, temp::big-16, vbat::big-16, lat_deg::big-8, lat_min::big-8, lat_10000::big-16, long_deg::big-8, long_min::big-8, long_10000::big-16>>, _meta) do
 
     # calculate the GPS coordinates

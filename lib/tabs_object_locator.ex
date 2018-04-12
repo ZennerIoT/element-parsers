@@ -1,8 +1,11 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
   use Bitwise
-  
-# Test hex payload: "08FE3D59D1D3027E5281E0"
+
+  #ELEMENT IoT Parser for TrackNet Tabs object locator
+  # According to documentation provided by TrackNet
+
+  # Test hex payload: "08FE3D59D1D3027E5281E0"
 
   def parse(<<status, battery, temp, lat::signed-little-32, lon::signed-little-32, _::binary>>, _meta) do
   <<rem_cap::4, voltage::4>> = <<battery>>
@@ -20,7 +23,7 @@ defmodule Parser do
     0 -> "has fix"
     1 -> "no fix"
   end
-  
+
   acc = case acc do
     7 -> 256
     _ -> 2<<<(acc+1)

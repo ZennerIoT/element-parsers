@@ -1,6 +1,9 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
+  # ELEMENT IoT Parser for Ascoel IT868LR sensor. Pyroelectric Motion Detector
+  # According to documentation provided by Ascoel
+
   def parse(<<evt::8, count::unsigned-16>>, %{meta: %{frame_port: 20 }}) do
     << res::5, blow::1, tamper::1, intr::1>> = <<evt::8>>
 

@@ -1,6 +1,10 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
+  # ELEMENT IoT Parser for ZENNER Water meters
+  # According to documentation provided by ZENNER International
+  # Link:  https://www.zenner.com
+  
   def parse(<< type :: integer-4, subtype :: integer-4, rest :: binary >>, _meta) do
     case type do
       1 ->

@@ -1,6 +1,9 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
+  # ELEMENT IoT Parser for ZIS Oskar 1.0
+  # not commercially available
+  
   def parse(<<distance::little-size(16), battery::little-size(16)>>, _meta) do
     height = 90;
 
