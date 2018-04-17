@@ -56,7 +56,7 @@ defmodule Parser do
   def tests() do
     [
       {
-        :parse_hex, "01000A61F2C341A0661542", %{? => %{"frame_port" => 30}}, %{
+        :parse_hex, "01000A61F2C341A0661542", %{meta=> %{"frame_port" => 30}}, %{
           messagetype: "event",
           intrusion: 1,
           tamper: 0,
