@@ -62,8 +62,19 @@ defmodule Parser do
           tamper: 0,
           batterywarn: 0,
           counter: 10,
-          temperature: "24.493349075317383",
-          humidity: "37.3502197265625"
+          temperature: 24.493349075317383,
+          humidity: 37.3502197265625
+        }
+      },
+      {
+        :parse_hex, "E400600EBF4180D70A42", %{meta: %{frame_port: 9}}, %{
+          messagetype: "status",
+          intrusion: 0,
+          tamper: 0,
+          battery: 100,
+          batterywarn: 0,
+          temperature: 23.88201904296875,
+          humidity: 34.71044921875
         }
       }
     ]
