@@ -33,6 +33,8 @@ defmodule Parser do
     [
       {
         :parse_hex, "03000005", %{}, %{
+          error: false,
+          qualifier: 1,
           register_value: 5,
           version: 0,
           version_name: "v1",
