@@ -16,8 +16,29 @@ defmodule Parser do
     }
   end
 
-  def parse(_event, _meta) do
-    # Expecting binary values, no maps.
-    [] # Empty result
+
+  # defining fields for visualisation
+  def fields do
+  [
+    %{
+      "field" => "register_value",
+      "display" => "A+",
+      "unit" => "kWh"
+    }
+  ]
+  end
+
+  # Test case and data for automatic testing
+  def tests() do
+    [
+      {
+        :parse_hex, "03000005", %{}, %{
+          register_value: 5,
+          version: 0,
+          version_name: "v1",
+          status: 1
+        }
+      },
+    ]
   end
 end
