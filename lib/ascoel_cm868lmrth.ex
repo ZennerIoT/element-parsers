@@ -34,10 +34,38 @@ defmodule Parser do
     }
   end
 
-  def parse(evt, _meta) do
-    %{
-
-    }
+  def fields do
+    [
+      %{
+        "field" => "counter",
+        "display" => "Openings",
+      },
+      %{
+        "field" => "temperature",
+        "display" => "Temperature",
+        "unit" => "°C"
+      },
+      %{
+        "field" => "humidity",
+        "display" => "Humidity",
+        "unit" => "%"
+      }
+    ]
   end
 
+  def tests() do
+    [
+      {
+        :parse_hex, "01000A61F2C341A0661542", %{? => %{"frame_port" => 30}}, %{
+          messagetype: "event",
+          intrusion: 1,
+          tamper: 0,
+          batterywarn: 0,
+          counter: 10,
+          temperature: "24.493349075317383",
+          humidity: "37.3502197265625"
+        }
+      }
+    ]
+  end
 end
