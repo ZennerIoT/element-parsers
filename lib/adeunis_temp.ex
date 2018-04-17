@@ -32,4 +32,34 @@ defmodule Parser do
     }
   end
 
+  # defining fields for visualisation
+  def fields do
+    [
+      %{
+        "field" => "internal_temp",
+        "display" => "Internal Temperature",
+        "unit" => "°C"
+      },
+      %{
+        "field" => "external_temp",
+        "display" => "External Temperature",
+        "unit" => "°C"
+      }
+
+    ]
+  end
+
+  # Test case and data for automatic testing
+  def tests() do
+    [
+      {
+        :parse_hex, "43800100EC0200EC", %{}, %{
+          internal_sensor: "B57863S0303F040",
+          external_sensor: "FANB57863-400-1",
+          internal_temp: 23.6,
+          external_temp: 23.6
+        }
+      }
+    ]
+  end
 end
