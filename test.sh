@@ -2,4 +2,4 @@
 set -x
 set -e
 
-elixir test_parser.exs lib/libelium_smart-parking_v3.exs
+elixir test_parser.exs lib/holley_e-meter.ex
