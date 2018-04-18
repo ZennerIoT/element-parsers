@@ -31,10 +31,12 @@ defmodule Parser do
     }
   end
 
-  def parse(evt, _meta) do
-    %{
-
-    }
+  def fields do
+    [
+      %{
+        "field" => "counter",
+        "display" => "Movements"
+      }
+    ]
   end
-
 end

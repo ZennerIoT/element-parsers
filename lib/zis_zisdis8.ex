@@ -4,7 +4,7 @@ defmodule Parser do
   # ELEMENT IoT Parser for ZIS DigitalInputSurveillance 8
   # According to self developed devices
   # not commercially available
-  
+
   def parse(event, _meta) do
     << stat_foo::6, stat_heartbeat::1, stat_change::1, in1::integer-8, in2::integer-8,in3::integer-8,in4::integer-8,in5::integer-8,in6::integer-8,in7::integer-8,in8::integer-8>> = event
 
@@ -32,5 +32,39 @@ defmodule Parser do
         input7: in7,
         input8: in8
     }
+  end
+
+  def tests() do
+    [
+      # Heartbeat frame
+      {
+        :parse_hex, "020101010101010101", %{}, %{
+          trigger: "heartbeat",
+          input1: 1,
+          input2: 1,
+          input3: 1,
+          input4: 1,
+          input5: 1,
+          input6: 1,
+          input7: 1,
+          input8: 1
+        }
+      },
+
+      #Trigger frame
+      {
+        :parse_hex, "010000010101010101", %{}, %{
+          trigger: "change",
+          input1: 0,
+          input2: 0,
+          input3: 1,
+          input4: 1,
+          input5: 1,
+          input6: 1,
+          input7: 1,
+          input8: 1
+        }
+      }
+    ]
   end
 end
