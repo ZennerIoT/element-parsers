@@ -42,4 +42,30 @@ defmodule Parser do
     volume: volume/decimalplaces,
     }
   end
+
+  def fields do
+    [
+      %{
+        "field" => "volume",
+        "display" => "Volume",
+        "unit" => "m³"
+      }
+    ]
+  end
+
+  def tests() do
+    [
+      {
+        :parse_hex, "01E61E1831062103000000141900000000D0982D", %{}, %{
+          protocol_type: 1,
+          manufacturer_id: "1EE6",
+          actuality_minutes: 0,
+          meter_id: "21063118",
+          medium: "gas",
+          state: "no error",
+          volume: 0.25
+        }
+      }
+    ]
+  end
 end

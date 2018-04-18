@@ -23,4 +23,26 @@ defmodule Parser do
     }
   end
 
+  def fields do
+    [
+      %{
+        "field" => "register",
+        "display" => "A+",
+        "unit" => "kWh"
+      }
+    ]
+  end
+
+  def tests() do
+    [
+      {
+        :parse_hex, "51D0F1BD0263000000", %{}, %{
+          qualifier: 1,
+          meterid: 46002640,
+          medium: "electricity",
+          register: 0.99
+        }
+      }
+    ]
+  end
 end
