@@ -8,6 +8,9 @@ For more information on the inner workings of the parsers, please check the [ELE
 
 Device Name | Parser File
 ------------|-------------
+ADEUNIS ARF8046 | [lib/adeunis_arf8046.ex](lib/adeunis_arf8046.ex)
+ADEUNIS ARF8170BA | [lib/adeunis_arf8170ba.ex](lib/adeunis_arf8170ba.ex)
+ADEUNIS ARF8230AA | [lib/adeunis_arf_8230aa.ex](lib/adeunis_arf_8230aa.ex)
 ADEUNIS FIELD TEST DEVICE LORAWAN ARF8123AA EU868 | [lib/adeunis_ftd.ex](lib/adeunis_ftd.ex)
 ADEUNIS TEMP ARF8180BA | [lib/adeunis_temp.ex](lib/adeunis_temp.ex)
 ASCOEL LoRaWan Magnetic Contact Sensor CM868LR (Temperature/Humidity) | [lib/cm868lmrth.ex](lib/cm868lmrth.ex)
@@ -24,7 +27,7 @@ Holley Power Meter | [lib/holley_e-meter.ex](lib/holley_e-meter.ex)
 Libelium Smart Agriculture | [lib/libelium_smart-agriculture.ex](lib/libelium_smart-agriculture.ex)
 Libelium Smart Cities | [lib/libelium_smart-cities.ex](lib/libelium_smart-cities.ex)
 Libelium Smart Environment | [lib/libelium_smart-envirenment.ex](lib/libelium_smart-environment.ex)
-Libelium Smart Parking Sensor v3 | [lib/libelium_smart_parking_v3.exs](lib/libelium_smart-parking_v3.exs)
+Libelium Smart Parking Sensor v3 | [lib/libelium_smart-parking_v3.exs](lib/libelium_smart-parking_v3.exs)
 Libelium Smart Water | [lib/libelium_smart-water.ex](lib/libelium_smart-water.ex)
 Lobaro GPS Tracker | [lib/lobaro_gps-tracker.ex](lib/lobaro_gps-tracker.ex)
 NAS UM32023 Digital Pulse Counter | [lib/nas_um32023.ex](lib/nas_um32023.ex)
