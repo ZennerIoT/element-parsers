@@ -3,7 +3,7 @@ defmodule Parser do
 
   # ELEMENT IoT Parser for GWF Gas meter with Elster module
   # According to documentation provided by GWF
-  # Test hex payload: "01E61E1831062103000000141800000000D830E9"
+
   def parse(<<ptype::8, manu::integer-little-16, mid::integer-32, medium::8, state::8, accd::integer-little-16, vif::8, volume::integer-little-32, _::binary>>, _meta) do
     med = case medium do
       3 -> "gas"
