@@ -53,5 +53,5 @@ defmodule Parser do
         "unit" => "ppm"
       }
     ]
-
+  end
 end
