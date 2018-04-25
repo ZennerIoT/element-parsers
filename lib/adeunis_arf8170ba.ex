@@ -40,23 +40,28 @@ defmodule Parser do
           1 -> "OTAA"
         end
         %{
+          frame_type: "ADR config",
           ADR: adr,
           Mode: mode
         }
 
       0x30 ->
         %{
+          frame_type: "Status frame",
           status: "Online"
         }
 
       0x40 ->
         << tor1::16, tor2::16, tor3::16, tor4::16, details::8 >> = payload
         %{
+          frame_type: "data frame",
           Port1_count: tor1,
           Port2_count: tor2,
           Port3_count: tor3,
           Port4_count: tor4
         }
+      _ ->
+        []
     end
 
   end
