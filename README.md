@@ -10,7 +10,7 @@ Device Name | Parser File
 ------------|-------------
 ADEUNIS ARF8046 | [lib/adeunis_arf8046.ex](lib/adeunis_arf8046.ex)
 ADEUNIS ARF8170BA | [lib/adeunis_arf8170ba.ex](lib/adeunis_arf8170ba.ex)
-ADEUNIS ARF8230AA | [lib/adeunis_arf_8230aa.ex](lib/adeunis_arf_8230aa.ex)
+ADEUNIS ARF8230AA | [lib/adeunis_arf8230aa.ex](lib/adeunis_arf8230aa.ex)
 ADEUNIS FIELD TEST DEVICE LORAWAN ARF8123AA EU868 | [lib/adeunis_ftd.ex](lib/adeunis_ftd.ex)
 ADEUNIS TEMP ARF8180BA | [lib/adeunis_temp.ex](lib/adeunis_temp.ex)
 ASCOEL LoRaWan Magnetic Contact Sensor CM868LR (Temperature/Humidity) | [lib/cm868lmrth.ex](lib/cm868lmrth.ex)
