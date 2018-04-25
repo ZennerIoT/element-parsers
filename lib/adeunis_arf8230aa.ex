@@ -3,8 +3,8 @@ defmodule Parser do
 
   # ELEMENT IoT Parser for Adeunis ARF8230AA
   # According to documentation provided by Adeunis
-  # Link:
-  # Documentation:
+  # Link: https://www.adeunis.com/en/produit/pulse-2/
+  # Documentation: https://www.adeunis.com/wp-content/uploads/2017/08/PULSE_LoRaWAN_UG_V2_FR_GB.pdf
 
   # basic parser only, default configs used, no thresholds etc
   # not all alarms/errors visualized, please see documentation for further information
