@@ -47,7 +47,7 @@ defmodule Parser do
           frame_type: "Nwk config frame",
           ADR: adr,
           Mode: mode,
-          error:error
+          error: error
         }
 
       0x30 ->
