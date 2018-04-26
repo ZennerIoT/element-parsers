@@ -42,7 +42,11 @@ defmodule Parser do
         "field" => "temperature",
         "display" => "Temperature",
         "unit" => "°C"
-      }
+      },
+      %{
+        "field" => "contact",
+        "display" => "Contact"
+       }
     ]
   end
 end
