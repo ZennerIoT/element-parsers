@@ -12,3 +12,4 @@ elixir test_parser.exs lib/libelium_smart-parking_v3.exs
 elixir test_parser.exs lib/libelium_smart-water.ex
 elixir test_parser.exs lib/nke_ino.ex
 elixir test_parser.exs lib/zis_zisdis8.ex
+elixir test_parser.exs lib/zenner_water-meter.ex
