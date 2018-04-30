@@ -47,19 +47,19 @@ defmodule Parser do
     [
       {
         :parse_hex, "0000000000000097003D25E300400A7700094FB80064", %{meta: %{frame_port: 30}}, %{
-        wm: -138.5252410240391,
-        vane: "S",
-        temp: 15.1,
-        pres: 969.9,
-        power: 100,
-        pluv3: 0,
-        pluv2: 0,
-        pluv1: 0,
-        lux: 2679,
-        hum: 61,
-        anemo: 6.4
+          wm: -138.5252410240391,
+          vane: "S",
+          temp: 15.1,
+          pres: 969.9,
+          power: 100,
+          pluv3: 0,
+          pluv2: 0,
+          pluv1: 0,
+          lux: 2679,
+          hum: 61,
+          anemo: 6.4
         }
-      }
+      },
     ]
-end
+  end
 end
