@@ -52,9 +52,9 @@ defmodule Parser do
           temp: 15.1,
           pres: 969.9,
           power: 100,
-          pluv3: 0,
-          pluv2: 0,
-          pluv1: 0,
+          pluv3: 0.0,
+          pluv2: 0.0,
+          pluv1: 0.0,
           lux: 2679,
           hum: 61,
           anemo: 6.4
