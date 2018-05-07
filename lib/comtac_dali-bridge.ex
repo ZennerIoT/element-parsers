@@ -57,16 +57,4 @@ defmodule Parser do
   end
   def parse(_, _), do: []
 
-  def test() do
-    result = "020500000000"
-    |> Base.decode16!
-    |> parse(nil)
-    |> IO.inspect
-
-    %{ballast_error: 0, communication_error: 0, dali_device_type: 0,
-      dali_version: 0, fade_ready: 0, glowing: 0, lamp_arc_power_on: 0,
-      lamp_failure: 0, last_level: 0, last_received_level: 5, limit_error: 0,
-      missing_short_address: 0, power_failure: 0, reset_state: 0} = result
-  end
-
 end
