@@ -3,7 +3,7 @@ defmodule Parser do
 
   # Test hex payload: "51BBF1BD0228000000"
   def parse(<<header::8, meterid::integer-little-32, register_value::integer-little-32>>, _meta) do
-  <<version::integer-little-2, medium::integer-little-3,qualifier::integer-little-3>> = <<header::8>>
+  << _version::integer-little-2, medium::integer-little-3,qualifier::integer-little-3 >> = <<header::8>>
 
     med = case medium do
       1 -> "temperature"

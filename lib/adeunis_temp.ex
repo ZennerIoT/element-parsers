@@ -8,9 +8,9 @@ defmodule Parser do
   # Test hex payload: "43A2D1015E82FF06"
   # Only parse "data frames" when first byte is "0x43"
 
-  def parse(<<67, status::8, internal_identifier::8, internal_value::signed-16, external_identifier::8, external_value::signed-16>>, _meta) do
-  << internal_register::4, internal_status::4 >> = << internal_identifier::8 >>
-  << external_register::4, external_status::4 >> = << external_identifier::8 >>
+  def parse(<<67, _status::8, internal_identifier::8, internal_value::signed-16, external_identifier::8, external_value::signed-16>>, _meta) do
+  << _internal_register::4, internal_status::4 >> = << internal_identifier::8 >>
+  << _external_register::4, external_status::4 >> = << external_identifier::8 >>
 
     internal_sensor = case internal_status do
       0 -> "error"
