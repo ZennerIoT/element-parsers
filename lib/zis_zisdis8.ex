@@ -6,7 +6,7 @@ defmodule Parser do
   # not commercially available
 
   def parse(event, _meta) do
-    << stat_foo::6, stat_heartbeat::1, stat_change::1, in1::integer-8, in2::integer-8,in3::integer-8,in4::integer-8,in5::integer-8,in6::integer-8,in7::integer-8,in8::integer-8>> = event
+    << _stat_foo::6, stat_heartbeat::1, stat_change::1, in1::integer-8, in2::integer-8,in3::integer-8,in4::integer-8,in5::integer-8,in6::integer-8,in7::integer-8,in8::integer-8>> = event
 
     trigger_txt=[]
 

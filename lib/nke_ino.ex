@@ -6,7 +6,7 @@ defmodule Parser do
   # Link: http://www.nke-watteco.com/product/ino-lora-state-report-and-output-control-sensor/
   # Documentation: http://support.nke-watteco.com/ino
 
-  def parse(<<fctrl::8, cmdid::8, clusterid::16, attrid::16, attrtyp::8, data::8>>, _meta) do
+  def parse(<<fctrl::8, _cmdid::8, _clusterid::16, _attrid::16, _attrtyp::8, data::8>>, _meta) do
 
     input = case fctrl do
       0x11 -> 1
