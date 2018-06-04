@@ -1,7 +1,8 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
-  
-  #Parser for Siconia sensor according to standard program
+  #Parser for Siconia sensor according to standard preconfiguration by iot-shop.de or ZENNER IoT Solutions
+  #Long press: start joining procedure (blinks green 3 times) or puts device to sleep mode (blinks red 3 times)
+  #Short press: if joined, a packet will be sent, if not nothing happens.
 
   def parse(<<temp::signed-little-32, humid::little-32, bat::little-32>>, _meta) do
   
