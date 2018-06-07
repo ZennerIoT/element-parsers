@@ -6,6 +6,20 @@ This repository contains Elixir code templates for IoT devices such as sensors t
 
 For more information on the inner workings of the parsers, please check the [ELEMENT Documentation](https://docs.element-iot.com/parsers/overview/).
 
+## Example Parsers for common Usecases
+
+Have a look at these parsers if you need to write your own parser.
+
+Usecase | Parser File
+------------|-------------
+Frame-Port | [lib/example_frame_port.ex](lib/example_frame_port.ex)
+Variable Length | [lib/example_variable_part.ex](lib/example_variable_part.ex)
+
+
+## Public Parsers for LoRaWAN Devices
+
+A list of parser for devices we already integrated in ELEMENT IoT Platform.
+
 Device Name | Parser File
 ------------|-------------
 ADEUNIS ARF8046 | [lib/adeunis_arf8046.ex](lib/adeunis_arf8046.ex)
@@ -39,3 +53,5 @@ ZENNER Water Meter (v1.9) | [lib/zenner_water-meter.ex](lib/zenner_water-meter.e
 ZIS DHT22 Digital Temperature and Humidity Sensor Module | [lib/zis_dht-22.ex](lib/zis_dht-22.ex)
 ZIS SmartWaste UltraSonic | [lib/zis_smart-waste-ultrasonic.ex](lib/zis_smart-waste-ultrasonic.ex)
 ZIS ZISDIS 8 | [lib/zis_zisdis8.ex](lib/zis_zisdis8.ex)
+
+Your device is missing? Contact us at: [https://zenner-iot.com/page/kontakt/](https://zenner-iot.com/page/kontakt/)

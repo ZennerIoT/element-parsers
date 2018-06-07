@@ -16,3 +16,4 @@ elixir test_parser.exs lib/zenner_water-meter.ex
 elixir test_parser.exs lib/libelium_smart-agriculture.ex
 elixir test_parser.exs lib/tabs_object-locator.ex
 elixir test_parser.exs lib/example_variable_part.ex
+elixir test_parser.exs lib/example_frame_port.ex
