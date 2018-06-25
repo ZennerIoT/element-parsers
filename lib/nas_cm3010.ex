@@ -14,7 +14,7 @@ defmodule Parser do
     end
 
     # Status Message
-    def parse(<<usage::little-32, battery::signed-8, temperature::signed-8, rssi::signed-8, _rest::binary>>,%{meta: %{frame_port: 24}}) do
+    def parse(<<usage::little-32, _battery::signed-8, temperature::signed-8, rssi::signed-8, _rest::binary>>,%{meta: %{frame_port: 24}}) do
 
       %{
         message_type: "status",
