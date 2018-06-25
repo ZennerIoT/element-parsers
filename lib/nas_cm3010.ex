@@ -53,7 +53,7 @@ defmodule Parser do
           field: "usage",
           display: "Gas usage (since last status)",
           unit: "l"
-        }
+        },
         %{
           field: "temperature",
           display: "Temperature",
