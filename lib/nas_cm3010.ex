@@ -76,6 +76,7 @@ defmodule Parser do
           display: "Message type"
         }
       ]
+    end
 
     def tests() do
       [
