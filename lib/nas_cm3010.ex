@@ -99,7 +99,7 @@ defmodule Parser do
             message_type: "boot",
             serial_nr: "4B02003A",
             firmware: "0.2.152",
-            Elster_ID: 29345943
+            elster_id: 29345943
           }
         },
         {
