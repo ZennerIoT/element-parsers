@@ -25,36 +25,57 @@ defmodule Parser do
     end
 
     # Boot/Debug Message
-    def parse(<<type::8, payload::binary>>,%{meta: %{frame_port: 99}}) do
-      case type do
-        0x00 ->
-          << serial::binary-4, firmware::24, meter_id::little-32 >> = payload
-          << a, b, c, d >> = serial
-          << major::8, minor::8, patch::8 >> = << firmware::24 >>
-          %{
-            message_type: "boot",
-            serial_nr: Base.encode16(<<d,c,b,a>>),
-            firmware: "#{major}.#{minor}.#{patch}",
-            Elster_ID: meter_id
-          }
-
-        0x01 ->
-          %{
-            message_type: "shutdown"
-          }
-      end
+    def parse(<<0x00, serial::binary-4, firmware::24, meter_id::little-32>>,%{meta: %{frame_port: 99}}) do
+      << a, b, c, d >> = serial
+      << major::8, minor::8, patch::8 >> = << firmware::24 >>
+      %{
+        message_type: "boot",
+        serial_nr: Base.encode16(<<d,c,b,a>>),
+        firmware: "#{major}.#{minor}.#{patch}",
+        elster_id: meter_id
+      }
     end
 
-    # Fields
+    def parse(<<0x01>>,%{meta: %{frame_port: 99}}) do
+      %{
+        message_type: "shutdown"
+      }
+    end
+
     def fields do
       [
         %{
-          "field" => "gas",
-          "display" => "Gas usage",
-          "unit" => "l"
+          field: "gas",
+          display: "Gas usage (cumulative)",
+          unit: "l"
+        },
+        %{
+          field: "usage",
+          display: "Gas usage (since last status)",
+          unit: "l"
+        }
+        %{
+          field: "temperature",
+          display: "Temperature",
+          unit: "°C"
+        },
+        %{
+          field: "serial_nr",
+          display: "Serial number"
+        },
+        %{
+          field: "elster_id",
+          display: "ELSTER ID"
+        },
+        %{
+          field: "firmware",
+          display: "Firmware"
+        },
+        %{
+          field: "message_type",
+          display: "Message type"
         }
       ]
-    end
 
     def tests() do
       [
@@ -78,6 +99,11 @@ defmodule Parser do
             serial_nr: "4B02003A",
             firmware: "0.2.152",
             Elster_ID: 29345943
+          }
+        },
+        {
+          :parse_hex, "01", %{meta: %{frame_port: 99}}, %{
+            message_type: "shutdown"
           }
         },
       ]
