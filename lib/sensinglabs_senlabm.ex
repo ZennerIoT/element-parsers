@@ -2,7 +2,7 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
 
   # ELEMENT IoT Parser for Sensing Labs "SenLab LED"
-  #
+  # Works for electricity meters with 1000 pulses/kWh. If needed replace '1000' in kWh calculation to your needs
   
   def parse(<<0x02, battery, rest::binary>>, _meta) do
 
@@ -15,7 +15,7 @@ defmodule Parser do
     %{
       battery_percent: trunc((battery/254) * 100),
       number: number,
-      kWh: trunc(number/1000+129.15),
+      kWh: trunc(number/1000), # if wanted, trunc can be replaced with Float.round(number,x), where x defines the decimals
     }
   end
 
