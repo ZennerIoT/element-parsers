@@ -18,3 +18,4 @@ elixir test_parser.exs lib/tabs_object-locator.ex
 elixir test_parser.exs lib/example_variable_part.ex
 elixir test_parser.exs lib/example_frame_port.ex
 elixir test_parser.exs lib/nas_cm3010.ex
+elixir test_parser.exs lib/sensinglabs_senlabm.ex
