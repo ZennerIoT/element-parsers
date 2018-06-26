@@ -22,19 +22,19 @@ defmodule Parser do
   def tests() do
     [
       {
-        :parse_hex, "021299887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575986},
+        :parse_hex, "021299887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575857},
       },
       {
-        :parse_hex, "02120099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575986},
+        :parse_hex, "02120099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575857},
       },
       {
-        :parse_hex, "0212000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575986},
+        :parse_hex, "0212000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575857},
       },
       {
-        :parse_hex, "021200000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575986},
+        :parse_hex, "021200000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575857},
       },
       {
-        :parse_hex, "02120000000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575986},
+        :parse_hex, "02120000000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575857},
       },
     ]
   end
