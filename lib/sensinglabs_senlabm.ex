@@ -15,26 +15,26 @@ defmodule Parser do
     %{
       battery_percent: trunc((battery/254) * 100),
       number: number,
-      kWh: number/1000+129.15,
+      kWh: trunc(number/1000+129.15),
     }
   end
 
   def tests() do
     [
       {
-        :parse_hex, "021299887766", %{}, %{battery_percent: 7, number: 2575857510},
+        :parse_hex, "021299887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575986},
       },
       {
-        :parse_hex, "02120099887766", %{}, %{battery_percent: 7, number: 2575857510},
+        :parse_hex, "02120099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575986},
       },
       {
-        :parse_hex, "0212000099887766", %{}, %{battery_percent: 7, number: 2575857510},
+        :parse_hex, "0212000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575986},
       },
       {
-        :parse_hex, "021200000099887766", %{}, %{battery_percent: 7, number: 2575857510},
+        :parse_hex, "021200000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575986},
       },
       {
-        :parse_hex, "02120000000099887766", %{}, %{battery_percent: 7, number: 2575857510},
+        :parse_hex, "02120000000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575986},
       },
     ]
   end
