@@ -29,6 +29,14 @@ defmodule Parser do
         "field" => "register",
         "display" => "A+",
         "unit" => "kWh"
+      },
+      %{
+        "field" => "medium",
+        "display" => "Medium"
+      },
+      %{
+        "field" => "meterid",
+        "display" => "MeterID"
       }
     ]
   end
