@@ -3,6 +3,8 @@ defmodule Parser do
 
   # ELEMENT IoT Parser for TrackNet Tabs object locator
   # According to documentation provided by TrackNet
+  # Payload Description Version v1.3
+
 
   # Test hex payload "Motion" : "01FB060000CC0E00"
   # Status 1 = occupied; 0 = free

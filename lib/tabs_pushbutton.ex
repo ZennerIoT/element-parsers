@@ -1,8 +1,10 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
-  #ELEMENT IoT Parser for TrackNet Tabs object locator
+  # ELEMENT IoT Parser for TrackNet Tabs object locator
   # According to documentation provided by TrackNet
+  # Payload Description Version v1.3
+
 
   def parse(<<status, battery, temp, time::little-16, count::little-24>>, _meta) do
   <<rfu::6, state_1::1, state_0::1>> = <<status>>

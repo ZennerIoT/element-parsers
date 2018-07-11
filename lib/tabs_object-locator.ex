@@ -4,6 +4,8 @@ defmodule Parser do
 
   #ELEMENT IoT Parser for TrackNet Tabs object locator
   # According to documentation provided by TrackNet
+  # Payload Description Version v1.3
+
   #
   # Changelog
   #   2018-05-23 [jb]: Added tests(), formatted code.
