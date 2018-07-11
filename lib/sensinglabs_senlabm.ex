@@ -2,7 +2,7 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
 
   # ELEMENT IoT Parser for Sensing Labs "SenLab LED"
-  #
+  # Works for electricity meters with 1000 pulses/kWh. If needed replace '1000' in kWh calculation to your needs
   
   def parse(<<0x02, battery, rest::binary>>, _meta) do
 
@@ -15,26 +15,26 @@ defmodule Parser do
     %{
       battery_percent: trunc((battery/254) * 100),
       number: number,
-      kWh: number/1000+129.15,
+      kWh: trunc(number/1000), # if wanted, trunc can be replaced with Float.round(number,x), where x defines the decimals
     }
   end
 
   def tests() do
     [
       {
-        :parse_hex, "021299887766", %{}, %{battery_percent: 7, number: 2575857510},
+        :parse_hex, "021299887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575857},
       },
       {
-        :parse_hex, "02120099887766", %{}, %{battery_percent: 7, number: 2575857510},
+        :parse_hex, "02120099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575857},
       },
       {
-        :parse_hex, "0212000099887766", %{}, %{battery_percent: 7, number: 2575857510},
+        :parse_hex, "0212000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575857},
       },
       {
-        :parse_hex, "021200000099887766", %{}, %{battery_percent: 7, number: 2575857510},
+        :parse_hex, "021200000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575857},
       },
       {
-        :parse_hex, "02120000000099887766", %{}, %{battery_percent: 7, number: 2575857510},
+        :parse_hex, "02120000000099887766", %{}, %{battery_percent: 7, number: 2575857510, kWh: 2575857},
       },
     ]
   end
