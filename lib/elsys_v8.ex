@@ -1,12 +1,7 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
-  # ELEMENT IoT Parser for various ELSYS devices
-  # According to ELSYS Payload v8
-  # Products: https://www.elsys.se/en/#
-  # Documentation: https://www.elsys.se/en/elsys-payload/
-
-  # not yet defined for all available products
+  # Parser for ELSYS devices according to "Elsys-LoRa-payload_v8.pdf"
 
   def parse(payload, _meta) do
     case parse_parts(payload, %{}) do
@@ -29,7 +24,19 @@ defmodule Parser do
     parse_parts(rest, add_part(parts, :humidity, humidity, %{offset: offset, unit: "%"}))
   end
 
-  # Missing 0x03 .. 0x06
+  # Missing 0x03
+
+  def parse_parts(<<nob::2, 0x04::6, lux::16, offset::unit(8)-size(nob), rest::bitstring>>, parts) do
+    parse_parts(rest, add_part(parts, :lux, lux, %{offset: offset, unit: "lux"}))
+  end
+
+  def parse_parts(<<nob::2, 0x05::6, motion::8, offset::unit(8)-size(nob), rest::bitstring>>, parts) do
+    parse_parts(rest, add_part(parts, :motion, motion, %{offset: offset, unit: ""}))
+  end
+
+  def parse_parts(<<nob::2, 0x06::6, co2::16, offset::unit(8)-size(nob), rest::bitstring>>, parts) do
+    parse_parts(rest, add_part(parts, :co2, co2, %{offset: offset, unit: "ppm"}))
+  end
 
   def parse_parts(<<nob::2, 0x07::6, battery::16, offset::unit(8)-size(nob), rest::bitstring>>, parts) do
     parse_parts(rest, add_part(parts, :battery, battery, %{offset: offset, unit: "mV"}))
