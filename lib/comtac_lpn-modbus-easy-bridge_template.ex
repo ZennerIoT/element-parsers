@@ -23,7 +23,7 @@ defmodule Parser do
   #   2018-07-18: [jb] First implementation.
   #
 
-  @register_enabled [
+  def register_enabled?(name), do: [
     r0: true,
     r1: true,
     r2: false,
@@ -41,7 +41,7 @@ defmodule Parser do
     r13: false,
     r14: false,
     r15: false,
-  ]
+  ][name]
   
   # Parsing LoRa uplink payload structure on Port3
   def parse(<<
@@ -69,12 +69,14 @@ defmodule Parser do
       r15: r15,
     ]
 
-    registers |> Enum.reduce({registers_binary, %{}}, &handle_register/2) |> elem(1)
+    {_, result} = Enum.reduce(registers, {registers_binary, %{}}, &handle_register/2)
+
+    result
   end
 
   defp handle_register({register, ok}, {registers_binary, result}) do
 
-    case {@register_enabled[register], ok} do
+    case {register_enabled?(register), ok} do
 
       {true, 0} -> # Enabled but error
         <<value::16, rest::binary>> = registers_binary
