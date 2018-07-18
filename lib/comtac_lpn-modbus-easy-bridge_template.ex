@@ -72,29 +72,42 @@ defmodule Parser do
     registers |> Enum.reduce({registers_binary, %{}}, &handle_register/2) |> elem(1)
   end
 
-  def handle_register({register, ok}, {registers_binary, result}) do
+  defp handle_register({register, ok}, {registers_binary, result}) do
 
     case {@register_enabled[register], ok} do
 
       {true, 0} -> # Enabled but error
         <<value::16, rest::binary>> = registers_binary
-        result = result
-          |> Map.put(:"#{register}_value", value)
-          |> Map.put(:"#{register}_status", "error")
-        {rest, result}
+        {rest, Map.merge(result, to_result_map(register, value, "error"))}
 
       {true, 1} -> # Enabled and ok
         <<value::16, rest::binary>> = registers_binary
-        result = result
-          |> Map.put(:"#{register}_value", value)
-          |> Map.put(:"#{register}_status", "ok")
-        {rest, result}
+        {rest, Map.merge(result, to_result_map(register, value, "ok"))}
 
       {false, _} -> # Dont care
         {registers_binary, result}
 
     end
   end
+  
+  # Fix to avoid binary_to_atom
+  defp to_result_map(:r0, v, s), do: %{r0_value: v, r0_status: s}
+  defp to_result_map(:r1, v, s), do: %{r1_value: v, r1_status: s}
+  defp to_result_map(:r2, v, s), do: %{r2_value: v, r2_status: s}
+  defp to_result_map(:r3, v, s), do: %{r3_value: v, r3_status: s}
+  defp to_result_map(:r4, v, s), do: %{r4_value: v, r4_status: s}
+  defp to_result_map(:r5, v, s), do: %{r5_value: v, r5_status: s}
+  defp to_result_map(:r6, v, s), do: %{r6_value: v, r6_status: s}
+  defp to_result_map(:r7, v, s), do: %{r7_value: v, r7_status: s}
+  defp to_result_map(:r8, v, s), do: %{r8_value: v, r8_status: s}
+  defp to_result_map(:r9, v, s), do: %{r9_value: v, r9_status: s}
+  defp to_result_map(:r10, v, s), do: %{r10_value: v, r10_status: s}
+  defp to_result_map(:r11, v, s), do: %{r11_value: v, r11_status: s}
+  defp to_result_map(:r12, v, s), do: %{r12_value: v, r12_status: s}
+  defp to_result_map(:r13, v, s), do: %{r13_value: v, r13_status: s}
+  defp to_result_map(:r14, v, s), do: %{r14_value: v, r14_status: s}
+  defp to_result_map(:r15, v, s), do: %{r15_value: v, r15_status: s}
+
 
   #def fields() do
   # # Omitted field definitions here so all fields will be shown.
