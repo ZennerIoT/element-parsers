@@ -21,20 +21,21 @@ defmodule Parser do
   #  Byte[5]: DALI-Device Devicetype (QueryDevicetype-Cmd)
 
   def parse(<<
+      _::4, #unused
+      glowing::1,
+      _::1, #unused
       communication_error::1,
       _::1, # unused
-      glowing::1,
-      _::5, # unused
       last_received_level::8,
       last_level::8,
-    ballast_error::1,
-      lamp_failure::1,
-      lamp_arc_power_on::1,
-      limit_error::1,
-      fade_ready::1,
-      reset_state::1,
-      missing_short_address::1,
       power_failure::1,
+      missing_short_address::1,
+      reset_state::1,
+      fade_ready::1,
+      limit_error::1,
+      lamp_arc_power_on::1,
+      lamp_failure::1,
+      ballast_error::1,
       dali_version::8,
       dali_device_type::8
     >>, _meta) do
