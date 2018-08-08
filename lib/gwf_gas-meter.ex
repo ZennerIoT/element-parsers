@@ -4,7 +4,14 @@ defmodule Parser do
   # ELEMENT IoT Parser for GWF Gas meter with Elster module
   # According to documentation provided by GWF
 
-  def parse(<<ptype::8, manu::integer-little-16, mid::integer-32, medium::8, state::8, accd::integer-little-16, vif::8, volume::integer-little-32, _::binary>>, _meta) do
+  #
+  # Changelog
+  #   2018-04-18 [as]: Initial version.
+  #   2018-08-08 [jb]: Parsing battery and additional function.
+  #
+
+
+  def parse(<<ptype::8, manu::integer-little-16, mid::integer-32, medium::8, state::8, accd::integer-little-16, vif::8, volume::integer-little-32, additional_functions::binary-1, battery::binary-1, _::binary>>, _meta) do
     med = case medium do
       3 -> "gas"
       6 -> "warm water"
@@ -31,15 +38,28 @@ defmodule Parser do
 
     <<n1::integer-4,n0::integer-4,n3::integer-4,n2::integer-4,n5::integer-4,n4::integer-4,n7::4,n6::integer-4>> = <<mid::32>>
 
+    <<battery_lifetime_semester::5, battery_link_error::1, _::2>> = battery
+
+    <<no_usage::1, backflow::1, battery_low::1, _::1, broken_pipe::1, _::1, continous_flow::1, _::1>> = additional_functions
 
     %{
-    protocol_type: ptype,
-    manufacturer_id: Base.encode16(<<manu::16>>),
-    actuality_minutes: accd,
-    meter_id: Integer.to_string(n7)<>Integer.to_string(n6)<>Integer.to_string(n5)<>Integer.to_string(n4)<>Integer.to_string(n3)<>Integer.to_string(n2)<>Integer.to_string(n1)<>Integer.to_string(n0),
-    medium: med,
-    state: s,
-    volume: volume/decimalplaces,
+      protocol_type: ptype,
+      manufacturer_id: Base.encode16(<<manu::16>>),
+      actuality_minutes: accd,
+      meter_id: Integer.to_string(n7)<>Integer.to_string(n6)<>Integer.to_string(n5)<>Integer.to_string(n4)<>Integer.to_string(n3)<>Integer.to_string(n2)<>Integer.to_string(n1)<>Integer.to_string(n0),
+      medium: med,
+      state: s,
+      volume: volume/decimalplaces,
+
+      continous_flow: continous_flow,
+      broken_pipe: broken_pipe,
+      battery_low: battery_low,
+      backflow: backflow,
+      no_usage: no_usage,
+
+      battery_link_error: battery_link_error,
+      battery_lifetime_semester: battery_lifetime_semester,
+      battery_percent: (battery_lifetime_semester / 31) * 100,
     }
   end
 
@@ -63,7 +83,17 @@ defmodule Parser do
           meter_id: "21063118",
           medium: "gas",
           state: "no error",
-          volume: 0.25
+          volume: 0.25,
+
+          battery_lifetime_semester: 26,  # 31 = max, 0 = min
+          battery_percent: 83.87096774193549, # 100 = max, 0 = min
+          battery_link_error: 0,          # 0 = false, 1 = true
+
+          backflow: 0,
+          battery_low: 0,
+          broken_pipe: 0,
+          continous_flow: 0,
+          no_usage: 0,
         }
       }
     ]
