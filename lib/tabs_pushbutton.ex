@@ -40,9 +40,9 @@ defmodule Parser do
     case rest do
       <<count_1::little-24>> ->
         Map.merge(result, %{
-          total_count: count+count1,
+          total_count: count+count_1,
           button_0_count: count,
-          button_1_count: count1
+          button_1_count: count_1
         })
         _ -> result
     end
