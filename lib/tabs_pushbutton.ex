@@ -93,7 +93,8 @@ defmodule Parser do
           button_0_state: "pushed",
           button_0_count: 12,
           battery_voltage: 3.9,
-          battery_state: 100.0
+          battery_state: 100.0,
+          temperature: 25
         }
       },
       {
@@ -103,7 +104,8 @@ defmodule Parser do
           button_1_state: "not pushed",
           button_0_state: "pushed",
           battery_voltage: 3.9,
-          battery_state: 100.0
+          battery_state: 100.0,
+          temperature: 25
         }
       },
     ]
