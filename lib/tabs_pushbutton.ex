@@ -64,8 +64,35 @@ defmodule Parser do
         "unit" => "°C"
       },
       %{
-        "field" => ""
+        "field" => "total_count",
+        "display" => "Counter total"
+      },
+      %{
+        "field" => "button_0_count",
+        "display" => "Counter Button 0"
+      },
+      %{
+        "field" => "button_1_count",
+        "display" => "Counter Button 1"
       }
+    ]
+  end
+
+  # Test case and data for automatic testing
+  def tests() do
+    [
+      {
+        :parse_hex, "01FE39EA000C0000000000", %{}, %{
+          total_count: 12,
+          time_elapsed_since_trigger: 234,
+          button_1_state: "not pushed",
+          button_1_count: 0,
+          button_0_state: "pushed",
+          button_0_count: 12,
+          battery_voltage: 3.9,
+          battery_state: 100
+        }
+      },
     ]
   end
 
