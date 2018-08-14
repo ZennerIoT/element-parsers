@@ -4,7 +4,7 @@ defmodule Parser do
   # ELEMENT IoT Parser for TrackNet Tabs object locator
   # According to documentation provided by TrackNet
   # Payload Description Version v1.3 and v1.4
-  
+
   # Changelog
   #   2018-08-14/as: added v1.4 functionality
 
@@ -36,7 +36,7 @@ defmodule Parser do
     }
 
 
-    # additional functionality for
+    # additional functionality for v1.4
     case rest do
       <<count_1::little-24>> ->
         Map.merge(result, %{
@@ -92,6 +92,16 @@ defmodule Parser do
           button_1_count: 0,
           button_0_state: "pushed",
           button_0_count: 12,
+          battery_voltage: 3.9,
+          battery_state: 100
+        }
+      },
+      {
+        :parse_hex, "01FE39EA000C0000", %{}, %{
+          total_count: 12,
+          time_elapsed_since_trigger: 234,
+          button_1_state: "not pushed",
+          button_0_state: "pushed",
           battery_voltage: 3.9,
           battery_state: 100
         }
