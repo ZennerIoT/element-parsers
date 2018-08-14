@@ -6,7 +6,7 @@ defmodule Parser do
   # Payload Description Version v1.3
 
 
-  def parse(<<status, battery, temp, time::little-16, count::little-24>>, _meta) do
+  def parse(<<status, battery, temp, time::little-16, count::little-24, rest::binary>>, _meta) do
   <<rfu::6, state_1::1, state_0::1>> = <<status>>
   <<rem_cap::4, voltage::4>> = <<battery>>
   <<rfu::1, temperature::7>> = <<temp>>
@@ -22,7 +22,7 @@ defmodule Parser do
   end
 
 
-    %{
+    result = %{
       button_1_state: button_1,
       button_0_state: button_0,
       battery_state: 100*(rem_cap/15),
@@ -31,6 +31,19 @@ defmodule Parser do
       time_elapsed_since_trigger: time,
       total_count: count
     }
+
+
+    # additional functionality for
+    case rest do
+      <<count_1::little-24>> ->
+        Map.merge(result, %{
+          total_count: count+count1,
+          button_0_count: count,
+          button_1_count: count1
+        })
+        _ -> result
+    end
+
   end
 
   def fields do
@@ -49,6 +62,9 @@ defmodule Parser do
         "field" => "temperature",
         "display" => "Temperature",
         "unit" => "°C"
+      },
+      %{
+        "field" => ""
       }
     ]
   end
