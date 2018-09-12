@@ -15,7 +15,15 @@ defmodule Parser do
         field: "bat_v",
         display: "Battery voltage",
         unit: "V"
-      }
+      },
+      %{
+        field: "valvestatus",
+        display: "Valve status"
+      },
+      %{
+        field: "lidstatus",
+        display: "Lid status"
+      },
     ]
   end
 
