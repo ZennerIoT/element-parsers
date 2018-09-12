@@ -1,7 +1,7 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
-  def parse(<<bat_mv::binary-4, vt::binary-1, rest::binary>>, _meta) do
+  def parse(<<bat_mv::binary-4, vt::binary-1, _rest::binary>>, _meta) do
     %{
       bat_v: String.to_integer(bat_mv)/1000,
       valvestatus: if(vt == "1" or vt == "3" , do: "open", else: "closed"),
