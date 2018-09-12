@@ -23,3 +23,4 @@ elixir test_parser.exs lib/sensinglabs_senlabm.ex
 elixir test_parser.exs lib/comtac_lpn-modbus-easy-bridge_template.ex
 elixir test_parser.exs lib/conbee_hybdridtag_l300.ex
 elixir test_parser.exs lib/nas_um32023.ex
+elixir test_parser.exs lib/strega_smartvalve.ex
