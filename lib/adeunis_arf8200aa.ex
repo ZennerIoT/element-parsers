@@ -160,7 +160,40 @@ defmodule Parser do
         }
 
       0x30 ->
-        << type_a::8, a_value::24, type_b::8, b_value::24 >> = payload
+        << _rfua::4, type_a::4, a_value::24, _rfub::4, type_b::4, b_value::24 >> = payload
+
+        unit_a = case type_a do
+          1 -> "V"
+          2 -> "µA"
+          _ -> "error"
+        end
+        unit_b = case type_b do
+          1 -> "V"
+          2 -> "mA"
+          _ -> "error"
+        end
+
+        value_a = case type_a do
+          1 -> a_value/1000000
+          2 -> a_value/100000
+          _ -> "error"
+        end
+
+        value_b = case type_b do
+          1 -> b_value/1000000
+          2 -> b_value/100000
+          _ -> "error"
+        end
+
+        %{
+          unit_a: unit_a,
+          value_a: value_a,
+          unit_b: unit_b,
+          value_b: value_b
+        }
+
+      0x42 ->
+        << _rfua::4, type_a::4, a_value::24, _rfub::4, type_b::4, b_value::24 >> = payload
 
         unit_a = case type_a do
           1 -> "V"
