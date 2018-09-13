@@ -167,7 +167,7 @@ defmodule Parser do
           2 -> "µA"
           _ -> "error"
         end
-        unit_a = case type_b do
+        unit_b = case type_b do
           1 -> "V"
           2 -> "mA"
           _ -> "error"
