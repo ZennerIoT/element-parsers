@@ -1,6 +1,18 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
+  # ELEMENT IoT Parser for SensoNeo Single Sensor
+  # According to documentation provided by Sensoneo
+  # Link: https://sensoneo.com/product/smart-sensors/
+
+  #
+  # Changelog
+  #   2018-09-13 [as]: Initial version.
+  #   2018-09-17 [as]: fixed position value, was switched
+  #
+
+
+
   def parse(<<_uprefix::16, v::binary-4, _tprefix::8, t::binary-3, _dprefix::8, d::binary-3, _pprefix::8, p::binary-1, _rest::binary>>, _meta) do
     voltage = String.to_float(v)
     temperature = String.to_integer(t)
@@ -8,8 +20,8 @@ defmodule Parser do
     position = String.to_integer(p)
 
     position = case position do
-      0 -> "normal"
-      1 -> "tilt"
+      1 -> "normal"
+      0 -> "tilt"
     end
 
     %{

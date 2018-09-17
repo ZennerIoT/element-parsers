@@ -1,6 +1,16 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
+
+  # ELEMENT IoT Parser for Strega Smart Valve
+  # According to documentation (v3.0) provided by Strega
+  # Link: https://sensoneo.com/product/smart-sensors/
+  #
+  # Changelog
+  #   2018-09-13 [as]: Initial version.
+  #
+
+
   def parse(<<bat_mv::binary-4, vt::binary-1, _rest::binary>>, _meta) do
     %{
       bat_v: String.to_integer(bat_mv)/1000,
