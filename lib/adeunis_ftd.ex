@@ -8,6 +8,7 @@ defmodule Parser do
   # Documentation: https://www.adeunis.com/wp-content/uploads/2017/08/FTD_LoRaWAN_EU863-870_UG_FR_GB_V1.2.1.pdf
   
   # Changelog 18-09-03: AS: added fields for export functionality
+  # Changelog 18-09-20: JB: Completed fields definition; Added field "gps_reception_scale_name"
 
   def parse(event, meta) do
     << status :: binary-1, rest :: binary >> = event
@@ -44,11 +45,19 @@ defmodule Parser do
     long = hemi_to_sign(long_hemi) * (long_deg + (long_min / 100 / 60.0))
     
     << gps_reception_scale :: 4, gps_satellites :: 4 >> = gps_quality
-    
+
+    gps_reception_scale_name = case gps_reception_scale do
+      1 -> :good
+      2 -> :average
+      3 -> :poor
+      _ -> :unknown
+    end
+
     acc = Enum.concat([
       latitude: lat, 
       longitude: long,
       gps_reception_scale: gps_reception_scale,
+      gps_reception_scale_name: gps_reception_scale_name,
       gps_satellites: gps_satellites
     ], acc)
     
@@ -147,7 +156,35 @@ defmodule Parser do
     field: "temperature",
     display: "Temperatur",
     unit: "°C"
-  }
+  },
+    %{
+      field: "up_fcnt",
+      display: "Up-Framecount",
+    },
+    %{
+      field: "down_fcnt",
+      display: "Down-Framecount",
+    },
+    %{
+      field: "trigger_accelerometer",
+      display: "Movement",
+    },
+    %{
+      field: "trigger_push_button",
+      display: "Buttonpress",
+    },
+    %{
+      field: "gps_satellites",
+      display: "GPS-Satellites",
+    },
+    %{
+      field: "gps_reception_scale",
+      display: "GPS-Reception-Code",
+    },
+    %{
+      field: "gps_reception_scale_name",
+      display: "GPS-Reception-Quality",
+    },
   ]
   end
   
@@ -158,4 +195,23 @@ defmodule Parser do
     |> Enum.map(&Map.get(&1, "rssi"))
     |> Enum.max(fn -> nil end)
   end
+
+  def tests() do
+    [
+      {
+        :parse_hex, "CF1E6C390EA57102", %{}, %{
+          battery_voltage: 3749,
+          down_fcnt: 57,
+          gw_rssi: nil,
+          rssi: -113,
+          snr: 2,
+          temperature: 30,
+          trigger_accelerometer: true,
+          trigger_push_button: false,
+          up_fcnt: 108
+        }
+      }
+    ]
+  end
+
 end
