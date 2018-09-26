@@ -15,7 +15,7 @@ defmodule Parser do
   #   2018-09-17 [jb]: Handling missing fctrl, added fields like "input_2_state" for better historgrams.
 
 
-  def parse(<<fctrl::8, _cmdid::8, _clusterid::16, 0x0055, _attrtyp::8, data::8>>, _meta) do
+  def parse(<<fctrl::8, _cmdid::8, _clusterid::16, 0x00, 0x55, _attrtyp::8, data::8>>, _meta) do
 
     input = case fctrl do
       0x11 -> 1
@@ -68,7 +68,7 @@ defmodule Parser do
         %{
           :input => input,
           :counter => count,
-          "input_#{input}_state" => data,# Adding a specific field for a input.
+          "input_#{input}_state" => count,# Adding a specific field for a input.
         }
     end
   end
