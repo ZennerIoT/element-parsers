@@ -68,7 +68,7 @@ defmodule Parser do
         %{
           :input => input,
           :counter => count,
-          "input_#{input}_state" => count,# Adding a specific field for a input.
+          "input_#{input}_count" => count,# Adding a specific field for a input.
         }
     end
   end
