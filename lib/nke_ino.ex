@@ -44,7 +44,7 @@ defmodule Parser do
     end
   end
 
-  def parse(<<fctrl::8, _cmdid::8, _clusterid::16, 0x0402, _attrtyp::8, count::32>>, _meta) do
+  def parse(<<fctrl::8, _cmdid::8, _clusterid::16, 0x04, 0x02, _attrtyp::8, count::32>>, _meta) do
 
     input = case fctrl do
       0x11 -> 1
