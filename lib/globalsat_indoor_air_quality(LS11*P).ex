@@ -1,7 +1,8 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
   
-  #Parser for globalsat indoor climate monitor
+  #Parser for globalsat indoor climate monitor LS11*P
+  #works for CO, CO2 and PM2.5 Models
   #Author F. Wolf fw@alpha-omega-technology.de
 
   def parse(<<type::big-8, temp::signed-big-16, humid::big-16, sens::big-16>>, _meta) do
