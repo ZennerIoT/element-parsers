@@ -33,7 +33,8 @@ defmodule TestParser do
           :ok
         _ ->
           IO.puts("[#{test_type}] Test payload #{payload_hex} DID NOT MATCH expected_result")
-          IO.inspect {expected_result, actual_result}
+          IO.inspect(expected_result, label: "EXPECTED")
+          IO.inspect(actual_result, label: "ACTUAL")
           :error
       end
     end)
