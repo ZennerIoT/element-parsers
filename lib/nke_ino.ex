@@ -27,6 +27,11 @@ defmodule Parser do
         []
     end
   end
+  def parse(payload, meta) do
+    frame_port = get_in(meta, [:meta, :frame_port])
+    Logger.info("NKE Parser with UNKNOWN payload #{inspect payload} and frame_port #{inspect frame_port}")
+    []
+  end
 
   # See: http://support.nke-watteco.com/cluster-binary-input/#PresentValue
   def parse_cmd(0x0A, 0x000F, <<0x0055::16, attr::binary>>) do
