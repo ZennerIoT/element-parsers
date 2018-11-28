@@ -35,6 +35,7 @@ Comtac Temperature and Humidity Sensor | [lib/comtac_lpn-cm-1.ex](lib/comtac_lpn
 Comtac LPN Modbus easy SW | [lib/comtac_lpn-modbus-easy-bridge_template.ex](lib/comtac_lpn-modbus-easy-bridge_template.ex)
 Conbee HybridTag L300 | [lib/conbee_hybdridtag_l300.ex](lib/conbee_hybdridtag_l300.ex)
 DZG IVU LoRaMOD Bridge | [lib/dzg_loramod.ex](lib/dzg_loramod.ex)
+DZG IVU LoRaMOD Bridge v2 | [lib/dzg_loramod-v2.ex](lib/dzg_loramod-v2.ex)
 ELSYS LoRaWAN Payload v8 | [lib/elsys_v8.ex](lib/elsys_v8.ex)
 GlobalSat LT-100 Series Tracker | [lib/globalsat_tracker.ex](lib/globalsat_tracker.ex)
 Gupsy Temperature and Humidity Sensor | [lib/gupsy_th.ex](lib/gupsy_th.ex)
