@@ -6,6 +6,7 @@ defmodule Parser do
   #
   # Changelog
   #   2018-11-28 [jb]: Reimplementation according to PDF.
+  #   2018-12-03 [jb]: Handling MeterReading messages with missing frame header.
 
   # Structure of payload deciffered from PDF:
   #
@@ -35,15 +36,15 @@ defmodule Parser do
         []
     end
   end
-  def parse(<<version::2, is_encrypted::1, has_mac::1, is_compressed::1, _rest::bits>>) do
-    # Providing a error message to see which flag are not supported.
-    header_flags = %{
-      version: version,
-      is_encrypted: is_encrypted,
-      has_mac: has_mac,
-      is_compressed: is_compressed,
-    }
-    Logger.warn("Can not parse frame with header: #{inspect header_flags}")
+
+  # Handling MeterReading messages without Header.
+  def parse(<<frame::binary>>, %{meta: %{frame_port: 8}}) do
+    parse_meter_reading_message(frame)
+  end
+
+  # Error handler
+  def parse(payload, meta) do
+    Logger.info("Can not parse frame with payload: #{inspect Base.encode16(payload)} on frame port: #{inspect get(meta, [:meta, :frame_port])}")
     []
   end
 
@@ -85,7 +86,7 @@ defmodule Parser do
     }
   end
   def parse_meter_reading_message(_) do
-    Logger.warn("Unknown MeterReadingData format")
+    Logger.info("Unknown MeterReadingData format")
     []
   end
 
@@ -267,6 +268,22 @@ defmodule Parser do
       {
         # INVALID MeterReading Message from real device
         :parse_hex,  "0001A21FF5BD02FAAF4F4B0B030000", %{meta: %{frame_port: 8}}, [],
+      },
+
+      {
+        # MeterReading Message from real device that somehow has no frame header.
+        :parse_hex,  "513097F701B8030000", %{meta: %{frame_port: 8}}, %{
+          medium: "electricity_kwh",
+          meter_id: 33003312,
+          qualifier: "a-plus",
+          register_value: 9.52,
+          type: "meter_reading"
+        },
+      },
+
+      {
+        # Testing error handler
+        :parse_hex,  "", %{meta: %{frame_port: 8}}, [],
       },
     ]
   end
