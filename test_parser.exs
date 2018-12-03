@@ -2,8 +2,27 @@
 defmodule Platform.Parsing.Behaviour do
   # Empty modules so tests work so far.
 
-  def __using__(_) do
-    # TODO: Add needed callbacks here.
+  defmacro __using__(_) do
+    quote do
+
+      # Helper functions for data structure access in parsers.
+      # DO NOT REMOVE
+      def get(meta, access, default \\ nil)
+      def get(meta, [], _) do
+        meta
+      end
+      def get(meta, [atom | rest], default) when is_atom(atom) and is_map(meta) do
+        get(Map.get(meta, atom, Map.get(meta, to_string(atom), default)), rest, default)
+      end
+      def get(meta, [int | rest], default) when is_integer(int) and is_list(meta) do
+        get(Enum.at(meta, int, default), rest, default)
+      end
+      def get(_, _, default) do
+        default
+      end
+
+      # TODO: Add needed callbacks here.
+    end
   end
 
 end
@@ -29,10 +48,10 @@ defmodule TestParser do
 
       case actual_result do
         ^expected_result ->
-          IO.puts("[#{test_type}] Test payload #{payload_hex} matches expected_result")
+          IO.puts("[#{test_type}] Test payload #{inspect payload_hex} matches expected_result")
           :ok
         _ ->
-          IO.puts("[#{test_type}] Test payload #{payload_hex} DID NOT MATCH expected_result")
+          IO.puts("[#{test_type}] Test payload #{inspect payload_hex} DID NOT MATCH expected_result")
           IO.inspect(expected_result, label: "EXPECTED")
           IO.inspect(actual_result, label: "ACTUAL")
           :error
