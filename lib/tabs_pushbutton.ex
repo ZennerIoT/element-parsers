@@ -10,9 +10,9 @@ defmodule Parser do
 
 
   def parse(<<status, battery, temp, time::little-16, count::little-24, rest::binary>>, _meta) do
-  <<rfu::6, state_1::1, state_0::1>> = <<status>>
+  <<_rfu::6, state_1::1, state_0::1>> = <<status>>
   <<rem_cap::4, voltage::4>> = <<battery>>
-  <<rfu::1, temperature::7>> = <<temp>>
+  <<_rfu::1, temperature::7>> = <<temp>>
 
   button_1 = case state_1 do
     0 -> "not pushed"

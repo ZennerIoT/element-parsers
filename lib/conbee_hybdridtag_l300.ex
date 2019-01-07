@@ -119,72 +119,72 @@ defmodule Parser do
   def fields do
     [
       %{
-        "field": "ambient_light",
-        "display": "Ambient Light",
-        "unit": "lux"
+        "field" => "ambient_light",
+        "display" => "Ambient Light",
+        "unit" => "lux"
       },
       %{
-        "field": "temperature",
-        "display": "Temperature",
-        "unit": "C°"
+        "field" => "temperature",
+        "display" => "Temperature",
+        "unit" => "C°"
       },
       %{
-        "field": "humidity",
-        "display": "Humidity",
-        "unit": "%"
+        "field" => "humidity",
+        "display" => "Humidity",
+        "unit" => "%"
       },
       %{
-        "field": "accelerate_x",
-        "display": "Accelerate-X",
-        "unit": "millig"
+        "field" => "accelerate_x",
+        "display" => "Accelerate-X",
+        "unit" => "millig"
       },
       %{
-        "field": "accelerate_y",
-        "display": "Accelerate-Y",
-        "unit": "millig"
+        "field" => "accelerate_y",
+        "display" => "Accelerate-Y",
+        "unit" => "millig"
       },
       %{
-        "field": "accelerate_z",
-        "display": "Accelerate-Z",
-        "unit": "millig"
+        "field" => "accelerate_z",
+        "display" => "Accelerate-Z",
+        "unit" => "millig"
       },
       %{
-        "field": "button_1",
-        "display": "Button-1",
+        "field" => "button_1",
+        "display" => "Button-1",
       },
       %{
-        "field": "button_2",
-        "display": "Button-2",
+        "field" => "button_2",
+        "display" => "Button-2",
       },
       %{
-        "field": "proximity",
-        "display": "Proximity",
-        "unit": "mm"
+        "field" => "proximity",
+        "display" => "Proximity",
+        "unit" => "mm"
       },
       %{
-        "field": "localisation_id",
-        "display": "Localisation-ID",
+        "field" => "localisation_id",
+        "display" => "Localisation-ID",
       },
       %{
-        "field": "gps_lat",
-        "display": "GPS-Lat",
+        "field" => "gps_lat",
+        "display" => "GPS-Lat",
       },
       %{
-        "field": "gps_lon",
-        "display": "GPS-Lon",
+        "field" => "gps_lon",
+        "display" => "GPS-Lon",
       },
       %{
-        "field": "battery_voltage",
-        "display": "Battery",
-        "unit": "V"
+        "field" => "battery_voltage",
+        "display" => "Battery",
+        "unit" => "V"
       },
       %{
-        "field": "battery_indicator",
-        "display": "Battery Indicator",
+        "field" => "battery_indicator",
+        "display" => "Battery Indicator",
       },
       %{
-        "field": "serial_number",
-        "display": "Serial Number",
+        "field" => "serial_number",
+        "display" => "Serial Number",
       },
     ]
   end
