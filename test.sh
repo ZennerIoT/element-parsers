@@ -26,3 +26,4 @@ elixir test_parser.exs lib/nas_um32023.ex
 elixir test_parser.exs lib/strega_smartvalve.ex
 elixir test_parser.exs lib/adeunis_ftd.ex
 elixir test_parser.exs lib/comtac_lpn-di.ex
+elixir test_parser.exs lib/decentlab_dl_pr26.ex
