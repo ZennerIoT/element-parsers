@@ -1,7 +1,7 @@
 language: 'elixir'
 sudo: false
-elixir: '1.6'
-otp_release: '20.2'
+elixir: '1.7'
+otp_release: '21.1'
 install:
   - 'echo "Nothing to install"'
 script:
