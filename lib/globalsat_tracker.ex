@@ -6,7 +6,7 @@ defmodule Parser do
   # Link: http://www.globalsat.com.tw/en/product-199335/LoRaWAN%E2%84%A2-Compliant-GPS-Tracker-LT-100-Series.html#a
 
   def parse(event, _meta) do
-    <<foo::size(8), fix::size(8), bat::size(8), lat::size(32), lon::size(32)>> = event
+    <<_foo::size(8), _fix::size(8), bat::size(8), lat::size(32), lon::size(32)>> = event
     {
       %{
         battery: bat

@@ -6,10 +6,10 @@ defmodule Parser do
   # Payload Description Version v1.3
 
 
-  def parse(<<status, battery, temp, humidity, co2::little-16, voc::little-16>>, _meta) do
+  def parse(<<_status, battery, temp, humidity, co2::little-16, voc::little-16>>, _meta) do
   <<rem_cap::4, voltage::4>> = <<battery>>
-  <<rfu::1, temperature::7>> = <<temp>>
-  <<rfu::1, rhum::7>> = <<humidity>>
+  <<_rfu::1, temperature::7>> = <<temp>>
+  <<_rfu::1, rhum::7>> = <<humidity>>
 
 
     %{

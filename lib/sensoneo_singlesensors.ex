@@ -59,12 +59,7 @@ defmodule Parser do
   def tests() do
     [
       {
-        :parse_hex, "2855332e3539542b323144323534503029", %{}, %{
-          voltage: 3.59,
-          temperature: 21,
-          distance: 254,
-          position: "normal"
-        }
+        :parse_hex, "2855332e3539542b323144323534503029", %{}, %{distance: 254, position: "tilt", temperature: 21, voltage: 3.59}
       }
     ]
   end

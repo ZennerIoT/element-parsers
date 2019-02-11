@@ -11,7 +11,7 @@ defmodule Parser do
 
 
   def parse(<<code::8, status::8, payload::binary>>, _meta) do
-    << fcnt::4, err::4 >> = << status::8 >>
+    << _fcnt::4, err::4 >> = << status::8 >>
 
     error = case err do
       0 -> "no error"

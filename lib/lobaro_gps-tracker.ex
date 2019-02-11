@@ -35,7 +35,7 @@ defmodule Parser do
 
 
   #parsing packet if no GPS fix
-  def parse(<<type::big-8, temp::big-16, vbat::big-16, lat_deg::big-8, lat_min::big-8, lat_10000::big-16, long_deg::big-8, long_min::big-8, long_10000::big-16, 0x00, sat_cnt::8>>, _meta) do
+  def parse(<<type::big-8, temp::big-16, vbat::big-16, _lat_deg::big-8, _lat_min::big-8, _lat_10000::big-16, _long_deg::big-8, _long_min::big-8, _long_10000::big-16, 0x00, sat_cnt::8>>, _meta) do
 
     mode = case type do
       0 -> "Scheduled"
