@@ -14,6 +14,8 @@ Usecase | Parser File
 ------------|-------------
 Frame-Port | [lib/example_frame_port.ex](lib/example_frame_port.ex)
 Variable Length | [lib/example_variable_part.ex](lib/example_variable_part.ex)
+Reading profile data | [lib/example_profile_read.ex](lib/example_profile_read.ex)
+Writing profile data | [lib/example_profile_write.ex](lib/example_profile_write.ex)
 
 
 ## Public Parsers for LoRaWAN Devices
