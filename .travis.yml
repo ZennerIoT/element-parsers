@@ -7,5 +7,7 @@ install:
   - 'mix local.rebar --force'
   - 'cd parser_sdk && mix deps.get && mix compile'
 script:
+  - 'pwd'
   - 'cd'
+  - 'pwd'
   - 'sh test.sh'
