@@ -3,8 +3,7 @@ sudo: false
 elixir: '1.7'
 otp_release: '21.1'
 install:
-  - 'echo "Nothing to install"'
-script:
+  - 'mix local.hex --force'
   - 'cd parser_sdk && mix deps.get && mix compile'
-  - 'cd'
+script:
   - 'sh test.sh'
