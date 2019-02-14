@@ -13,16 +13,10 @@ defmodule Parser do
   #   2019-02-14 [mm]: Initial version.
   #
 
-  def parse(<<frame, b1::16, b2::16, b3::16, b4::16, b5::16>>, _meta) when frame in [0x02, 0x03, 0x40] do
-    %{
-      data_frame_type: data_frame_type(frame),
-      button1: b1,
-      button2: b2,
-      button3: b3,
-      button4: b4,
-      button5: b5,
-    }
-  end
+
+  def parse(<<0x02, _button_data::80>> = data, _meta), do: parse_data_frame(data)
+  def parse(<<0x03, _button_data::80>> = data, _meta), do: parse_data_frame(data)
+  def parse(<<0x40, _button_data::80>> = data, _meta), do: parse_data_frame(data)
 
   # Each 24 hours, Smilio Action sends automatically a monitoring data frame.
   def parse(<<0x01, battery_idle::16, battery_emission::16, 0x64>>, _meta) do
@@ -38,6 +32,17 @@ defmodule Parser do
     []
   end
 
+  def parse_data_frame(<<frame, b1::16, b2::16, b3::16, b4::16, b5::16>>) do
+    %{
+      data_frame_type: data_frame_type(frame),
+      message_type: "data_frame",
+      button1: b1,
+      button2: b2,
+      button3: b3,
+      button4: b4,
+      button5: b5,
+    }
+  end
 
   def data_frame_type(0x02), do: "normal"
   # Whenever the SKIPLY magnetic badge is detected, Smilio Action sends an `acknowledge` frame.
@@ -95,7 +100,8 @@ defmodule Parser do
           button3: 160,
           button4: 35,
           button5: 16,
-          data_frame_type: "normal"}
+          data_frame_type: "normal",
+          message_type: "data_frame"}
         },
       {
         :parse_hex, "030001001000A000230010", %{}, %{
@@ -104,7 +110,8 @@ defmodule Parser do
           button3: 160,
           button4: 35,
           button5: 16,
-          data_frame_type: "acknowledge"}
+          data_frame_type: "acknowledge",
+          message_type: "data_frame"}
         },
       {
         :parse_hex, "4000010000000100000001", %{}, %{
@@ -113,7 +120,8 @@ defmodule Parser do
           button3: 1,
           button4: 0,
           button5: 1,
-          data_frame_type: "pulse"}
+          data_frame_type: "pulse",
+          message_type: "data_frame"}
       },
       {
         :parse_hex, "010C800C8064", %{}, %{
