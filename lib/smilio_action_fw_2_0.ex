@@ -2,7 +2,16 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
   require Logger
 
+  #
   # ELEMENT IoT Parser for Smilio Action according to Firmware 2.0.1.x
+  #
+  # Link: https://www.smilio.eu/action
+  # Smilio Action is a system of modular connected buttons (between 1 and 5 buttons on the façade)
+  # allowing to report multiple events and trigger automated actions through email, SMS, API or webservices.
+  #
+  # Changelog
+  #   2019-02-14 [mm]: Initial version.
+  #
 
   def parse(<<frame, b1::16, b2::16, b3::16, b4::16, b5::16>>, _meta) when frame in [0x02, 0x03, 0x40] do
     %{
