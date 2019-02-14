@@ -50,6 +50,26 @@ defmodule Parser do
       %{
         "field" => "data_frame_type",
         "display" => "Data Frame Type",
+      },
+      %{
+        "field" => "button1",
+        "display" => "Button 1",
+      },
+      %{
+        "field" => "button2",
+        "display" => "Button 2",
+      },
+      %{
+        "field" => "button3",
+        "display" => "Button 3",
+      },
+      %{
+        "field" => "button4",
+        "display" => "Button 4",
+      },
+      %{
+        "field" => "button5",
+        "display" => "Button 5",
       }
     ]
   end
