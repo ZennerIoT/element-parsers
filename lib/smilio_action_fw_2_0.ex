@@ -65,6 +65,10 @@ defmodule Parser do
         "unit" => "mV"
       },
       %{
+        "field" => "message_type",
+        "display" => "Message Type",
+      },
+      %{
         "field" => "data_frame_type",
         "display" => "Data Frame Type",
       },
