@@ -1,6 +1,9 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
   require Logger
+
+  # ELEMENT IoT Parser for Smilio Action according to Firmware 2.0.1.x
+
   def parse(<<frame, b1::16, b2::16, b3::16, b4::16, b5::16>>, _meta) when frame in [0x02, 0x03, 0x40] do
     %{
       data_frame_type: data_frame_type(frame),
