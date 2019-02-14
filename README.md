@@ -14,6 +14,8 @@ Usecase | Parser File
 ------------|-------------
 Frame-Port | [lib/example_frame_port.ex](lib/example_frame_port.ex)
 Variable Length | [lib/example_variable_part.ex](lib/example_variable_part.ex)
+Reading profile data | [lib/example_profile_read.ex](lib/example_profile_read.ex)
+Writing profile data | [lib/example_profile_write.ex](lib/example_profile_write.ex)
 
 
 ## Public Parsers for LoRaWAN Devices
@@ -33,6 +35,7 @@ ASCOEL LoRaWAN Pyroelectric Motion Sensor | [lib/ascoel_ir868lr.ex](lib/ascoel_i
 Comtac DALI Bridge | [lib/comtac_dali-bridge.ex](lib/comtac_dali-bridge.ex)
 Comtac Temperature and Humidity Sensor | [lib/comtac_lpn-cm-1.ex](lib/comtac_lpn-cm-1.ex)
 Comtac LPN Modbus easy SW | [lib/comtac_lpn-modbus-easy-bridge_template.ex](lib/comtac_lpn-modbus-easy-bridge_template.ex)
+Comtac KLAX | [lib/comtac_klax.ex](lib/comtac_klax.ex)
 Conbee HybridTag L300 | [lib/conbee_hybdridtag_l300.ex](lib/conbee_hybdridtag_l300.ex)
 Decentlab DL-PR26 | [lib/decentlab_dl_pr26.ex](lib/decentlab_dl_pr26.ex)
 DZG IVU LoRaMOD Bridge | [lib/dzg_loramod.ex](lib/dzg_loramod.ex)

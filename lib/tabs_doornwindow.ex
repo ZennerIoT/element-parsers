@@ -6,9 +6,9 @@ defmodule Parser do
   # Payload Description Version v1.3
 
   def parse(<<status, battery, temp, time::little-16, count::little-24>>, _meta) do
-  <<rfu::7, state::1>> = <<status>>
+  <<_rfu::7, state::1>> = <<status>>
   <<rem_cap::4, voltage::4>> = <<battery>>
-  <<rfu::1, temperature::7>> = <<temp>>
+  <<_rfu::1, temperature::7>> = <<temp>>
 
   contact = case state do
     0 -> "closed"

@@ -9,7 +9,7 @@ defmodule Parser do
   # parser for 4 counter inputs, outputs are not interpreted
 
   def parse(<<code::8, status::8, payload::binary>>, _meta) do
-    << fcnt::3, res::1, err::4 >> = << status::8 >>
+    << _fcnt::3, _res::1, err::4 >> = << status::8 >>
 
     error = case err do
       0 -> "no error"
@@ -22,11 +22,12 @@ defmodule Parser do
 
     case code do
       0x10 ->
-        << s300::8, s301::8, s320::8, s321::8, s322::8, s323::8, s306::8 >> = payload
+        << s300::8, s301::8, _s320::8, _s321::8, _s322::8, _s323::8, _s306::8 >> = payload
         %{
           frame_type: "configuration",
           keepalive_time: s300/6,
-          transmission_period: s301/6
+          transmission_period: s301/6,
+          error: error,
         }
 
       0x20 ->
@@ -42,23 +43,26 @@ defmodule Parser do
         %{
           frame_type: "ADR config",
           ADR: adr,
-          Mode: mode
+          Mode: mode,
+          error: error,
         }
 
       0x30 ->
         %{
           frame_type: "Status frame",
-          status: "Online"
+          status: "Online",
+          error: error,
         }
 
       0x40 ->
-        << tor1::16, tor2::16, tor3::16, tor4::16, details::8 >> = payload
+        << tor1::16, tor2::16, tor3::16, tor4::16, _details::8 >> = payload
         %{
           frame_type: "data frame",
           Port1_count: tor1,
           Port2_count: tor2,
           Port3_count: tor3,
-          Port4_count: tor4
+          Port4_count: tor4,
+          error: error,
         }
       _ ->
         []

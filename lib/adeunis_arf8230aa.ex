@@ -10,7 +10,7 @@ defmodule Parser do
   # not all alarms/errors visualized, please see documentation for further information
 
   def parse(<<code::8, status::8, payload::binary>>, _meta) do
-    << fcnt::4, err::4 >> = << status::8 >>
+    << _fcnt::4, err::4 >> = << status::8 >>
 
     error = case err do
       0 -> "no error"
@@ -23,7 +23,7 @@ defmodule Parser do
 
     case code do
       0x10 ->
-        << s306::8, s301::16, s3201::4, s3202::4, s321::8, s322::8, s325::16, s326::16, s327::16, s328::16, s329::16, s330::16, s331::16 >> = payload
+        << _s306::8, s301::16, s3201::4, s3202::4, _s321::8, _s322::8, s325::16, _s326::16, _s327::16, _s328::16, _s329::16, _s330::16, _s331::16 >> = payload
         %{
           frame_type: "configuration frame",
           transmission_period: s301/60,

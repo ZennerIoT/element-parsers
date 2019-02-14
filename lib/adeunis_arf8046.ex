@@ -1,8 +1,8 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
-  def parse(<<code::8, status::8, type::8, meter_value1::little-32, type2::8, meter_value2::little-32>>, _meta) do
-    << fcnt::4, err::4 >> = << status::8 >>
+  def parse(<<_code::8, status::8, _type::8, meter_value1::little-32, _type2::8, meter_value2::little-32>>, _meta) do
+    << _fcnt::4, err::4 >> = << status::8 >>
 
     error = case err do
       0 -> "no error"

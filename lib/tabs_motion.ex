@@ -10,7 +10,7 @@ defmodule Parser do
   # Status 1 = occupied; 0 = free
 
    def parse(event, _meta) do
-    <<  stat_rfu::7, stat::1, bat_c::4, bat_v::4, temp_rfu::1, temp::7, time::little-16, count::little-24 >> = event
+    <<  _stat_rfu::7, stat::1, bat_c::4, bat_v::4, _temp_rfu::1, temp::7, _time::little-16, count::little-24 >> = event
     %{
         sensor_status: stat,
         batterie_voltage: (25+bat_v)/10,
