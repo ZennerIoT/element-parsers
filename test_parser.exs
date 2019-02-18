@@ -25,6 +25,13 @@ defmodule Platform.Parsing.Behaviour do
         []
       end
 
+      def get_last_reading(meta, []) do
+        Map.get(meta, :_last_reading, nil)
+      end
+      def get_last_reading(meta, [{key, value}]) do
+        Map.get(meta, :"_last_reading__#{key}_#{value}", nil)
+      end
+
       # TODO: Add needed callbacks here.
 
       defoverridable tests: 0

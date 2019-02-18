@@ -8,6 +8,14 @@ defmodule Parser do
   #   2018-11-28 [jb]: Reimplementation according to PDF.
   #   2018-12-03 [jb]: Handling MeterReading messages with missing frame header.
   #   2018-12-19 [jb]: Handling MeterReading messages with header v2. Fixed little encoding for some fields.
+  #   2019-02-18 [jb]: Added option add_power_from_last_reading? that will calculate the power between register values.
+
+  # Configuration
+
+  # Will use the register_value from previous reading and add the field `power`.
+  # Default: false
+  def add_power_from_last_reading?(), do: true
+
 
   # Structure of payload deciffered from PDF:
   #
@@ -28,10 +36,10 @@ defmodule Parser do
   # isEncrypted = 0
   # hasMac = 0
   # isCompressed = 0
-  def parse(<<0::2, 0::1, 0::1, 0::1, type::3, frame::binary>>, _meta) do
+  def parse(<<0::2, 0::1, 0::1, 0::1, type::3, frame::binary>>, meta) do
     case type do
       0 -> # MeterReadingMessageEncrypted
-        parse_meter_reading_message(frame)
+        parse_meter_reading_message(frame, meta)
       1 -> # StatusMessage
         parse_status_message(frame)
       _ -> # Ignored: FrameTypeRawSerial and FrameTypeIec1107
@@ -41,8 +49,8 @@ defmodule Parser do
   end
 
   # Handling MeterReading messages without Header.
-  def parse(<<frame::binary>>, %{meta: %{frame_port: 8}}) do
-    parse_meter_reading_message(frame)
+  def parse(<<frame::binary>>, %{meta: %{frame_port: 8}} = meta) do
+    parse_meter_reading_message(frame, meta)
   end
 
   # Error handler
@@ -75,7 +83,7 @@ defmodule Parser do
   #           RegisterValue::32
   #
   # Matching hard on medium 2=electricity_kwh here, to avoid problems with headerv2
-  def parse_meter_reading_message(<<1::2, 2::3, qualifier::3, meter_id::32-little, register_value::32-little>>) do
+  def parse_meter_reading_message(<<1::2, 2::3, qualifier::3, meter_id::32-little, register_value::32-little>>, meta) do
     medium = 2
     %{
       type: "meter_reading",
@@ -85,11 +93,12 @@ defmodule Parser do
       meter_id: meter_id,
       register_value: register_value / 100,
     }
+    |> add_power_from_last_reading(meta, :register_value, :power)
   end
 
   # Supporting MeterReadingMessageHeaderVersion2 with 2 byte length
   # Problem: the 2 byte header is little endian, so the verson flag is at a DIFFERENT position than in MeterReadingMessageHeaderVersion1.
-  def parse_meter_reading_message(<<qualifier::8, 2::2, has_timestamp::1, is_compressed::1, medium::4, rest::binary>>) do
+  def parse_meter_reading_message(<<qualifier::8, 2::2, has_timestamp::1, is_compressed::1, medium::4, rest::binary>>, meta) do
     case {{medium, qualifier, has_timestamp, is_compressed}, rest} do
       {{2, 4, 1, 0}, <<meter_id::32-little, timestamp::32-little, register_value::32-little, register2_value::32-little>>} ->
         %{
@@ -103,6 +112,8 @@ defmodule Parser do
           timestamp_unix: timestamp, # From device, can be wrong if device clock is wrong
           timestamp: DateTime.from_unix!(timestamp),
         }
+        |> add_power_from_last_reading(meta, :register_value, :power)
+        |> add_power_from_last_reading(meta, :register2_value, :power2)
       {header, binary} ->
         Logger.info("No creating meter reading because not matching header #{inspect header} and reading_data #{Base.encode16 binary}")
         []
@@ -110,7 +121,7 @@ defmodule Parser do
 
   end
 
-  def parse_meter_reading_message(_) do
+  def parse_meter_reading_message(_, _) do
     Logger.info("Unknown MeterReadingData format")
     []
   end
@@ -155,6 +166,30 @@ defmodule Parser do
     []
   end
 
+  def add_power_from_last_reading(data, meta, register_field, power_field) when is_atom(register_field) and is_atom(power_field) do
+    case {add_power_from_last_reading?(), Map.get(data, register_field, nil)} do
+      {_, nil} -> data # Missing field in data
+      {true, field_value} ->
+
+        case get_last_reading(meta, [{register_field, :_}]) do
+          %{measured_at: measured_at, data: last_data} ->
+
+            field_last = get(last_data, [register_field])
+
+            now_unix = DateTime.utc_now |> DateTime.to_unix
+            reading_unix = measured_at |> DateTime.to_unix
+
+            time_since_last_reading = now_unix - reading_unix
+
+            power = (field_value - field_last) / (time_since_last_reading / 3600)
+
+            Map.put(data, power_field, power)
+          _ -> data # No previous reading
+        end
+
+      _ -> data # Not activated
+    end
+  end
 
 
   defp medium_qualifier_name(_, 0), do: "none"
@@ -256,7 +291,7 @@ defmodule Parser do
   end
 
   def tests() do
-    [
+    tests_with_last_reading() ++ [
       {
         # Meter Reading from Example in PDF
         :parse_hex, "0051294BBC000D000000", %{meta: %{frame_port: 8}}, %{
@@ -345,4 +380,62 @@ defmodule Parser do
       },
     ]
   end
+
+  def tests_with_last_reading() do
+    if (add_power_from_last_reading?()) do
+
+      measured_at = Timex.now |> Timex.shift(hours: -1)
+
+      last_reading_register_value = %{measured_at: measured_at, data: %{"register_value" => 0.09}}
+      last_reading_register2_value = %{measured_at: measured_at, data: %{"register2_value" => 0.0}}
+
+      [
+        {
+          # Meter Reading from Example in PDF
+          :parse_hex, "0051294BBC000D000000", %{meta: %{frame_port: 8}, _last_reading__register_value__: last_reading_register_value}, %{
+            header_version: 1,
+            medium: "electricity_kwh",
+            meter_id: 12340009,
+            power: 0.04000000000000001,
+            qualifier: "a-plus",
+            register_value: 0.13,
+            type: "meter_reading"
+          },
+        },
+
+        {
+          # MeterReading Message from real device that somehow has no frame header.
+          :parse_hex,  "513097F701B8030000", %{meta: %{frame_port: 8}, _last_reading__register_value__: last_reading_register_value}, %{
+            header_version: 1,
+            medium: "electricity_kwh",
+            meter_id: 33003312,
+            power: 9.43,
+            qualifier: "a-plus",
+            register_value: 9.52,
+            type: "meter_reading"
+          },
+        },
+
+        {
+          # MeterReading Message with header v2
+          :parse_hex,  "0004A20FE4650327AA4F4B8301000000000000", %{meta: %{frame_port: 8}, _last_reading__register_value__: last_reading_register_value, _last_reading__register2_value__: last_reading_register2_value}, %{
+            header_version: 2,
+            medium: "electricity_kwh",
+            meter_id: 57009167,
+            qualifier: "a-plus-a-minus",
+            register_value: 3.87,
+            register2_value: 0.0,
+            power: 3.7800000000000002,
+            power2: 0.0,
+            type: "meter_reading",
+            timestamp: DateTime.from_unix!(1263512103),
+            timestamp_unix: 1263512103,
+          },
+        },
+      ]
+    else
+      []
+    end
+  end
+
 end
