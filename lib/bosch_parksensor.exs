@@ -2,7 +2,9 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
 
   # ELEMENT IoT Parser for Bosch Parking Sensor
-  # According to documentation provided by Bosch.
+  # According to documentation provided by Bosch:
+  #
+  # https://www.bosch-connectivity.com/media/product_detail_pls/parking-lot-sensor-communication-interface.pdf
   #
   # Changelog
   # 2018-10-09: [jb] Interface v1 implemented
