@@ -14,7 +14,7 @@ defmodule Parser do
 
   # Will use the register_value from previous reading and add the field `power`.
   # Default: false
-  def add_power_from_last_reading?(), do: true
+  def add_power_from_last_reading?(), do: false
 
 
   # Structure of payload deciffered from PDF:
@@ -166,11 +166,10 @@ defmodule Parser do
     []
   end
 
-  def add_power_from_last_reading(data, meta, register_field, power_field) when is_atom(register_field) and is_atom(power_field) do
-    case {add_power_from_last_reading?(), Map.get(data, register_field, nil)} do
-      {_, nil} -> data # Missing field in data
-      {true, field_value} ->
-
+  def add_power_from_last_reading(data, meta, register_field, power_field) do
+    field_value = Map.get(data, register_field)
+    case {add_power_from_last_reading?(), is_nil(field_value)} do
+      {true, false} ->
         case get_last_reading(meta, [{register_field, :_}]) do
           %{measured_at: measured_at, data: last_data} ->
 
@@ -186,8 +185,7 @@ defmodule Parser do
             Map.put(data, power_field, power)
           _ -> data # No previous reading
         end
-
-      _ -> data # Not activated
+      _ -> data # Not activated or missing field
     end
   end
 
