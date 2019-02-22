@@ -36,6 +36,7 @@ defmodule Parser do
     parse_parts(
       rest,
       parts
+      |> add_part(:acceleration_sum, (x/63)+(y/63)+(z/63), %{offset: offset, unit: "G"})
       |> add_part(:acceleration_x, x/63, %{offset: offset, unit: "G"})
       |> add_part(:acceleration_y, y/63, %{offset: offset, unit: "G"})
       |> add_part(:acceleration_z, z/63, %{offset: offset, unit: "G"})
@@ -104,6 +105,7 @@ defmodule Parser do
     Enum.flat_map([
       {:temperature, "Temperature", "C"},
       {:humidity, "Humidity", "%"},
+      {:acceleration_sum, "Total-Acceleration", "G"},
       {:acceleration_x, "X-Acceleration", "G"},
       {:acceleration_y, "Y-Acceleration", "G"},
       {:acceleration_z, "Z-Acceleration", "G"},
@@ -133,6 +135,9 @@ defmodule Parser do
         "acceleration_motion_1" => 0,
         "acceleration_motion_1_offset" => 0,
         "acceleration_motion_1_unit" => "count",
+        "acceleration_sum_1" => -1.0793650793650793,
+        "acceleration_sum_1_offset" => 0,
+        "acceleration_sum_1_unit" => "G",
         "acceleration_x_1" => -0.07936507936507936,
         "acceleration_x_1_offset" => 0,
         "acceleration_x_1_unit" => "G",
@@ -159,6 +164,9 @@ defmodule Parser do
         "acceleration_motion_1" => 0,
         "acceleration_motion_1_offset" => 0,
         "acceleration_motion_1_unit" => "count",
+        "acceleration_sum_1" => -1.1746031746031744,
+        "acceleration_sum_1_offset" => 0,
+        "acceleration_sum_1_unit" => "G",
         "acceleration_x_1" => -0.1111111111111111,
         "acceleration_x_1_offset" => 0,
         "acceleration_x_1_unit" => "G",
