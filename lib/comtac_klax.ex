@@ -6,7 +6,7 @@ defmodule Parser do
 
   # Changelog
   #   2019-02-13 [nk]: Initial Version by Niklas, registers and interval fixed.
-  #   2019-03-04 [jb]: Skipping invalid backdated values when value==0.0
+  #   2019-03-04 [jb]: Skipping invalid backdated values when value==0.0; Added mode "Logarex"
 
 
   #----- Configuration
@@ -244,6 +244,7 @@ defmodule Parser do
       0 -> "SML"
       1 -> "IEC 62056-21 Mode B"
       2 -> "IEC 62056-21 Mode C"
+      3 -> "Logarex"
       _ -> "unknown mode: #{inspect mode}"
     end
   end
