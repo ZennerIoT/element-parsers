@@ -2,8 +2,12 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
   require Logger
 
-  # ELEMENT IoT Parser for Adeunis Field Test Device
-  # Initial Version by Niklas, registers and interval fixed.
+  # ELEMENT IoT Parser for Comtac KLAX device.
+
+  # Changelog
+  #   2019-02-13 [nk]: Initial Version by Niklas, registers and interval fixed.
+  #   2019-03-04 [jb]: Skipping invalid backdated values when value==0.0
+
 
   #----- Configuration
 
@@ -120,6 +124,7 @@ defmodule Parser do
 
     list = if pos_1_active == 1 && pos_1_valid == 1 do
              [
+               # Always adding the first value, because the _valid flag is set for it.
                {
                  %{
                    Enum.at(registers, pos_1_selector) => pos_1_now * scaler_1,
@@ -127,34 +132,32 @@ defmodule Parser do
                  },
                  [measured_at: meta[:transceived_at]]
                },
-               {
-                 %{
-                   Enum.at(registers, pos_1_selector) => pos_1_minus_1 * scaler_1,
-                   "unit" => unit_1
-                 },
-                 [measured_at: Timex.shift(meta[:transceived_at], minutes: -1 * interval)]
-               },
-               {
-                 %{
-                   Enum.at(registers, pos_1_selector) => pos_1_minus_2 * scaler_1,
-                   "unit" => unit_1
-                 },
-                 [measured_at: Timex.shift(meta[:transceived_at], minutes: -1 * interval * 2 )]
-               },
-               {
-                 %{
-                   Enum.at(registers, pos_1_selector) => pos_1_minus_3 * scaler_1,
-                   "unit" => unit_1
-                 },
-                 [measured_at: Timex.shift(meta[:transceived_at], minutes: -1 * interval * 3)]
-               }
              ]
+             |> _add_valid_reading(
+                  Enum.at(registers, pos_1_selector),
+                  pos_1_minus_1 * scaler_1,
+                  unit_1,
+                  Timex.shift(meta[:transceived_at], minutes: -1 * interval)
+                )
+             |> _add_valid_reading(
+                  Enum.at(registers, pos_1_selector),
+                  pos_1_minus_2 * scaler_1,
+                  unit_1,
+                  Timex.shift(meta[:transceived_at], minutes: -1 * interval * 2)
+                )
+             |> _add_valid_reading(
+                  Enum.at(registers, pos_1_selector),
+                  pos_1_minus_3 * scaler_1,
+                  unit_1,
+                  Timex.shift(meta[:transceived_at], minutes: -1 * interval * 3)
+                )
            else
              []
            end
     ++
            if pos_2_active == 1 && pos_2_valid == 1 do
              [
+               # Always adding the first value, because the _valid flag is set for it.
                {
                  %{
                    Enum.at(registers, pos_2_selector) => pos_2_now * scaler_2,
@@ -162,28 +165,25 @@ defmodule Parser do
                  },
                  [measured_at: meta[:transceived_at]]
                },
-               {
-                 %{
-                   Enum.at(registers, pos_2_selector) => pos_2_minus_1 * scaler_2,
-                   "unit" => unit_2
-                 },
-                 [measured_at: Timex.shift(meta[:transceived_at], minutes: -1 * interval)]
-               },
-               {
-                 %{
-                   Enum.at(registers, pos_2_selector) => pos_2_minus_2 * scaler_2,
-                   "unit" => unit_2
-                 },
-                 [measured_at: Timex.shift(meta[:transceived_at], minutes: -1 * interval * 2 )]
-               },
-               {
-                 %{
-                   Enum.at(registers, pos_2_selector) => pos_2_minus_3 * scaler_2,
-                   "unit" => unit_2
-                 },
-                 [measured_at: Timex.shift(meta[:transceived_at], minutes: -1 * interval * 3)]
-               }
              ]
+             |> _add_valid_reading(
+                  Enum.at(registers, pos_2_selector),
+                  pos_2_minus_1 * scaler_2,
+                  unit_2,
+                  Timex.shift(meta[:transceived_at], minutes: -1 * interval)
+                )
+             |> _add_valid_reading(
+                  Enum.at(registers, pos_2_selector),
+                  pos_2_minus_2 * scaler_2,
+                  unit_2,
+                  Timex.shift(meta[:transceived_at], minutes: -1 * interval * 2)
+                )
+             |> _add_valid_reading(
+                  Enum.at(registers, pos_2_selector),
+                  pos_2_minus_3 * scaler_2,
+                  unit_2,
+                  Timex.shift(meta[:transceived_at], minutes: -1 * interval * 3)
+                )
            else
              []
            end
@@ -214,6 +214,22 @@ defmodule Parser do
       <<>> -> list
       _ -> _parse_payload(rest, meta) ++ list
     end
+  end
+
+
+  # Will add a reading to list when value is not zero, or skip that reading
+  defp _add_valid_reading(list, _field, 0.0, _unit, _measured_at), do: list
+  defp _add_valid_reading(list, _field, 0, _unit, _measured_at), do: list
+  defp _add_valid_reading(list, field, value, unit, measured_at) do
+    list ++ [
+      {
+        %{
+          field => value,
+          "unit" => unit,
+        },
+        [measured_at: measured_at]
+      }
+    ]
   end
 
   defp _map_unit(0), do: {"NDEF", 1}
@@ -332,6 +348,21 @@ defmodule Parser do
           {%{server_id: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
           {%{battery: 90}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
         ],
+      },
+
+      # Nachricht mit Fehler beim vierten 1.8.0 Messwert
+      {
+        :parse_hex,
+        "004AE41103090149534B00041A1C260109010028C4B20028C4850028C4610000000000000000000000000000000000000000",
+        %{meta: %{frame_port: 3}, transceived_at: test_datetime("2019-01-01T12:00:00Z")},
+        [
+          {%{"1_8_0" => 2671.794, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{"1_8_0" => 2671.7490000000003, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{"1_8_0" => 2671.713, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
+          # This value is omitted, because its faulty. {%{"1_8_0" => 0.0, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
+          {%{server_id: "090149534B00041A1C26"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{battery: 100}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
+        ]
       },
     ]
   end
