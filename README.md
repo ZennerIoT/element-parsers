@@ -16,6 +16,7 @@ Frame-Port | [lib/example_frame_port.ex](lib/example_frame_port.ex)
 Variable Length | [lib/example_variable_part.ex](lib/example_variable_part.ex)
 Reading profile data | [lib/example_profile_read.ex](lib/example_profile_read.ex)
 Writing profile data | [lib/example_profile_write.ex](lib/example_profile_write.ex)
+Parsing IEEE754 | [lib/example_ieee754.ex](lib/example_ieee754.ex)
 
 
 ## Public Parsers for LoRaWAN Devices
