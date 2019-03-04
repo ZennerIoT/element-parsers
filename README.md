@@ -55,6 +55,7 @@ Libelium Smart Water | [lib/libelium_smart-water.ex](lib/libelium_smart-water.ex
 Lobaro GPS Tracker | [lib/lobaro_gps-tracker.ex](lib/lobaro_gps-tracker.ex)
 NAS CM3010 | [lib/nas_cm3010.ex](lib/nas_cm3010.ex)
 NAS UM32023 Digital Pulse Counter | [lib/nas_um32023.ex](lib/nas_um32023.ex)
+NKE Watteco IN'O | [lib/nas_um32023.ex](lib/nke_ino.ex)
 Sensing Labs SenLab LED | [lib/sensinglabs_senlabm.ex](lib/sensinglabs_senlabm.ex)
 Tabs Door and Window Sensor | [lib/tabs_doornwindow.ex](lib/tabs_doornwindow.ex)
 Tabs Healthy Home Air Quality Sensor | [lib/tabs_healthy-home.ex](lib/tabs_healthy-home.ex)
