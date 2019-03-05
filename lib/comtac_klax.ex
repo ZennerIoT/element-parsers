@@ -7,6 +7,7 @@ defmodule Parser do
   # Changelog
   #   2019-02-13 [nk]: Initial Version by Niklas, registers and interval fixed.
   #   2019-03-04 [jb]: Skipping invalid backdated values when value==0.0; Added mode "Logarex"
+  #   2019-03-05 [jb]: Register values now signed. Added fields().
 
 
   #----- Configuration
@@ -113,7 +114,16 @@ defmodule Parser do
   defp _parse_payload(<<1, data::binary-34, rest::binary>>, meta) do
     <<pos_2_valid::1, pos_2_selector::2, pos_2_active::1, pos_1_valid::1, pos_1_selector::2, pos_1_active::1, unit_2::4, unit_1::4, content::binary>> = data
 
-    <<pos_1_now::32, pos_1_minus_1::32,  pos_1_minus_2::32,  pos_1_minus_3::32, pos_2_now::32, pos_2_minus_1::32,  pos_2_minus_2::32,  pos_2_minus_3::32,>> = content
+    <<
+      pos_1_now::signed-32,
+      pos_1_minus_1::signed-32,
+      pos_1_minus_2::signed-32,
+      pos_1_minus_3::signed-32,
+      pos_2_now::signed-32,
+      pos_2_minus_1::signed-32,
+      pos_2_minus_2::signed-32,
+      pos_2_minus_3::signed-32,
+    >> = content
 
     registers = registers() # TODO get from Frameport 104
     interval = interval_minutes()
@@ -250,6 +260,46 @@ defmodule Parser do
   end
 
 
+
+  def fields() do
+    [
+      %{
+        "field" => "battery",
+        "display" => "Battery",
+        "unit" => "%",
+      },
+      %{
+        "field" => "connection_test",
+        "display" => "ConnectionTest",
+      },
+      %{
+        "field" => "interval",
+        "display" => "Interval",
+        "unit" => "minutes",
+      },
+      %{
+        "field" => "mode",
+        "display" => "Mode",
+      },
+      %{
+        "field" => "registers_configured",
+        "display" => "Registers Configured",
+      },
+      %{
+        "field" => "version",
+        "display" => "Version",
+      },
+      %{
+        "field" => "app_version",
+        "display" => "App Version",
+      },
+    ] ++ Enum.map(registers(), fn(register) ->
+      %{
+        "field" => "#{register}",
+        "display" => "OBIS #{register}",
+      }
+    end)
+  end
 
 
 
