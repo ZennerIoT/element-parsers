@@ -6,6 +6,7 @@ defmodule Parser do
   #
   # Changelog
   #   2018-08-23 [jb]: Initial version implemented using HybridTAG-L300-Infosheet_06-18-2.pdf
+  #   2019-03-20 [jb]: Fixed "Humidity Sensor" for real payload.
   #
 
   def parse(data, %{meta: %{frame_port: 1}}) do
@@ -34,7 +35,8 @@ defmodule Parser do
   end
 
   # Humidity Sensor
-  def map_packet(<<0x03, 0x01, value::16>>, acc) do
+  def map_packet(<<0x03, 0x01, value::8>>, acc) do
+    # Documentation states value::16, but there was no example and a real device only sends 8 byte.
     Map.merge(acc, %{humidity: value})
   end
 
@@ -198,7 +200,7 @@ defmodule Parser do
         :parse_hex,  "06020141C40000", %{meta: %{frame_port: 1}}, %{temperature: 24.5},
       },
       {
-        :parse_hex,  "0403010042", %{meta: %{frame_port: 1}}, %{humidity: 66}, # There was no example in documentation
+        :parse_hex,  "03030142", %{meta: %{frame_port: 1}}, %{humidity: 66}, # There was no example in documentation
       },
       {
         :parse_hex,  "0404010035", %{meta: %{frame_port: 1}}, %{accelerate_x: 53},
@@ -239,6 +241,17 @@ defmodule Parser do
 
       {
         :parse_hex,  "040101026306020141DD83F30351011D", %{meta: %{frame_port: 1}}, %{ambient_light: 611, battery_voltage: 2.9, temperature: 27.689428329467773},
+      },
+
+      {
+        :parse_hex,  "040101005806020141B17FE8030301220351012103510201", %{meta: %{frame_port: 1}},
+        %{
+          ambient_light: 88,
+          battery_indicator: "FRESH",
+          battery_voltage: 3.3,
+          humidity: 34,
+          temperature: 22.187454223632813
+        },
       },
     ]
   end
