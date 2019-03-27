@@ -8,6 +8,7 @@ defmodule Parser do
   #   2019-02-13 [nk]: Initial Version by Niklas, registers and interval fixed.
   #   2019-03-04 [jb]: Skipping invalid backdated values when value==0.0; Added mode "Logarex"
   #   2019-03-05 [jb]: Register values now signed. Added fields().
+  #   2019-03-27 [jb]: Logging unknown binaries in _parse_payload/2.
 
 
   #----- Configuration
@@ -225,6 +226,10 @@ defmodule Parser do
       _ -> _parse_payload(rest, meta) ++ list
     end
   end
+  defp _parse_payload(unknown_binary, _meta) do
+    Logger.info("Unhandled payload binary part: #{inspect unknown_binary}")
+    []
+  end
 
 
   # Will add a reading to list when value is not zero, or skip that reading
@@ -412,6 +417,19 @@ defmodule Parser do
           {%{"1_8_0" => 2671.713, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
           # This value is omitted, because its faulty. {%{"1_8_0" => 0.0, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
           {%{server_id: "090149534B00041A1C26"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{battery: 100}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
+        ]
+      },
+
+      # Unhandled payload binary part
+      {
+        :parse_hex,
+        "004A71110306454D48010E15C1E250013901001A9FE4001A9FE40000000000000000000000000000000000000000000000000175001337",
+        %{meta: %{frame_port: 3}, transceived_at: test_datetime("2019-01-01T12:00:00Z")},
+        [
+          {%{"1_8_0" => 1744.868, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{"1_8_0" => 1744.868, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{server_id: "06454D48010E15C1E250"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
           {%{battery: 100}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
         ]
       },
