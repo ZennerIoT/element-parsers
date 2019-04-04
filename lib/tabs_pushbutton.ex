@@ -1,29 +1,29 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
-  # ELEMENT IoT Parser for TrackNet Tabs object locator
+  # ELEMENT IoT Parser for TrackNet Tabs Push Button
   # According to documentation provided by TrackNet
   # Payload Description Version v1.3 and v1.4
 
   # Changelog
-  #   2018-08-14/as: added v1.4 functionality
+  #   2018-08-14 [as]: added v1.4 functionality
+  #   2019-04-04 [gw]: formatted code, corrected name of device in comment, added frameport to tests
 
 
   def parse(<<status, battery, temp, time::little-16, count::little-24, rest::binary>>, _meta) do
-  <<_rfu::6, state_1::1, state_0::1>> = <<status>>
-  <<rem_cap::4, voltage::4>> = <<battery>>
-  <<_rfu::1, temperature::7>> = <<temp>>
+    <<_rfu::6, state_1::1, state_0::1>> = <<status>>
+    <<rem_cap::4, voltage::4>> = <<battery>>
+    <<_rfu::1, temperature::7>> = <<temp>>
 
-  button_1 = case state_1 do
-    0 -> "not pushed"
-    1 -> "pushed"
-  end
+    button_1 = case state_1 do
+      0 -> "not pushed"
+      1 -> "pushed"
+    end
 
-  button_0 = case state_0 do
-    0 -> "not pushed"
-    1 -> "pushed"
-  end
-
+    button_0 = case state_0 do
+      0 -> "not pushed"
+      1 -> "pushed"
+    end
 
     result = %{
       button_1_state: button_1,
@@ -34,7 +34,6 @@ defmodule Parser do
       time_elapsed_since_trigger: time,
       total_count: count
     }
-
 
     # additional functionality for v1.4
     case rest do
@@ -85,7 +84,7 @@ defmodule Parser do
   def tests() do
     [
       {
-        :parse_hex, "01FE39EA000C0000000000", %{}, %{
+        :parse_hex, "01FE39EA000C0000000000", %{meta: %{frame_port: 147}}, %{
           total_count: 12,
           time_elapsed_since_trigger: 234,
           button_1_state: "not pushed",
@@ -98,7 +97,7 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "01FE39EA000C0000", %{}, %{
+        :parse_hex, "01FE39EA000C0000", %{meta: %{frame_port: 147}}, %{
           total_count: 12,
           time_elapsed_since_trigger: 234,
           button_1_state: "not pushed",
