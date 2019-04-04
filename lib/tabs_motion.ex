@@ -2,13 +2,14 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
   require Logger
 
-  # ELEMENT IoT Parser for TrackNet Tabs object locator
+  # ELEMENT IoT Parser for TrackNet Tabs Motion Sensor
   # According to documentation provided by TrackNet
   # Payload Description Version v1.3
   #
   # Changelog
   #   2018-05-02 [as]: Initial version.
   #   2019-04-04 [jb]: Fixed invalid "temperature" value and typo. Added tests.
+  #   2019-04-04 [gw]: Corrected name of device in comment.
 
 
   def parse(<<_stat_rfu::7, stat::1, bat_c::4, bat_v::4, _temp_rfu::1, temp::7, _time::little-16, count::little-24>>, %{meta: %{frame_port: 102}}) do
