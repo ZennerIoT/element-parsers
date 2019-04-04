@@ -1,19 +1,22 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
-  #ELEMENT IoT Parser for TrackNet Tabs object locator
+  #ELEMENT IoT Parser for TrackNet Tabs Door & Windows Sensor
   # According to documentation provided by TrackNet
   # Payload Description Version v1.3
 
-  def parse(<<status, battery, temp, time::little-16, count::little-24>>, _meta) do
-  <<_rfu::7, state::1>> = <<status>>
-  <<rem_cap::4, voltage::4>> = <<battery>>
-  <<_rfu::1, temperature::7>> = <<temp>>
+  # Changelog
+  #   2019-04-04 [gw]: Adding tests(), formatted code, corrected name of device in comment.
 
-  contact = case state do
-    0 -> "closed"
-    1 -> "open"
-  end
+  def parse(<<status, battery, temp, time::little-16, count::little-24>>, _meta) do
+    <<_rfu::7, state::1>> = <<status>>
+    <<rem_cap::4, voltage::4>> = <<battery>>
+    <<_rfu::1, temperature::7>> = <<temp>>
+
+    contact = case state do
+      0 -> "closed"
+      1 -> "open"
+    end
 
 
     %{
@@ -25,7 +28,6 @@ defmodule Parser do
       total_count: count
     }
   end
-
 
   def fields do
     [
@@ -47,7 +49,42 @@ defmodule Parser do
       %{
         "field" => "contact",
         "display" => "Contact"
-       }
+      },
+      %{
+        "field" => "total_count",
+        "display" => "Total count"
+      },
+      %{
+        "field" => "time_elapsed_since_trigger",
+        "display" => "Time elapsed since trigger"
+      }
+    ]
+  end
+
+  def tests() do
+    [
+      {
+        :parse_hex, "00FB050000781D00", %{meta: %{frame_port: 100}},
+        %{
+          battery_state: 100.0,
+          battery_voltage: 3.6,
+          contact: "closed",
+          temperature: -27,
+          total_count: 7544,
+          time_elapsed_since_trigger: 0
+        }
+      },
+      {
+        :parse_hex, "01FB050000771D00", %{meta: %{frame_port: 100}},
+        %{
+          battery_state: 100.0,
+          battery_voltage: 3.6,
+          contact: "open",
+          temperature: -27,
+          total_count: 7543,
+          time_elapsed_since_trigger: 0
+        }
+      }
     ]
   end
 end
