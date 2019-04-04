@@ -7,7 +7,7 @@ defmodule Parser do
 
   # Changelog
   #   2018-04-12 [as]: Initial version.
-  #   2019-04-04 [jb]: Skipping 65535 for co2 and voc. Added tests.
+  #   2019-04-04 [jb]: Skipping 65535 for co2 and voc. Added tests. Added parse() fallback.
 
   def parse(<<_status, battery::binary-1, temp::binary-1, humidity::binary-1, co2::little-16, voc::little-16>>, _meta) do
     <<rem_cap::4, voltage::4>> = battery
@@ -22,6 +22,11 @@ defmodule Parser do
     }
     |> add_value_or_skip(:co2, co2, [65535])
     |> add_value_or_skip(:voc, voc, [65535])
+  end
+
+  def parse(payload, meta) do
+    Logger.info("Unhandled meta.frame_port: #{inspect get_in(meta, [:meta, :frame_port])} with payload #{inspect payload}")
+    []
   end
 
   def add_value_or_skip(map, key, value, skipped_values) do
