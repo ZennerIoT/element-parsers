@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for TrackNet Tabs Healthy Home Sensor
   # According to documentation provided by TrackNet
