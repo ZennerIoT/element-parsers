@@ -9,7 +9,7 @@ defmodule Parser do
   #
   # Changelog
   #   2018-05-23 [jb]: Added tests(), formatted code.
-  #
+  #   2019-04-04 [gw]: Added fields(), added frameport to tests.
 
   # Test hex payload: "08FE3D59D1D3027E5281E0"
 
@@ -53,10 +53,46 @@ defmodule Parser do
     }
   end
 
+  def fields() do
+    [
+      %{
+        "field" => "battery_state",
+        "display" => "Battery state",
+        "unit" => "%"
+      },
+      %{
+        "field" => "battery_voltage",
+        "display" => "Battery voltage",
+        "unit" => "V"
+      },
+      %{
+        "field" => "gnss",
+        "display" => "GNSS"
+      },
+      %{
+        "field" => "button",
+        "display" => "Button",
+        "unit" => ""
+      },
+      %{
+        "field" => "longitude",
+        "display" => "Longitude"
+      },
+      %{
+        "field" => "latitude",
+        "display" => "Latitude"
+      },
+      %{
+        "field" => "acc",
+        "display" => "Accuracy"
+      }
+    ]
+  end
+
   def tests() do
     [
       {
-        :parse_hex, "08FE3D59D1D3027E5281E0", %{}, {
+        :parse_hex, "08FE3D59D1D3027E5281E0", %{meta: %{frame_port: 136}}, {
           %{
             acc: 256,
             battery_state: 100.0,
@@ -70,7 +106,7 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "086E3E36D2D302D1508180", %{}, {
+        :parse_hex, "086E3E36D2D302D1508180", %{meta: %{frame_port: 136}}, {
           %{
             acc: 64,
             battery_state: 40.0,
@@ -84,7 +120,7 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "005D4076CED302434A8180", %{}, {
+        :parse_hex, "005D4076CED302434A8180", %{meta: %{frame_port: 136}}, {
           %{
             acc: 64,
             battery_state: 33.33333333333333,
