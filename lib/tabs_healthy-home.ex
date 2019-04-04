@@ -1,25 +1,35 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
-  #ELEMENT IoT Parser for TrackNet Tabs object locator
+  # ELEMENT IoT Parser for TrackNet Tabs Healthy Home Sensor
   # According to documentation provided by TrackNet
   # Payload Description Version v1.3
 
+  # Changelog
+  #   2018-04-12 [as]: Initial version.
+  #   2019-04-04 [jb]: Skipping 65535 for co2 and voc. Added tests.
 
-  def parse(<<_status, battery, temp, humidity, co2::little-16, voc::little-16>>, _meta) do
-  <<rem_cap::4, voltage::4>> = <<battery>>
-  <<_rfu::1, temperature::7>> = <<temp>>
-  <<_rfu::1, rhum::7>> = <<humidity>>
-
+  def parse(<<_status, battery::binary-1, temp::binary-1, humidity::binary-1, co2::little-16, voc::little-16>>, _meta) do
+    <<rem_cap::4, voltage::4>> = battery
+    <<_rfu::1, temperature::7>> = temp
+    <<_rfu::1, rhum::7>> = humidity
 
     %{
       battery_state: 100*(rem_cap/15),
       battery_voltage: (25+voltage)/10,
       temperature: temperature-32,
       relative_humidity: rhum,
-      co2: co2,
-      voc: voc
     }
+    |> add_value_or_skip(:co2, co2, [65535])
+    |> add_value_or_skip(:voc, voc, [65535])
+  end
+
+  def add_value_or_skip(map, key, value, skipped_values) do
+    if Enum.member?(skipped_values, value) do
+      map
+    else
+      Map.put(map, key, value)
+    end
   end
 
   def fields do
@@ -56,4 +66,31 @@ defmodule Parser do
       }
     ]
   end
+
+  def tests() do
+    [
+      {
+        :parse_hex, "00FB352555021E00", %{meta: %{frame_port: 103}},
+        %{
+          battery_state: 100.0,
+          battery_voltage: 3.6,
+          co2: 597,
+          relative_humidity: 37,
+          temperature: 21,
+          voc: 30
+        }
+      },
+      {
+        :parse_hex, "08FB3525FFFFFFFF", %{meta: %{frame_port: 103}},
+        %{
+          battery_state: 100.0,
+          battery_voltage: 3.6,
+          relative_humidity: 37,
+          temperature: 21,
+          # voc and co2 are filtered because they are 65535
+        }
+      },
+    ]
+  end
+
 end
