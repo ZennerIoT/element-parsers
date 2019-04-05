@@ -65,6 +65,7 @@ Sensing Labs SenLab LED | [lib/sensinglabs_senlabm.ex](lib/sensinglabs_senlabm.e
 Sensoneo Singlesensors | [lib/sensoneo_singlesensors.ex](lib/sensoneo_singlesensors.ex)
 Strega Smartvalve| [lib/strega_smartvalve.ex](lib/strega_smartvalve.ex)
 Smilio Action| [lib/smilio_action_fw_2_0.ex](lib/smilio_action_fw_2_0.ex)
+Tabs All in One | [lib/tabs.ex](lib/tabs.ex)
 Tabs Door and Window Sensor | [lib/tabs_doornwindow.ex](lib/tabs_doornwindow.ex)
 Tabs Healthy Home Air Quality Sensor | [lib/tabs_healthy-home.ex](lib/tabs_healthy-home.ex)
 Tabs Object locator | [lib/tabs_object-locator.ex](lib/tabs_object-locator.ex)
