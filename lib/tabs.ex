@@ -111,18 +111,18 @@ defmodule Parser do
     []
   end
 
-  defp get_contact_state(<<_rfu::7, 0::1>>), do: "closed"
-  defp get_contact_state(<<_rfu::7, 1::1>>), do: "open"
+  def get_contact_state(<<_rfu::7, 0::1>>), do: "closed"
+  def get_contact_state(<<_rfu::7, 1::1>>), do: "open"
 
-  defp read_battery(<<rem_cap::4, voltage::4>>) do
+  def read_battery(<<rem_cap::4, voltage::4>>) do
     battery_state = 100 * (rem_cap / 15)
     battery_voltage = (25 + voltage) / 10
     {battery_state, battery_voltage}
   end
 
-  defp read_temperature(<<_rfu::1, temperature::7>>), do: temperature - 32
+  def read_temperature(<<_rfu::1, temperature::7>>), do: temperature - 32
 
-  defp read_location(<<_rfu::4, latitude::28>>, <<acc::3, longitude::29>>) do
+  def read_location(<<_rfu::4, latitude::28>>, <<acc::3, longitude::29>>) do
     acc = case acc do
       7 -> 256
       _ -> 2<<<(acc+1)
@@ -134,7 +134,7 @@ defmodule Parser do
     }
   end
 
-  defp read_location_status(<<_rfu1::4, fix::1, _rfu2::2, btn::1>>) do
+  def read_location_status(<<_rfu1::4, fix::1, _rfu2::2, btn::1>>) do
     button = case btn do
       0 -> "not pushed"
       1 -> "pushed"
@@ -147,7 +147,7 @@ defmodule Parser do
     {button, gnss_fix}
   end
 
-  defp read_button_state(<<_rfu::6, state_1::1, state_0::1>>) do
+  def read_button_state(<<_rfu::6, state_1::1, state_0::1>>) do
     button_1 = case state_1 do
       0 -> "not pushed"
       1 -> "pushed"
@@ -160,7 +160,7 @@ defmodule Parser do
     {button_1, button_0}
   end
 
-  defp add_value_or_skip(map, key, value, skipped_values) do
+  def add_value_or_skip(map, key, value, skipped_values) do
     if Enum.member?(skipped_values, value) do
       map
     else
@@ -259,7 +259,7 @@ defmodule Parser do
     tests_doornwindow() ++ tests_healthy_home() ++ tests_motion() ++ tests_object_locator() ++ tests_pushbutton()
   end
 
-  defp tests_doornwindow() do
+  def tests_doornwindow() do
     [
       {
         :parse_hex, "00FB050000781D00", %{meta: %{frame_port: 100}},
@@ -286,7 +286,7 @@ defmodule Parser do
     ]
   end
 
-  defp tests_healthy_home() do
+  def tests_healthy_home() do
     [
       {
         :parse_hex, "00FB352555021E00", %{meta: %{frame_port: 103}},
@@ -312,7 +312,7 @@ defmodule Parser do
     ]
   end
 
-  defp tests_motion() do
+  def tests_motion() do
     [
       {
         :parse_hex, "01FB060000CC0E00", %{meta: %{frame_port: 102}},
@@ -337,7 +337,7 @@ defmodule Parser do
     ]
   end
 
-  defp tests_object_locator() do
+  def tests_object_locator() do
     [
       {
         :parse_hex, "08FE3D59D1D3027E5281E0", %{meta: %{frame_port: 136}}, {
@@ -384,7 +384,7 @@ defmodule Parser do
     ]
   end
 
-  defp tests_pushbutton() do
+  def tests_pushbutton() do
     [
       {
         :parse_hex, "01FE39EA000C0000000000", %{meta: %{frame_port: 147}},
