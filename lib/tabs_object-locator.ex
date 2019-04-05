@@ -2,6 +2,8 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
   use Bitwise
 
+  # !!! This Parser is not maintained anymore. Use tabs.ex instead !!!
+  #
   #ELEMENT IoT Parser for TrackNet Tabs object locator
   # According to documentation provided by TrackNet
   # Payload Description Version v1.3
