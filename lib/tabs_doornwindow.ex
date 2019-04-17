@@ -24,6 +24,7 @@ defmodule Parser do
       battery_voltage: (25+voltage)/10,
       temperature: temperature-32,
       contact: contact,
+      state: state,
       time_elapsed_since_trigger: time,
       total_count: count
     }
