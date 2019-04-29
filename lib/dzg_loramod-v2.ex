@@ -9,6 +9,7 @@ defmodule Parser do
   #   2018-12-03 [jb]: Handling MeterReading messages with missing frame header.
   #   2018-12-19 [jb]: Handling MeterReading messages with header v2. Fixed little encoding for some fields.
   #   2019-02-18 [jb]: Added option add_power_from_last_reading? that will calculate the power between register values.
+  #   2019-04-29 [gw]: Also handle medium electricity with qualifier A_Plus.
 
   # Configuration
 
@@ -82,7 +83,7 @@ defmodule Parser do
   #         SEQUENCE
   #           RegisterValue::32
   #
-  # Matching hard on medium 2=electricity_kwh here, to avoid problems with headerv2
+  # Matching hard on medium 2=electricity_kwh here, to avoid problems with header v2
   def parse_meter_reading_message(<<1::2, 2::3, qualifier::3, meter_id::32-little, register_value::32-little>>, meta) do
     medium = 2
     %{
@@ -97,25 +98,21 @@ defmodule Parser do
   end
 
   # Supporting MeterReadingMessageHeaderVersion2 with 2 byte length
-  # Problem: the 2 byte header is little endian, so the verson flag is at a DIFFERENT position than in MeterReadingMessageHeaderVersion1.
+  # Problem: the 2 byte header is little endian, so the version flag is at a DIFFERENT position than in MeterReadingMessageHeaderVersion1.
   def parse_meter_reading_message(<<qualifier::8, 2::2, has_timestamp::1, is_compressed::1, medium::4, rest::binary>>, meta) do
     case {{medium, qualifier, has_timestamp, is_compressed}, rest} do
       {{2, 4, 1, 0}, <<meter_id::32-little, timestamp::32-little, register_value::32-little, register2_value::32-little>>} ->
-        %{
-          type: "meter_reading",
-          header_version: 2,
-          medium: medium_name_extended(medium),
-          qualifier: medium_qualifier_name_extended(medium, qualifier),
-          meter_id: meter_id,
-          register_value: register_value / 100,
-          register2_value: register2_value / 100,
-          timestamp_unix: timestamp, # From device, can be wrong if device clock is wrong
-          timestamp: DateTime.from_unix!(timestamp),
-        }
+        create_basic_meter_reading_data(medium, qualifier, meter_id)
+        |> add_register_values(timestamp, register_value, register2_value)
+        |> add_power_from_last_reading(meta, :register_value, :power)
+        |> add_power_from_last_reading(meta, :register2_value, :power2)
+      {{2, 1, 1, 0}, <<meter_id::32-little, rest::binary>>} ->
+        create_basic_meter_reading_data(medium, qualifier, meter_id)
+        |> add_multiple_register_values(rest, 1)
         |> add_power_from_last_reading(meta, :register_value, :power)
         |> add_power_from_last_reading(meta, :register2_value, :power2)
       {header, binary} ->
-        Logger.info("No creating meter reading because not matching header #{inspect header} and reading_data #{Base.encode16 binary}")
+        Logger.info("Not creating meter reading because not matching header #{inspect header} and reading_data #{Base.encode16 binary}")
         []
     end
 
@@ -125,6 +122,33 @@ defmodule Parser do
     Logger.info("Unknown MeterReadingData format")
     []
   end
+
+  defp create_basic_meter_reading_data(medium, qualifier, meter_id) do
+    %{
+      type: "meter_reading",
+      header_version: 2,
+      medium: medium_name_extended(medium),
+      qualifier: medium_qualifier_name_extended(medium, qualifier),
+      meter_id: meter_id
+    }
+  end
+
+  defp add_register_values(map, timestamp, register_value, register2_value) do
+    map
+    |> Map.put(:register_value, register_value / 100)
+    |> Map.put(:register2_value, register2_value / 100)
+    |> Map.put(:timestamp_unix, timestamp)
+    |> Map.put(:timestamp, DateTime.from_unix!(timestamp))
+  end
+
+  defp add_multiple_register_values(map, <<timestamp::32-little, register_value::32-little, rest::binary>>, i) do
+    map
+    |> Map.put(:"register_value_#{i}", register_value / 100)
+    |> Map.put(:"timestamp_unix_#{i}", timestamp) # From device, can be wrong if device clock is wrong
+    |> Map.put(:"timestamp_#{i}", DateTime.from_unix!(timestamp)) # From device, can be wrong if device clock is wrong
+    |> add_multiple_register_values(rest, i + 1)
+  end
+  defp add_multiple_register_values(map, <<>>, _), do: map
 
   # Parsing the frame data for a status.
   #
@@ -370,6 +394,49 @@ defmodule Parser do
           timestamp: DateTime.from_unix!(1263511214),
           timestamp_unix: 1263511214,
         },
+      },
+
+      {
+        # Electricity medium with A_Plus qualifier and 3 values
+        :parse_hex, "0001A27D29370046237B4BCF0100002E227B4BCF01000062217B4BCF010000", %{meta: %{frame_port: 8}}, %{
+          header_version: 2,
+          medium: "electricity_kwh",
+          meter_id: 3615101,
+          qualifier: "a-plus",
+          register_value_1: 4.63,
+          register_value_2: 4.63,
+          register_value_3: 4.63,
+          type: "meter_reading",
+          timestamp_1: DateTime.from_unix!(1266361158),
+          timestamp_2: DateTime.from_unix!(1266360878),
+          timestamp_3: DateTime.from_unix!(1266360674),
+          timestamp_unix_1: 1266361158,
+          timestamp_unix_2: 1266360878,
+          timestamp_unix_3: 1266360674,
+        }
+      },
+
+      {
+        # Electricity medium with A_Plus qualifier and 4 values
+        :parse_hex, "0001A277293700F7287A4B1A0400006B287A4B19040000B0277A4B1904000024277A4B19040000", %{meta: %{frame_port: 8}}, %{
+          header_version: 2,
+          medium: "electricity_kwh",
+          meter_id: 3615095,
+          qualifier: "a-plus",
+          register_value_1: 10.5,
+          register_value_2: 10.49,
+          register_value_3: 10.49,
+          register_value_4: 10.49,
+          type: "meter_reading",
+          timestamp_1: DateTime.from_unix!(1266297079),
+          timestamp_2: DateTime.from_unix!(1266296939),
+          timestamp_3: DateTime.from_unix!(1266296752),
+          timestamp_4: DateTime.from_unix!(1266296612),
+          timestamp_unix_1: 1266297079,
+          timestamp_unix_2: 1266296939,
+          timestamp_unix_3: 1266296752,
+          timestamp_unix_4: 1266296612,
+        }
       },
 
       {
