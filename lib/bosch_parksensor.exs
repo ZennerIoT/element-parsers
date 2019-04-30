@@ -10,6 +10,7 @@ defmodule Parser do
   # 2018-10-09: [jb] Interface v1 implemented
   # 2018-11-12: [jb] Interface v2 implemented
   # 2019-02-19: [jb] Added fields
+  # 2019-04-30: [gw] change order of bytes in startup message, according to FW v0.23.3
 
 
   # 3.1.1 Parking status
@@ -31,7 +32,7 @@ defmodule Parser do
   end
 
   # 3.1.3 Startup
-  def parse(<<_reserved::7, state::1, reset_cause::8, firmware::24, debug::binary-12>>, %{meta: %{frame_port: 3}}) do
+  def parse(<<debug::binary-12, firmware::24, reset_cause::8, _reserved::7, state::1>> = all, %{meta: %{frame_port: 3}}) do
     << major::8, minor::8, patch::8 >> = << firmware::24 >>
     %{
       message_type: "startup",
@@ -112,25 +113,15 @@ defmodule Parser do
 
       # 3.1.3 Startup
       {
-        :parse_hex, "0000000000000000000000000017030300", %{meta: %{frame_port: 3}}, %{
-          debug: "000000000000000017030300",
-          firmware: "0.0.0",
+        :parse_hex, "0000000099020206006F00000017030200", %{meta: %{frame_port: 3}}, %{
+          debug: "0000000099020206006F0000",
+          firmware: "0.23.3",
           map_state: 0,
           message_type: "startup",
           p_state: "free",
-          reset_cause: "watchdog_reset"
-        },
-      },
-      {
-        :parse_hex, "0100000000000000000000000017030300", %{meta: %{frame_port: 3}}, %{
-          debug: "000000000000000017030300",
-          firmware: "0.0.0",
-          map_state: 1,
-          message_type: "startup",
-          p_state: "occupied",
-          reset_cause: "watchdog_reset"
-        },
-      },
+          reset_cause: "system_request_reset"
+        }
+      }
 
     ]
   end
