@@ -10,7 +10,7 @@ defmodule Parser do
   #   2018-12-19 [jb]: Handling MeterReading messages with header v2. Fixed little encoding for some fields.
   #   2019-02-18 [jb]: Added option add_power_from_last_reading? that will calculate the power between register values.
   #   2019-04-29 [gw]: Also handle medium electricity with qualifier A_Plus.
-  #   2019-05-02 [gw]: Use String.to_atom/1 instead of :erlang.binary_to_atom/1 for handling variable length payload in meter reading.
+  #   2019-05-02 [gw]: Return multiple readings with an A_Plus qualifier and a correct timestamp.
 
   # Configuration
 
@@ -108,10 +108,7 @@ defmodule Parser do
         |> add_power_from_last_reading(meta, :register_value, :power)
         |> add_power_from_last_reading(meta, :register2_value, :power2)
       {{2, 1, 1, 0}, <<meter_id::32-little, rest::binary>>} ->
-        create_basic_meter_reading_data(medium, qualifier, meter_id)
-        |> add_multiple_register_values(rest, 1)
-        |> add_power_from_last_reading(meta, :register_value, :power)
-        |> add_power_from_last_reading(meta, :register2_value, :power2)
+        create_multiple_meter_readings(medium, qualifier, meter_id, meta, rest)
       {header, binary} ->
         Logger.info("Not creating meter reading because not matching header #{inspect header} and reading_data #{Base.encode16 binary}")
         []
@@ -142,14 +139,18 @@ defmodule Parser do
     |> Map.put(:timestamp, DateTime.from_unix!(timestamp))
   end
 
-  defp add_multiple_register_values(map, <<timestamp::32-little, register_value::32-little, rest::binary>>, i) do
-    map
-    |> Map.put(String.to_atom("register_value_#{i}"), register_value / 100)
-    |> Map.put(String.to_atom("timestamp_unix_#{i}"), timestamp) # From device, can be wrong if device clock is wrong
-    |> Map.put(String.to_atom("timestamp_#{i}"), DateTime.from_unix!(timestamp)) # From device, can be wrong if device clock is wrong
-    |> add_multiple_register_values(rest, i + 1)
+  defp create_multiple_meter_readings(medium, qualifier, meter_id, meta, <<timestamp::32-little, register_value::32-little, rest::binary>>) do
+    current=
+      create_basic_meter_reading_data(medium, qualifier, meter_id)
+      |> Map.put(:register_value, register_value / 100)
+      |> Map.put(:timestamp_unix, timestamp) # From device, can be wrong if device clock is wrong
+      |> Map.put(:timestamp, DateTime.from_unix!(timestamp))
+      |> add_power_from_last_reading(meta, :register_value, :power)
+      |> add_power_from_last_reading(meta, :register2_value, :power2)
+
+    [{current, [measured_at: DateTime.from_unix!(timestamp)]}] ++ create_multiple_meter_readings(medium, qualifier, meter_id, meta, rest)
   end
-  defp add_multiple_register_values(map, <<>>, _), do: map
+  defp create_multiple_meter_readings(_, _, _, _, <<>>), do: []
 
   # Parsing the frame data for a status.
   #
@@ -399,45 +400,105 @@ defmodule Parser do
 
       {
         # Electricity medium with A_Plus qualifier and 3 values
-        :parse_hex, "0001A27D29370046237B4BCF0100002E227B4BCF01000062217B4BCF010000", %{meta: %{frame_port: 8}}, %{
-          header_version: 2,
-          medium: "electricity_kwh",
-          meter_id: 3615101,
-          qualifier: "a-plus",
-          register_value_1: 4.63,
-          register_value_2: 4.63,
-          register_value_3: 4.63,
-          type: "meter_reading",
-          timestamp_1: DateTime.from_unix!(1266361158),
-          timestamp_2: DateTime.from_unix!(1266360878),
-          timestamp_3: DateTime.from_unix!(1266360674),
-          timestamp_unix_1: 1266361158,
-          timestamp_unix_2: 1266360878,
-          timestamp_unix_3: 1266360674,
-        }
+        :parse_hex, "0001A27D29370046237B4BCF0100002E227B4BCF01000062217B4BCF010000", %{meta: %{frame_port: 8}}, [
+          {
+            %{
+              header_version: 2,
+              medium: "electricity_kwh",
+              meter_id: 3615101,
+              qualifier: "a-plus",
+              register_value: 4.63,
+              type: "meter_reading",
+              timestamp: DateTime.from_unix!(1266361158),
+              timestamp_unix: 1266361158,
+            },
+            [measured_at: DateTime.from_unix!(1266361158)]
+          },
+          {
+            %{
+              header_version: 2,
+              medium: "electricity_kwh",
+              meter_id: 3615101,
+              qualifier: "a-plus",
+              register_value: 4.63,
+              type: "meter_reading",
+              timestamp: DateTime.from_unix!(1266360878),
+              timestamp_unix: 1266360878,
+            },
+            [measured_at: DateTime.from_unix!(1266360878)]
+          },
+          {
+            %{
+              header_version: 2,
+              medium: "electricity_kwh",
+              meter_id: 3615101,
+              qualifier: "a-plus",
+              register_value: 4.63,
+              type: "meter_reading",
+              timestamp: DateTime.from_unix!(1266360674),
+              timestamp_unix: 1266360674,
+            },
+            [measured_at: DateTime.from_unix!(1266360674)]
+          }
+        ]
       },
 
       {
         # Electricity medium with A_Plus qualifier and 4 values
-        :parse_hex, "0001A277293700F7287A4B1A0400006B287A4B19040000B0277A4B1904000024277A4B19040000", %{meta: %{frame_port: 8}}, %{
-          header_version: 2,
-          medium: "electricity_kwh",
-          meter_id: 3615095,
-          qualifier: "a-plus",
-          register_value_1: 10.5,
-          register_value_2: 10.49,
-          register_value_3: 10.49,
-          register_value_4: 10.49,
-          type: "meter_reading",
-          timestamp_1: DateTime.from_unix!(1266297079),
-          timestamp_2: DateTime.from_unix!(1266296939),
-          timestamp_3: DateTime.from_unix!(1266296752),
-          timestamp_4: DateTime.from_unix!(1266296612),
-          timestamp_unix_1: 1266297079,
-          timestamp_unix_2: 1266296939,
-          timestamp_unix_3: 1266296752,
-          timestamp_unix_4: 1266296612,
-        }
+        :parse_hex, "0001A277293700F7287A4B1A0400006B287A4B19040000B0277A4B1904000024277A4B19040000", %{meta: %{frame_port: 8}}, [
+          {
+            %{
+              header_version: 2,
+              medium: "electricity_kwh",
+              meter_id: 3615095,
+              qualifier: "a-plus",
+              register_value: 10.5,
+              type: "meter_reading",
+              timestamp: DateTime.from_unix!(1266297079),
+              timestamp_unix: 1266297079,
+            },
+            [measured_at: DateTime.from_unix!(1266297079)]
+          },
+          {
+            %{
+              header_version: 2,
+              medium: "electricity_kwh",
+              meter_id: 3615095,
+              qualifier: "a-plus",
+              register_value: 10.49,
+              type: "meter_reading",
+              timestamp: DateTime.from_unix!(1266296939),
+              timestamp_unix: 1266296939,
+            },
+            [measured_at: DateTime.from_unix!(1266296939)]
+          },
+          {
+            %{
+              header_version: 2,
+              medium: "electricity_kwh",
+              meter_id: 3615095,
+              qualifier: "a-plus",
+              register_value: 10.49,
+              type: "meter_reading",
+              timestamp: DateTime.from_unix!(1266296752),
+              timestamp_unix: 1266296752,
+            },
+            [measured_at: DateTime.from_unix!(1266296752)]
+          },
+          {
+            %{
+              header_version: 2,
+              medium: "electricity_kwh",
+              meter_id: 3615095,
+              qualifier: "a-plus",
+              register_value: 10.49,
+              type: "meter_reading",
+              timestamp: DateTime.from_unix!(1266296612),
+              timestamp_unix: 1266296612,
+            },
+            [measured_at: DateTime.from_unix!(1266296612)]
+          }
+        ]
       },
 
       {
