@@ -10,6 +10,7 @@ defmodule Parser do
   #   2018-12-19 [jb]: Handling MeterReading messages with header v2. Fixed little encoding for some fields.
   #   2019-02-18 [jb]: Added option add_power_from_last_reading? that will calculate the power between register values.
   #   2019-04-29 [gw]: Also handle medium electricity with qualifier A_Plus.
+  #   2019-05-02 [gw]: Use String.to_atom/1 instead of :erlang.binary_to_atom/1 for handling variable length payload in meter reading.
 
   # Configuration
 
@@ -143,9 +144,9 @@ defmodule Parser do
 
   defp add_multiple_register_values(map, <<timestamp::32-little, register_value::32-little, rest::binary>>, i) do
     map
-    |> Map.put(:"register_value_#{i}", register_value / 100)
-    |> Map.put(:"timestamp_unix_#{i}", timestamp) # From device, can be wrong if device clock is wrong
-    |> Map.put(:"timestamp_#{i}", DateTime.from_unix!(timestamp)) # From device, can be wrong if device clock is wrong
+    |> Map.put(String.to_atom("register_value_#{i}"), register_value / 100)
+    |> Map.put(String.to_atom("timestamp_unix_#{i}"), timestamp) # From device, can be wrong if device clock is wrong
+    |> Map.put(String.to_atom("timestamp_#{i}"), DateTime.from_unix!(timestamp)) # From device, can be wrong if device clock is wrong
     |> add_multiple_register_values(rest, i + 1)
   end
   defp add_multiple_register_values(map, <<>>, _), do: map
