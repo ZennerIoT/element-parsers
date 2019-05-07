@@ -58,6 +58,7 @@ Libelium Smart Water | [lib/libelium_smart-water.ex](lib/libelium_smart-water.ex
 Lobaro GPS Tracker | [lib/lobaro_gps-tracker.ex](lib/lobaro_gps-tracker.ex)
 Lobaro WMBUS Bridge | [lib/lobaro_wmbus-bridge.ex](lib/lobaro_wmbus-bridge.ex)
 NAS CM3010 | [lib/nas_cm3010.ex](lib/nas_cm3010.ex)
+NAS Luminaire Controller Zhaga 18 | [lib/nas_luminaire.ex](lib/nas_luminaire.ex)
 NAS UM3023 Digital Pulse Counter | [lib/nas_um3023.ex](lib/nas_um3023.ex)
 NKE Watteco IN'O | [lib/nke_ino.ex](lib/nke_ino.ex)
 Sagemcom Siconia | [lib/sagemcom_siconia.ex](lib/sagemcom_siconia.ex)
