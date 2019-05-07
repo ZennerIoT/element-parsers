@@ -154,9 +154,6 @@ defmodule Parser do
           "digital2_reporting_value_during_reporting" => :low
         },
       },
-      {
-        :parse_hex, "4F46185D503000000020820F00004229CE6E4042F5D56940", %{meta: %{frame_port: 24}}, %{}
-      },
       { # Example Payload from docs v0.7.0
         :parse_hex, "0FF61A4B120100000010C40900004039C160404140C9D740", %{meta: %{frame_port: 24}}, %{
           :battery => 246,
