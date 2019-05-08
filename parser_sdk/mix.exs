@@ -7,7 +7,7 @@ defmodule ParserSdk.MixProject do
       version: "0.1.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps() ++ deps_testing(Mix.env())
     ]
   end
 
@@ -26,5 +26,23 @@ defmodule ParserSdk.MixProject do
 
       {:timex, "~> 3.1"},
     ]
+  end
+
+  defp deps_testing(:test) do
+    [
+      {:lib_wmbus, git: zisops_git_url("code/lib_wmbus"), ref: "cc993ae48f35f38d68a0a03503121b36131bf405"}
+    ]
+  end
+  defp deps_testing(_) do
+    []
+  end
+
+  # Helper for a ssh-less dependency using https which needs user:pass from env.
+  def zisops_git_url(repo) do
+    if nil == System.get_env("DEPLOYMENT_USER") || nil == System.get_env("DEPLOYMENT_PASSWORD") do
+      "git@git.zisops.com:#{repo}.git"
+    else
+      "https://#{System.get_env("DEPLOYMENT_USER")}:#{System.get_env("DEPLOYMENT_PASSWORD")}@git.zisops.com/#{repo}.git"
+    end
   end
 end
