@@ -1,32 +1,36 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
-  # ELEMENT IoT Parser for NAS "Pulse + Analog Reader UM3023"  v0.5.0 and v0.7.0
+  require Logger
+
+  # ELEMENT IoT Parser for NAS "Pulse + Analog Reader UM30x3" v0.5.0 and v0.7.0
   # Author NKlein
   # Link: https://www.nasys.no/product/lorawan-pulse-analog-reader/
   # Documentation:
-  #      0.5.0: https://www.nasys.no/wp-content/uploads/Pulse-Analog-Reader_UM3023.pdf
-  #      0.7.0: https://www.nasys.no/wp-content/uploads/Pulse_readeranalog_UM3023.pdf
+  #   UM3023
+  #     0.5.0: https://www.nasys.no/wp-content/uploads/Pulse-Analog-Reader_UM3023.pdf
+  #     0.7.0: https://www.nasys.no/wp-content/uploads/Pulse_readeranalog_UM3023.pdf
+  #   UM3033
+  #     0.7.0: https://www.nasys.no/wp-content/uploads/Pulse_ReaderMbus_UM3033.pdf
 
   # Changelog
   #   2018-09-04 [jb]: Added tests. Handling Configuration request on port 49
   #   2019-05-07 [gw]: Updated with information from 0.7.0 document. Fix rssi and medium_type mapping.
+  #   2019-05-07 [gw]: Also handling UM3033 devices.
 
   # Status Message
-  def parse(<<settings, battery::unsigned, temp::signed, rssi::signed, interface_status::binary>>, %{meta: %{frame_port:  24}}) do
-    map = %{
+  def parse(<<settings::binary-1, battery::unsigned, temp::signed, rssi::signed, interface_status::binary>>, %{meta: %{frame_port:  24}}) do
+    status_map = %{
       battery: battery,
       temp: temp,
       rssi: rssi * -1,
     }
-    parse_reporting(settings, interface_status)
-    |> Map.merge(map)
-
+    parse_reporting(status_map, settings, interface_status)
   end
 
   # Status Message
-  def parse(<<settings, interface_status::binary>>, %{meta: %{frame_port:  25}}) do
-    parse_reporting(settings, interface_status)
+  def parse(<<settings::binary-1, interface_status::binary>>, %{meta: %{frame_port:  25}}) do
+    parse_reporting(%{}, settings, interface_status)
   end
 
   # Boot Message
@@ -68,22 +72,31 @@ defmodule Parser do
     }
   end
 
-  def parse_reporting(settings, interface_status) do
-    <<_rfu::1, user_triggered::1, mbus::1, ssi::1, analog2_reporting::1, analog1_reporting::1, digital2_reporting::1, digital1_reporting::1>> = <<settings>>
-    map = %{
+  defp parse_reporting(map, <<settings::binary-1>>, interface_status) do
+    <<_rfu::1, user_triggered::1, mbus::1, ssi::1, analog2_reporting::1, analog1_reporting::1, digital2_reporting::1, digital1_reporting::1>> = settings
+    settings_map = %{
       user_triggered: (1 == user_triggered),
       mbus: (1 == mbus),
       ssi: (1 == ssi)
     }
-
-    reportingKeys = Enum.filter([digital1_reporting: digital1_reporting, digital2_reporting: digital2_reporting, analog1_reporting: analog1_reporting, analog2_reporting: analog2_reporting], fn {_,y} -> y == 1 end)
+    
+    [digital1_reporting: digital1_reporting, digital2_reporting: digital2_reporting, analog1_reporting: analog1_reporting, analog2_reporting: analog2_reporting, mbus_reporting: mbus]
+    |> Enum.filter(fn {_,y} -> y == 1 end)
     |> Enum.map(&elem(&1,0))
-
-    parse_single_reporting(reportingKeys, interface_status)
-    |> Map.merge(map)
+    |> parse_single_reporting(Map.merge(settings_map, map), interface_status)
   end
 
-  def parse_single_reporting([type | more_types], <<settings::8, counter::little-32, rest::binary>>) when type in [:digital1_reporting, :digital2_reporting] do
+  defp parse_single_reporting([type | _more_types], map, <<status::binary-1, mbus_status, dr::binary>>) when type in [:mbus_reporting] do
+    <<_rfu::4, parameter::4>> = status
+    mbus_map = %{
+      mbus_parameter: mbus_parameter(parameter),
+      mbus_status: mbus_status,
+    }
+
+    [Map.merge(mbus_map, map)] ++ filter_and_flatmap_mbus_data(dr)
+  end
+
+  defp parse_single_reporting([type | more_types], map, <<settings::8, counter::little-32, rest::binary>>) when type in [:digital1_reporting, :digital2_reporting] do
     <<medium_type::4, _rfu::1, trigger_alert::1, trigger_mode::1, value_high::1>> = <<settings>>
     result = %{
       type => counter,
@@ -93,43 +106,70 @@ defmodule Parser do
       "#{type}_value_during_reporting" => %{0=>:low, 1=>:high}[value_high],
     }
 
-    result
-    |> Map.merge(parse_single_reporting(more_types, rest))
+    parse_single_reporting(more_types, Map.merge(map, result), rest)
   end
 
   # analog: both current (instant) and average value are sent
-  def parse_single_reporting([type | more_types], <<status_settings, rest::binary>>) when type in [:analog1_reporting, :analog2_reporting] do
-    <<average_flag::1, instant_flag::1, _rfu::4, _thresh_alert::1, mode::1>> = <<status_settings>>
+  defp parse_single_reporting([type | more_types], map, <<status_settings::binary-1, rest::binary>>) when type in [:analog1_reporting, :analog2_reporting] do
+    <<average_flag::1, instant_flag::1, _rfu::4, _thresh_alert::1, mode::1>> = status_settings
 
-    {map, new_rest} =
-      {%{}, rest}
+    {new_map, new_rest} =
+      {map, rest}
       |> parse_analog_value("#{type}_current_value", instant_flag)
       |> parse_analog_value("#{type}_average_value", average_flag)
 
+    result_map = Map.put(new_map, "#{type}_mode", %{0 => "0..10V", 1 => "4..20mA"}[mode])
+    parse_single_reporting(more_types, result_map, new_rest)
+  end
+
+  defp parse_single_reporting(_, map, _) do
     map
-    |> Map.put("#{type}_mode", %{0 => "0..10V", 1 => "4..20mA"}[mode])
-    |> Map.merge(parse_single_reporting(more_types, new_rest))
   end
 
-  def parse_single_reporting(_, _) do
-    %{}
-  end
-
-  def parse_analog_value({map, <<value::float-little-32, rest::binary>>}, key, 1) do
+  defp parse_analog_value({map, <<value::float-little-32, rest::binary>>}, key, 1) do
     {
       Map.put(map, key, value),
       rest
     }
   end
-  def parse_analog_value({map, rest}, _, 0), do: {map, rest}
+  defp parse_analog_value({map, rest}, _, 0), do: {map, rest}
 
-  def medium_type(0x00), do: :not_available
-  def medium_type(0x01), do: :pulses
-  def medium_type(0x02), do: :water_in_liter
-  def medium_type(0x03), do: :electricity_in_wh
-  def medium_type(0x04), do: :gas_in_liter
-  def medium_type(0x05), do: :heat_in_wh
-  def medium_type(_),    do: :rfu
+  defp filter_and_flatmap_mbus_data(mbus_data) do
+    mbus_data
+    |> LibWmbus.Dib.parse_dib()
+    |> Enum.map(fn
+      %{data: data} = map ->
+        Map.merge(map, data)
+        |> Map.delete(:data)
+    end)
+    |> Enum.map(fn
+      %{desc: "error codes", value: v} = map ->
+        Map.merge(map, %{"error codes" => v, :unit => ""})
+        |> Map.drop([:desc, :value])
+      %{desc: d = "energy", value: v, unit: "Wh"} = map ->
+        Map.merge(map, %{d => Float.round(v / 1000, 3), :unit => "kWh"})
+        |> Map.drop([:desc, :value])
+      %{desc: d, value: v} = map ->
+        Map.merge(map, %{d => v})
+        |> Map.drop([:desc, :value])
+    end)
+  end
+
+  defp mbus_parameter(0x00), do: :ok
+  defp mbus_parameter(0x01), do: :nothing_requested
+  defp mbus_parameter(0x02), do: :bus_unpowered
+  defp mbus_parameter(0x03), do: :no_response
+  defp mbus_parameter(0x04), do: :empty_response
+  defp mbus_parameter(0x05), do: :invalid_data
+  defp mbus_parameter(_), do: :rfu
+
+  defp medium_type(0x00), do: :not_available
+  defp medium_type(0x01), do: :pulses
+  defp medium_type(0x02), do: :water_in_liter
+  defp medium_type(0x03), do: :electricity_in_wh
+  defp medium_type(0x04), do: :gas_in_liter
+  defp medium_type(0x05), do: :heat_in_wh
+  defp medium_type(_),    do: :rfu
 
 
   def tests() do
@@ -154,7 +194,7 @@ defmodule Parser do
           "digital2_reporting_value_during_reporting" => :low
         },
       },
-      { # Example Payload from docs v0.7.0
+      { # Example Payload for UM3023 from docs v0.7.0
         :parse_hex, "0FF61A4B120100000010C40900004039C160404140C9D740", %{meta: %{frame_port: 24}}, %{
           :battery => 246,
           :digital1_reporting => 1,
@@ -178,6 +218,63 @@ defmodule Parser do
           "digital2_reporting_value_during_reporting" => :low,
         }
       },
+      # Commented the following test, as it is using a library that is not publicly available yet
+#      { # Example Payload for UM3033 from docs v0.7.0
+#        :parse_hex, "63F51B361000000000100000000000000B2D4700009B102D5800000C0616160000046D0A0E5727", %{meta: %{frame_port: 24}}, [
+#          %{
+#            :battery => 245,
+#            :digital1_reporting => 0,
+#            :digital2_reporting => 0,
+#            :temp => 27,
+#            :rssi => -54,
+#            :mbus => true,
+#            :mbus_parameter => :ok,
+#            :mbus_status => 0,
+#            :ssi => false,
+#            :user_triggered => true,
+#            "digital1_reporting_medium_type" => :pulses,
+#            "digital1_reporting_trigger_alert" => :ok,
+#            "digital1_reporting_trigger_mode2" => :disabled,
+#            "digital1_reporting_value_during_reporting" => :low,
+#            "digital2_reporting_medium_type" => :pulses,
+#            "digital2_reporting_trigger_alert" => :ok,
+#            "digital2_reporting_trigger_mode2" => :disabled,
+#            "digital2_reporting_value_during_reporting" => :low,
+#          },
+#          %{
+#            :function_field => :current_value,
+#            :memory_address => 0,
+#            :sub_device => 0,
+#            :tariff => 0,
+#            :unit => "W",
+#            "power" => 4700
+#          },
+#          %{
+#            :function_field => :max_value,
+#            :memory_address => 0,
+#            :sub_device => 0,
+#            :tariff => 1,
+#            :unit => "W",
+#            "power" => 5800
+#          },
+#          %{
+#            :function_field => :current_value,
+#            :memory_address => 0,
+#            :sub_device => 0,
+#            :tariff => 0,
+#            :unit => "kWh",
+#            "energy" => 1616.0
+#          },
+#          %{
+#            :function_field => :current_value,
+#            :memory_address => 0,
+#            :sub_device => 0,
+#            :tariff => 0,
+#            :unit => "",
+#            "datetime" => ~N[2018-07-23 14:10:00]
+#          }
+#        ]
+#      },
       {
         :parse_hex,  "0350000000002006000000", %{meta: %{frame_port: 25}},  %{
           :digital1_reporting => 0,
