@@ -32,7 +32,7 @@ defmodule Parser do
   end
 
   # 3.1.3 Startup
-  def parse(<<debug::binary-12, firmware::24, reset_cause::8, _reserved::7, state::1>> = all, %{meta: %{frame_port: 3}}) do
+  def parse(<<debug::binary-12, firmware::24, reset_cause::8, _reserved::7, state::1>>, %{meta: %{frame_port: 3}}) do
     << major::8, minor::8, patch::8 >> = << firmware::24 >>
     %{
       message_type: "startup",
