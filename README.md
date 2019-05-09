@@ -12,6 +12,7 @@ Have a look at these parsers if you need to write your own parser.
 
 Usecase | Parser File
 ------------|-------------
+Template | [lib/example_template.ex](lib/example_template.ex)
 Frame-Port | [lib/example_frame_port.ex](lib/example_frame_port.ex)
 Variable Length | [lib/example_variable_part.ex](lib/example_variable_part.ex)
 Reading profile data | [lib/example_profile_read.ex](lib/example_profile_read.ex)
