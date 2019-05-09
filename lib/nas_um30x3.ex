@@ -63,6 +63,36 @@ defmodule Parser do
     }
   end
 
+  # MBus connect Message
+  def parse(<<0x01, packet_info::binary-1, rest::binary>>, %{meta: %{frame_port: 53}}) do
+    <<only_drh::1, mbus_fixed_header::1, _rfu::2, packets_to_follow::1, packet_number::3>> = packet_info
+    packet_info_map = %{
+      type: :mbus_connect,
+      packet_number: packet_number,
+      packets_to_follow: (packets_to_follow == 1),
+      mbus_fixed_header: sent_or_not(mbus_fixed_header),
+      only_drh: (only_drh == 1),
+    }
+
+    mbus_fixed = if mbus_fixed_header == 1 do
+      <<bcd_ident_number::little-32, manufacturer_id::binary-2, sw_version::binary-1, medium::binary-1, access_number:: binary-1, status::binary-1, signature::binary-2, _drh_bytes::binary>> = rest
+
+      %{
+        bcd_ident_number: Base.encode16(<<bcd_ident_number::32>>),
+        manufacturer_id: Base.encode16(manufacturer_id),
+        sw_version: Base.encode16(sw_version),
+        medium: Base.encode16(medium),
+        access_number: Base.encode16(access_number),
+        status: Base.encode16(status),
+        signature: Base.encode16(signature),
+      }
+    else
+      %{}
+    end
+
+    Map.merge(packet_info_map, mbus_fixed)
+  end
+
   # Catchall for any other message.
   def parse(payload, %{meta: %{frame_port:  frame_port}}) do
     %{
@@ -171,6 +201,9 @@ defmodule Parser do
   defp medium_type(0x05), do: :heat_in_wh
   defp medium_type(_),    do: :rfu
 
+  defp sent_or_not(0), do: :not_sent
+  defp sent_or_not(1), do: :sent
+  defp sent_or_not(_), do: :unknown
 
   def tests() do
     [
@@ -318,6 +351,31 @@ defmodule Parser do
       },
       {
         :parse_hex,  "00D002A005000357020000803F27020000803F", %{meta: %{frame_port: 49}},  %{type: :config_req},
+      },
+      {
+        :parse_hex, "01C888020969A732070415000000097409700C060C140B2D0B3B0B5A0B5E0B620C788910713C220C220C268C9010069B102D", %{meta: %{frame_port: 53}}, %{
+          :type => :mbus_connect,
+          :packet_number => 0,
+          :packets_to_follow => true,
+          :mbus_fixed_header => :sent,
+          :only_drh => true,
+          :bcd_ident_number => "69090288",
+          :manufacturer_id => "A732",
+          :sw_version => "07",
+          :medium => "04",
+          :access_number => "15",
+          :status => "00",
+          :signature => "0000"
+        }
+      },
+      {
+        :parse_hex, "01819B103B9B105A9B105E9410AD6F9410BB6F9410DA6F9410DE6F4C064C147C224C26CC901006DB102DDB103BDB105ADB105E848F0F6D046D", %{meta: %{frame_port: 53}}, %{
+          :type => :mbus_connect,
+          :packet_number => 1,
+          :packets_to_follow => false,
+          :mbus_fixed_header => :not_sent,
+          :only_drh => true
+        }
       },
       {
         :parse_hex,  "01", %{meta: %{frame_port: 99}}, %{type: :shutdown},
