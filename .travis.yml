@@ -7,5 +7,8 @@ install:
   - 'mix local.rebar --force'
   - 'cd parser_sdk && mix deps.get && mix compile'
 script:
+  - 'git config --global url."https://$DEPLOY_USER_LIB_WMBUS:$DEPLOY_PASS_LIB_WMBUS@git.zisops.com/code/ib_wmbus.git".insteadOf "git@git.zisops.com:code/lib_wmbus.git"'
+  - 'git config --global url."https://$DEPLOY_USER_LIB_SML:$DEPLOY_PASS_LIB_SML@git.zisops.com/code/lib_sml.git".insteadOf "git@git.zisops.com:code/lib_sml.git"'
+  - 'git config --global url."https://$DEPLOY_USER_TIMESERIES:$DEPLOY_PASS_TIMESERIES@git.zisops.com/code/timeseries.git".insteadOf "git@git.zisops.com:code/timeseries.git"'
   - 'cd ..'
   - 'sh test.sh'
