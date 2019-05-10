@@ -21,16 +21,13 @@ defmodule ParserSdk.MixProject do
   # Default dependencies
   defp deps do
     [
-      {:timex, "~> 3.1"},
+      {:timex, "~> 3.3"},
       {:lib_wmbus, git: zisops_git_url("code/lib_wmbus"), ref: "cc993ae48f35f38d68a0a03503121b36131bf405"}, # Internal ZIS library available on ELEMENT.
+      {:timeseries, git: zisops_git_url("code/timeseries")}, # Internal ZIS library available on ELEMENT.
     ]
   end
 
   def zisops_git_url(repo) do
-    if nil == System.get_env("DEPLOYMENT_USER") || nil == System.get_env("DEPLOYMENT_PASSWORD") do
-      "git@git.zisops.com:#{repo}.git"
-    else
-      "https://#{System.get_env("DEPLOYMENT_USER")}:#{System.get_env("DEPLOYMENT_PASSWORD")}@git.zisops.com/#{repo}.git"
-    end
+    "git@git.zisops.com:#{repo}.git"
   end
 end
