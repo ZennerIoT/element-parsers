@@ -10,7 +10,7 @@ defmodule Parser do
   #   2018-12-19 [jb]: Handling MeterReading messages with header v2. Fixed little encoding for some fields.
   #   2019-02-18 [jb]: Added option add_power_from_last_reading? that will calculate the power between register values.
   #   2019-04-29 [gw]: Also handle medium electricity with qualifier A_Plus.
-  #   2019-05-02 [gw]: Return multiple readings with an A_Plus qualifier and a correct timestamp.
+  #   2019-05-02 [gw]: Return multiple readings with an A_Plus qualifier and a correct timestamp. DON'T USE THIS!
   #   2019-05-13 [gw]: Return only the latest value with A_Plus qualifier.
 
   # Configuration
