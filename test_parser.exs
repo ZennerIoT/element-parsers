@@ -28,8 +28,13 @@ defmodule Platform.Parsing.Behaviour do
       def get_last_reading(meta, []) do
         Map.get(meta, :_last_reading, nil)
       end
-      def get_last_reading(meta, [{key, value}]) do
-        Map.get(meta, :"_last_reading__#{key}_#{value}", nil)
+      def get_last_reading(meta, query) do
+        meta
+        |> Map.get(:_last_reading_map, %{})
+        |> case do
+          map when is_map(map) -> Access.get(map, query)
+          _ -> nil
+        end
       end
 
       # TODO: Add needed callbacks here.
