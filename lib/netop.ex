@@ -137,7 +137,7 @@ defmodule Parser do
   end
 
   # 7.3 plugged slots
-  defp parse_device_information(0x002, <<slot_1::1, slot_2::1, slot_3::1, slot_4::1, slot_5::1, slot_6::1, slot_7::1, slot_8::1, rest::binary>>) do
+  defp parse_device_information(0x002, <<slot_8::1, slot_7::1, slot_6::1, slot_5::1, slot_4::1, slot_3::1, slot_2::1, slot_1::1, rest::binary>>) do
     {
       :ok,
       %{
@@ -508,14 +508,14 @@ defmodule Parser do
           %{
             might_have_an_error: 0,
             serial_number: 268435556,
-            slot_1: :not_connected,
+            slot_1: :connected,
             slot_2: :not_connected,
             slot_3: :not_connected,
             slot_4: :not_connected,
             slot_5: :not_connected,
             slot_6: :not_connected,
             slot_7: :not_connected,
-            slot_8: :connected,
+            slot_8: :not_connected,
             slot_number: 0,
             type: :device_information
           },
