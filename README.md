@@ -57,6 +57,7 @@ Libelium Smart Environment | [lib/libelium_smart-environment.ex](lib/libelium_sm
 Libelium Smart Parking Sensor v3 | [lib/libelium_smart-parking_v3.exs](lib/libelium_smart-parking_v3.exs)
 Libelium Smart Water | [lib/libelium_smart-water.ex](lib/libelium_smart-water.ex)
 Lobaro GPS Tracker | [lib/lobaro_gps-tracker.ex](lib/lobaro_gps-tracker.ex)
+Lobaro Pressure 26D | [lib/lobaro_pressure26d.ex](lib/lobaro_pressure26d.ex)
 Lobaro WMBUS Bridge | [lib/lobaro_wmbus-bridge.ex](lib/lobaro_wmbus-bridge.ex)
 NAS CM3010 | [lib/nas_cm3010.ex](lib/nas_cm3010.ex)
 NAS Luminaire Controller Zhaga 18 | [lib/nas_luminaire.ex](lib/nas_luminaire.ex)
