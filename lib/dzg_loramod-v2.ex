@@ -12,6 +12,7 @@ defmodule Parser do
   #   2019-04-29 [gw]: Also handle medium electricity with qualifier A_Plus.
   #   2019-05-02 [gw]: Return multiple readings with an A_Plus qualifier and a correct timestamp. DON'T USE THIS!
   #   2019-05-13 [gw]: Return only the latest value with A_Plus qualifier.
+  #   2019-05-14 [jb]: Added full obis code if available.
 
   # Configuration
 
@@ -97,6 +98,7 @@ defmodule Parser do
       register_value: register_value / 100,
     }
     |> add_power_from_last_reading(meta, :register_value, :power)
+    |> add_obis(medium, qualifier, 1, register_value / 100)
   end
 
   # Supporting MeterReadingMessageHeaderVersion2 with 2 byte length
@@ -105,9 +107,11 @@ defmodule Parser do
     case {{medium, qualifier, has_timestamp, is_compressed}, rest} do
       {{2, 4, 1, 0}, <<meter_id::32-little, timestamp::32-little, register_value::32-little, register2_value::32-little>>} ->
         create_basic_meter_reading_data(medium, qualifier, meter_id)
-        |> add_register_values(timestamp, register_value, register2_value)
+        |> add_register_values(timestamp, register_value / 100, register2_value / 100)
         |> add_power_from_last_reading(meta, :register_value, :power)
         |> add_power_from_last_reading(meta, :register2_value, :power2)
+        |> add_obis(medium, qualifier, 1, register_value / 100)
+        |> add_obis(medium, qualifier, 2, register2_value / 100)
       {{2, 1, 1, 0}, <<meter_id::32-little, rest::binary>>} ->
         create_latest_meter_readings(medium, qualifier, meter_id, meta, rest)
       {header, binary} ->
@@ -122,6 +126,18 @@ defmodule Parser do
     []
   end
 
+  # Adds a a key like %{"1-0:1.8.0" => value} for given parameters.
+  defp add_obis(data, medium, qualifier, register_index, value) do
+    case obis_medium_qualifier(medium, qualifier) do
+      [] -> data
+      obis_codes ->
+        case Enum.at(obis_codes, register_index-1) do
+          nil -> data
+          obis_code -> Map.put(data, obis_code, value)
+        end
+    end
+  end
+
   defp create_basic_meter_reading_data(medium, qualifier, meter_id) do
     %{
       type: "meter_reading",
@@ -134,8 +150,8 @@ defmodule Parser do
 
   defp add_register_values(map, timestamp, register_value, register2_value) do
     map
-    |> Map.put(:register_value, register_value / 100)
-    |> Map.put(:register2_value, register2_value / 100)
+    |> Map.put(:register_value, register_value)
+    |> Map.put(:register2_value, register2_value)
     |> Map.put(:timestamp_unix, timestamp)
     |> Map.put(:timestamp, DateTime.from_unix!(timestamp))
   end
@@ -147,6 +163,7 @@ defmodule Parser do
     |> Map.put(:timestamp, DateTime.from_unix!(timestamp))
     |> add_power_from_last_reading(meta, :register_value, :power)
     |> add_power_from_last_reading(meta, :register2_value, :power2)
+    |> add_obis(medium, qualifier, 1, register_value / 100)
   end
   defp create_latest_meter_readings(_, _, _, _, <<>>), do: []
 
@@ -236,6 +253,13 @@ defmodule Parser do
 
   defp medium_qualifier_name(_, _), do: "unknown"
 
+
+  # `1-0:e:8:t` e = energierichtung (1 = plus, 2 = minus), t = tarif (0 = gesamt, 1 = t1, 2 = t2, ...)
+  defp obis_medium_qualifier(2, 1), do: ["1-0:1.8.0"] # a-plus
+  defp obis_medium_qualifier(2, 4), do: ["1-0:1.8.0", "1-0:2.8.0"] # a-plus-a-minus
+  defp obis_medium_qualifier(2, 5), do: ["1-0:2.8.0"] # a-minus
+  defp obis_medium_qualifier(2, _), do: []
+
   defp medium_name(1), do: "temperature_celsius"
   defp medium_name(2), do: "electricity_kwh"
   defp medium_name(3), do: "gas_m3"
@@ -317,12 +341,13 @@ defmodule Parser do
       {
         # Meter Reading from Example in PDF
         :parse_hex, "0051294BBC000D000000", %{meta: %{frame_port: 8}}, %{
-          header_version: 1,
-          medium: "electricity_kwh",
-          meter_id: 12340009,
-          qualifier: "a-plus",
-          register_value: 0.13,
-          type: "meter_reading"
+          :header_version => 1,
+          :medium => "electricity_kwh",
+          :meter_id => 12340009,
+          :qualifier => "a-plus",
+          :register_value => 0.13,
+          :type => "meter_reading",
+          "1-0:1.8.0" => 0.13
         },
       },
 
@@ -348,12 +373,13 @@ defmodule Parser do
       {
         # MeterReading Message from real device that somehow has no frame header.
         :parse_hex,  "513097F701B8030000", %{meta: %{frame_port: 8}}, %{
-          header_version: 1,
-          medium: "electricity_kwh",
-          meter_id: 33003312,
-          qualifier: "a-plus",
-          register_value: 9.52,
-          type: "meter_reading"
+          :header_version => 1,
+          :medium => "electricity_kwh",
+          :meter_id => 33003312,
+          :qualifier => "a-plus",
+          :register_value => 9.52,
+          :type => "meter_reading",
+          "1-0:1.8.0" => 9.52
         },
       },
 
@@ -368,15 +394,17 @@ defmodule Parser do
       {
         # MeterReading Message with header v2
         :parse_hex,  "0004A20FE4650327AA4F4B8301000000000000", %{meta: %{frame_port: 8}}, %{
-          header_version: 2,
-          medium: "electricity_kwh",
-          meter_id: 57009167,
-          qualifier: "a-plus-a-minus",
-          register_value: 3.87,
-          register2_value: 0.0,
-          type: "meter_reading",
-          timestamp: DateTime.from_unix!(1263512103),
-          timestamp_unix: 1263512103,
+          :header_version => 2,
+          :medium => "electricity_kwh",
+          :meter_id => 57009167,
+          :qualifier => "a-plus-a-minus",
+          :register2_value => 0.0,
+          :register_value => 3.87,
+          :timestamp => DateTime.from_unix!(1263512103),
+          :timestamp_unix => 1263512103,
+          :type => "meter_reading",
+          "1-0:1.8.0" => 3.87,
+          "1-0:2.8.0" => 0.0
         },
       },
 
@@ -384,46 +412,48 @@ defmodule Parser do
       {
         # another MeterReading Message with header v2
         :parse_hex,  "0004A20FE46503AEA64F4B8301000000000000", %{meta: %{frame_port: 8}}, %{
-          header_version: 2,
-          medium: "electricity_kwh",
-          meter_id: 57009167,
-          qualifier: "a-plus-a-minus",
-          register_value: 3.87,
-          register2_value: 0.0,
-          type: "meter_reading",
-          timestamp: DateTime.from_unix!(1263511214),
-          timestamp_unix: 1263511214,
-        },
+          :header_version => 2,
+          :medium => "electricity_kwh",
+          :meter_id => 57009167,
+          :qualifier => "a-plus-a-minus",
+          :register2_value => 0.0,
+          :register_value => 3.87,
+          :timestamp => DateTime.from_unix!(1263511214),
+          :timestamp_unix => 1263511214,
+          :type => "meter_reading",
+          "1-0:1.8.0" => 3.87,
+          "1-0:2.8.0" => 0.0
+        }
       },
 
       {
         # Electricity medium with A_Plus qualifier and 3 values
-        :parse_hex, "0001A27D29370046237B4BCF0100002E227B4BCF01000062217B4BCF010000", %{meta: %{frame_port: 8}},
-          %{
-            header_version: 2,
-            medium: "electricity_kwh",
-            meter_id: 3615101,
-            qualifier: "a-plus",
-            register_value: 4.63,
-            type: "meter_reading",
-            timestamp: DateTime.from_unix!(1266361158),
-            timestamp_unix: 1266361158,
-          }
+        :parse_hex, "0001A27D29370046237B4BCF0100002E227B4BCF01000062217B4BCF010000", %{meta: %{frame_port: 8}}, %{
+          :header_version => 2,
+          :medium => "electricity_kwh",
+          :meter_id => 3615101,
+          :qualifier => "a-plus",
+          :register_value => 4.63,
+          :timestamp => DateTime.from_unix!(1266361158),
+          :timestamp_unix => 1266361158,
+          :type => "meter_reading",
+          "1-0:1.8.0" => 4.63
+        }
       },
 
       {
         # Electricity medium with A_Plus qualifier and 4 values
-        :parse_hex, "0001A277293700F7287A4B1A0400006B287A4B19040000B0277A4B1904000024277A4B19040000", %{meta: %{frame_port: 8}},
-          %{
-            header_version: 2,
-            medium: "electricity_kwh",
-            meter_id: 3615095,
-            qualifier: "a-plus",
-            register_value: 10.5,
-            type: "meter_reading",
-            timestamp: DateTime.from_unix!(1266297079),
-            timestamp_unix: 1266297079,
-          },
+        :parse_hex, "0001A277293700F7287A4B1A0400006B287A4B19040000B0277A4B1904000024277A4B19040000", %{meta: %{frame_port: 8}}, %{
+          :header_version => 2,
+          :medium => "electricity_kwh",
+          :meter_id => 3615095,
+          :qualifier => "a-plus",
+          :register_value => 10.5,
+          :timestamp => DateTime.from_unix!(1266297079),
+          :timestamp_unix => 1266297079,
+          :type => "meter_reading",
+          "1-0:1.8.0" => 10.5
+        }
       },
 
       {
@@ -445,43 +475,43 @@ defmodule Parser do
         {
           # Meter Reading from Example in PDF
           :parse_hex, "0051294BBC000D000000", %{meta: %{frame_port: 8}, _last_reading__register_value__: last_reading_register_value}, %{
-            header_version: 1,
-            medium: "electricity_kwh",
-            meter_id: 12340009,
-            power: 0.04000000000000001,
-            qualifier: "a-plus",
-            register_value: 0.13,
-            type: "meter_reading"
+            :header_version => 1,
+            :medium => "electricity_kwh",
+            :meter_id => 12340009,
+            :qualifier => "a-plus",
+            :register_value => 0.13,
+            :type => "meter_reading",
+            "1-0:1.8.0" => 0.13
           },
         },
 
         {
           # MeterReading Message from real device that somehow has no frame header.
           :parse_hex,  "513097F701B8030000", %{meta: %{frame_port: 8}, _last_reading__register_value__: last_reading_register_value}, %{
-            header_version: 1,
-            medium: "electricity_kwh",
-            meter_id: 33003312,
-            power: 9.43,
-            qualifier: "a-plus",
-            register_value: 9.52,
-            type: "meter_reading"
+            :header_version => 1,
+            :medium => "electricity_kwh",
+            :meter_id => 33003312,
+            :qualifier => "a-plus",
+            :register_value => 9.52,
+            :type => "meter_reading",
+            "1-0:1.8.0" => 9.52
           },
         },
 
         {
           # MeterReading Message with header v2
           :parse_hex,  "0004A20FE4650327AA4F4B8301000000000000", %{meta: %{frame_port: 8}, _last_reading__register_value__: last_reading_register_value, _last_reading__register2_value__: last_reading_register2_value}, %{
-            header_version: 2,
-            medium: "electricity_kwh",
-            meter_id: 57009167,
-            qualifier: "a-plus-a-minus",
-            register_value: 3.87,
-            register2_value: 0.0,
-            power: 3.7800000000000002,
-            power2: 0.0,
-            type: "meter_reading",
-            timestamp: DateTime.from_unix!(1263512103),
-            timestamp_unix: 1263512103,
+            :header_version => 2,
+            :medium => "electricity_kwh",
+            :meter_id => 57009167,
+            :qualifier => "a-plus-a-minus",
+            :register2_value => 0.0,
+            :register_value => 3.87,
+            :timestamp => DateTime.from_unix!(1263512103),
+            :timestamp_unix => 1263512103,
+            :type => "meter_reading",
+            "1-0:1.8.0" => 3.87,
+            "1-0:2.8.0" => 0.0
           },
         },
       ]
