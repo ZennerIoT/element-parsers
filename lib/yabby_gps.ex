@@ -190,7 +190,7 @@ defmodule Parser do
 
       {:parse_hex, "D30102", %{meta: %{frame_port: 2}}, %{type: :ack, downlink: "accepted", seq_no: 83, version: "1.2"}},
 
-      {:parse_hex, "8BF3DC7B9438984278B85E", %{meta: %{frame_port: 2}}, %{type: :statistics, initial_bat: 5.1, tx_count: 59136, trip_count: 194336, gps_success: 10464, gps_fails: 7232, avg_gps_fix: 96, avg_gps_fail: 133, avg_gps_fresh: 120, wakeups: 56, uptime: 189}}
+      {:parse_hex, "8BF3DC7B9438984278B85E", %{meta: %{frame_port: 3}}, %{type: :statistics, initial_bat: 5.1, tx_count: 59136, trip_count: 194336, gps_success: 10464, gps_fails: 7232, avg_gps_fix: 96, avg_gps_fail: 133, avg_gps_fresh: 120, wakeups: 56, uptime: 189}}
     ]
   end
 end
