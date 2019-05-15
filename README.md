@@ -75,6 +75,7 @@ Tabs Healthy Home Air Quality Sensor | [lib/tabs_healthy-home.ex](lib/tabs_healt
 Tabs Object locator | [lib/tabs_object-locator.ex](lib/tabs_object-locator.ex)
 Tabs Pushbutton | [lib/tabs_pushbutton.ex](lib/tabs_pushbutton.ex)
 Tabs Motion | [lib/tabs_motion.ex](lib/tabs_motion.ex)
+yabby GPS | [lib/yabby_gps.ex](lib/yabby_gps.ex)
 ZENNER Water Meter (v1.9) | [lib/zenner_water-meter.ex](lib/zenner_water-meter.ex)
 ZIS DHT22 Digital Temperature and Humidity Sensor Module | [lib/zis_dht-22.ex](lib/zis_dht-22.ex)
 ZIS SmartWaste UltraSonic | [lib/zis_smart-waste-ultrasonic.ex](lib/zis_smart-waste-ultrasonic.ex)
