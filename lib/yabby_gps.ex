@@ -52,7 +52,7 @@ defmodule Parser do
   def parse(<<down_accept::1, seq_no::7, v1, v2>>, %{meta: %{frame_port: 2}}) do
     downlink = case down_accept do
       0 -> "rejected"
-      1 -> "failed"
+      1 -> "accepted"
       _ -> "unknown"
     end
 
