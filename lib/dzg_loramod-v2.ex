@@ -13,6 +13,7 @@ defmodule Parser do
   #   2019-05-02 [gw]: Return multiple readings with an A_Plus qualifier and a correct timestamp. DON'T USE THIS!
   #   2019-05-13 [gw]: Return only the latest value with A_Plus qualifier.
   #   2019-05-14 [jb]: Added full obis code if available. Added interpolation feature.
+  #   2019-05-15 [jb]: Rounding all values as float to a precision of 3 decimals.
 
   # Configuration
 
@@ -101,16 +102,17 @@ defmodule Parser do
   # Matching hard on medium 2=electricity_kwh here, to avoid problems with header v2
   def parse_meter_reading_message(<<1::2, 2::3, qualifier::3, meter_id::32-little, register_value::32-little>>, meta) do
     medium = 2
+    value = round_as_float(register_value / 100)
     reading = %{
       type: "meter_reading",
       header_version: 1,
       medium: medium_name(medium),
       qualifier: medium_qualifier_name(medium, qualifier),
       meter_id: meter_id,
-      register_value: register_value / 100,
+      register_value: value,
     }
     |> add_power_from_last_reading(meta, :register_value, :power)
-    |> add_obis(medium, qualifier, 1, register_value / 100)
+    |> add_obis(medium, qualifier, 1, value)
 
     [reading] ++ build_missing(reading, :register_value, meta, %{medium: medium, qualifier: qualifier, register_index: 1})
   end
@@ -120,12 +122,14 @@ defmodule Parser do
   def parse_meter_reading_message(<<qualifier::8, 2::2, has_timestamp::1, is_compressed::1, medium::4, rest::binary>>, meta) do
     case {{medium, qualifier, has_timestamp, is_compressed}, rest} do
       {{2, 4, 1, 0}, <<meter_id::32-little, timestamp::32-little, register_value::32-little, register2_value::32-little>>} ->
+        value = round_as_float(register_value / 100)
+        value2 = round_as_float(register2_value / 100)
         reading = create_basic_meter_reading_data(medium, qualifier, meter_id)
-        |> add_register_values(timestamp, register_value / 100, register2_value / 100)
+        |> add_register_values(timestamp, value, value2)
         |> add_power_from_last_reading(meta, :register_value, :power)
         |> add_power_from_last_reading(meta, :register2_value, :power2)
-        |> add_obis(medium, qualifier, 1, register_value / 100)
-        |> add_obis(medium, qualifier, 2, register2_value / 100)
+        |> add_obis(medium, qualifier, 1, value)
+        |> add_obis(medium, qualifier, 2, value2)
 
         [reading]
         ++
@@ -134,7 +138,7 @@ defmodule Parser do
         build_missing(reading, :register2_value, meta, %{medium: medium, qualifier: qualifier, register_index: 2})
 
       {{2, 1, 1, 0}, <<meter_id::32-little, rest::binary>>} ->
-        create_latest_meter_readings(medium, qualifier, meter_id, meta, rest, meta)
+        create_latest_meter_readings(medium, qualifier, meter_id, meta, rest)
       {header, binary} ->
         Logger.info("Not creating meter reading because not matching header #{inspect header} and reading_data #{Base.encode16 binary}")
         []
@@ -179,10 +183,11 @@ defmodule Parser do
                 x_pre_calc_fun: &Timex.to_unix/1,
                 x_post_calc_fun: &Timex.to_datetime/1,
                 y_pre_calc_fun: fn %{value: value} -> value end,
-                y_post_calc_fun: &(%{value: round(&1), _interpolated: true})
+                y_post_calc_fun: &(%{value: &1, _interpolated: true})
               )
            |> Enum.filter(fn ({data, _meta}) -> Map.get(data, :_interpolated, false) end)
            |> Enum.map(fn {%{value: value}, reading_meta} ->
+            value = round_as_float(value)
             {
               current_data
               |> Map.take([:type, :medium, :qualifier, :meter_id])
@@ -249,17 +254,18 @@ defmodule Parser do
     |> Map.put(:timestamp, DateTime.from_unix!(timestamp))
   end
 
-  defp create_latest_meter_readings(medium, qualifier, meter_id, meta, <<timestamp::32-little, register_value::32-little, _other_register_values::binary>>, meta) do
+  defp create_latest_meter_readings(medium, qualifier, meter_id, meta, <<timestamp::32-little, register_value::32-little, _other_register_values::binary>>) do
+    value = round_as_float(register_value / 100)
     reading = create_basic_meter_reading_data(medium, qualifier, meter_id)
-    |> Map.put(:register_value, register_value / 100)
+    |> Map.put(:register_value, value)
     |> Map.put(:timestamp_unix, timestamp) # From device, can be wrong if device clock is wrong
     |> Map.put(:timestamp, DateTime.from_unix!(timestamp))
     |> add_power_from_last_reading(meta, :register_value, :power)
-    |> add_obis(medium, qualifier, 1, register_value / 100)
+    |> add_obis(medium, qualifier, 1, value)
 
     [reading] ++ build_missing(reading, :register_value, meta, %{medium: medium, qualifier: qualifier, register_index: 1})
   end
-  defp create_latest_meter_readings(_, _, _, _, <<>>, _meta), do: []
+  defp create_latest_meter_readings(_medium, _qualifier, _meter_id, _meta, <<>>), do: []
 
   # Parsing the frame data for a status.
   #
@@ -326,6 +332,9 @@ defmodule Parser do
     end
   end
 
+  defp round_as_float(value) do
+    Float.round(value / 1, 3)
+  end
 
   defp medium_qualifier_name(_, 0), do: "none"
 
@@ -502,9 +511,9 @@ defmodule Parser do
               :medium => "electricity_kwh",
               :meter_id => 33003312,
               :qualifier => "a-plus",
-              :register_value => 3,
+              :register_value => 2.562,
               :type => "meter_reading",
-              "1-0:1.8.0" => 3
+              "1-0:1.8.0" => 2.562
             },
             [
               measured_at: test_datetime("2019-01-01 12:15:00Z")
@@ -515,9 +524,9 @@ defmodule Parser do
               :medium => "electricity_kwh",
               :meter_id => 33003312,
               :qualifier => "a-plus",
-              :register_value => 8,
+              :register_value => 7.798,
               :type => "meter_reading",
-              "1-0:1.8.0" => 8
+              "1-0:1.8.0" => 7.798
             },
             [
              measured_at: test_datetime("2019-01-01 12:30:00Z")
@@ -667,17 +676,17 @@ defmodule Parser do
             :medium => "electricity_kwh",
             :meter_id => 3615095,
             :qualifier => "a-plus",
-            :register_value => 3,
+            :register_value => 2.72,
             :type => "meter_reading",
-            "1-0:1.8.0" => 3
+            "1-0:1.8.0" => 2.72
           }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
           {%{
             :medium => "electricity_kwh",
             :meter_id => 3615095,
             :qualifier => "a-plus",
-            :register_value => 9,
+            :register_value => 8.574,
             :type => "meter_reading",
-            "1-0:1.8.0" => 9
+            "1-0:1.8.0" => 8.574
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]}
         ]
       },
@@ -736,33 +745,33 @@ defmodule Parser do
             :medium => "electricity_kwh",
             :meter_id => 12340009,
             :qualifier => "a-plus",
-            :register_value => 0,
+            :register_value => 0.097,
             :type => "meter_reading",
-            "1-0:1.8.0" => 0
+            "1-0:1.8.0" => 0.097
           }, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
           {%{
             :medium => "electricity_kwh",
             :meter_id => 12340009,
             :qualifier => "a-plus",
-            :register_value => 0,
+            :register_value => 0.107,
             :type => "meter_reading",
-            "1-0:1.8.0" => 0
+            "1-0:1.8.0" => 0.107
           }, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
           {%{
             :medium => "electricity_kwh",
             :meter_id => 12340009,
             :qualifier => "a-plus",
-            :register_value => 0,
+            :register_value => 0.117,
             :type => "meter_reading",
-            "1-0:1.8.0" => 0
+            "1-0:1.8.0" => 0.117
           }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
           {%{
             :medium => "electricity_kwh",
             :meter_id => 12340009,
             :qualifier => "a-plus",
-            :register_value => 0,
+            :register_value => 0.127,
             :type => "meter_reading",
-            "1-0:1.8.0" => 0
+            "1-0:1.8.0" => 0.127
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]}
         ]
       },
@@ -792,33 +801,33 @@ defmodule Parser do
             :medium => "electricity_kwh",
             :meter_id => 33003312,
             :qualifier => "a-plus",
-            :register_value => 2,
+            :register_value => 1.672,
             :type => "meter_reading",
-            "1-0:1.8.0" => 2
+            "1-0:1.8.0" => 1.672
           }, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
           {%{
             :medium => "electricity_kwh",
             :meter_id => 33003312,
             :qualifier => "a-plus",
-            :register_value => 4,
+            :register_value => 4.03,
             :type => "meter_reading",
-            "1-0:1.8.0" => 4
+            "1-0:1.8.0" => 4.03
           }, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
           {%{
             :medium => "electricity_kwh",
             :meter_id => 33003312,
             :qualifier => "a-plus",
-            :register_value => 6,
+            :register_value => 6.387,
             :type => "meter_reading",
-            "1-0:1.8.0" => 6
+            "1-0:1.8.0" => 6.387
           }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
           {%{
             :medium => "electricity_kwh",
             :meter_id => 33003312,
             :qualifier => "a-plus",
-            :register_value => 9,
+            :register_value => 8.745,
             :type => "meter_reading",
-            "1-0:1.8.0" => 9
+            "1-0:1.8.0" => 8.745
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]}
         ]
       },
@@ -854,65 +863,65 @@ defmodule Parser do
           :medium => "electricity_kwh",
           :meter_id => 57009167,
           :qualifier => "a-plus-a-minus",
-          :register_value => 1,
+          :register_value => 0.724,
           :type => "meter_reading",
-          "1-0:1.8.0" => 1
+          "1-0:1.8.0" => 0.724
           }, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
         {%{
           :medium => "electricity_kwh",
           :meter_id => 57009167,
           :qualifier => "a-plus-a-minus",
-          :register_value => 2,
+          :register_value => 1.669,
           :type => "meter_reading",
-          "1-0:1.8.0" => 2
+          "1-0:1.8.0" => 1.669
           }, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
         {%{
           :medium => "electricity_kwh",
           :meter_id => 57009167,
           :qualifier => "a-plus-a-minus",
-          :register_value => 3,
+          :register_value => 2.614,
           :type => "meter_reading",
-          "1-0:1.8.0" => 3
+          "1-0:1.8.0" => 2.614
           }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
         {%{
           :medium => "electricity_kwh",
           :meter_id => 57009167,
           :qualifier => "a-plus-a-minus",
-          :register_value => 4,
+          :register_value => 3.559,
           :type => "meter_reading",
-          "1-0:1.8.0" => 4
+          "1-0:1.8.0" => 3.559
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
         {%{
           :medium => "electricity_kwh",
           :meter_id => 57009167,
           :qualifier => "a-plus-a-minus",
-          :register2_value => 0,
+          :register2_value => 0.0,
           :type => "meter_reading",
-          "1-0:2.8.0" => 0
+          "1-0:2.8.0" => 0.0
           }, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
         {%{
           :medium => "electricity_kwh",
           :meter_id => 57009167,
           :qualifier => "a-plus-a-minus",
-          :register2_value => 0,
+          :register2_value => 0.0,
           :type => "meter_reading",
-          "1-0:2.8.0" => 0
+          "1-0:2.8.0" => 0.0
           }, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
         {%{
           :medium => "electricity_kwh",
           :meter_id => 57009167,
           :qualifier => "a-plus-a-minus",
-          :register2_value => 0,
+          :register2_value => 0.0,
           :type => "meter_reading",
-          "1-0:2.8.0" => 0
+          "1-0:2.8.0" => 0.0
           }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
         {%{
           :medium => "electricity_kwh",
           :meter_id => 57009167,
           :qualifier => "a-plus-a-minus",
-          :register2_value => 0,
+          :register2_value => 0.0,
           :type => "meter_reading",
-          "1-0:2.8.0" => 0
+          "1-0:2.8.0" => 0.0
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]}
         ]
       },
