@@ -108,21 +108,6 @@ defmodule Parser do
     add_dim_steps(map, rest, 1)
   end
 
-  defp add_dim_steps(map, <<step_time, dim_level, rest::binary>>, i) do
-    {:ok, midnight} = NaiveDateTime.new(0, 1, 1, 0, 0, 0)
-    step_time =
-      midnight
-      |> Timex.to_datetime()
-      |> Timex.shift(minutes: step_time * 10)
-      |> Timex.format!("{h24}:{m}")
-
-    map
-    |> Map.put("dim_step_#{i}_time", step_time)
-    |> Map.put("dim_step_#{i}_level", dim_level)
-    |> add_dim_steps(rest, i + 1)
-  end
-  defp add_dim_steps(map, <<>>, _), do: map
-
   # set time response
   def parse(<<0x09, timestamp::little-32>>, %{meta: %{frame_port: 50}}) do
     %{
@@ -206,6 +191,23 @@ defmodule Parser do
     Logger.info("Unknown DALI address #{inspect other}")
     ""
   end
+
+  ### Apply Profile Helper ###
+
+  defp add_dim_steps(map, <<step_time, dim_level, rest::binary>>, i) do
+    {:ok, midnight} = NaiveDateTime.new(0, 1, 1, 0, 0, 0)
+    step_time =
+      midnight
+      |> Timex.to_datetime()
+      |> Timex.shift(minutes: step_time * 10)
+      |> Timex.format!("{h24}:{m}")
+
+    map
+    |> Map.put("dim_step_#{i}_time", step_time)
+    |> Map.put("dim_step_#{i}_level", dim_level)
+    |> add_dim_steps(rest, i + 1)
+  end
+  defp add_dim_steps(map, <<>>, _), do: map
 
   ### Command Message Response Helper ###
 
