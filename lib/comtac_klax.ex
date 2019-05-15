@@ -10,7 +10,6 @@ defmodule Parser do
   #   2019-03-05 [jb]: Register values now signed. Added fields().
   #   2019-03-27 [jb]: Logging unknown binaries in _parse_payload/2.
   #   2019-05-13 [jb]: Added interpolation feature. Added registers with full OBIS codes.
-  #   2019-05-14 [jb]: Rounding all values as float to a precision of 3 decimals.
 
 
   #----- Configuration
@@ -153,8 +152,8 @@ defmodule Parser do
          {
            %{
              "obis" => obis_full,
-             obis => round_as_float(pos_1_now * scaler),
-             obis_full => round_as_float(pos_1_now * scaler),
+             obis => pos_1_now * scaler,
+             obis_full => pos_1_now * scaler,
              "unit" => unit
            },
            [measured_at: meta[:transceived_at]]
@@ -192,8 +191,8 @@ defmodule Parser do
        {
          %{
            "obis" => obis_full,
-           obis => round_as_float(pos_2_now * scaler),
-           obis_full => round_as_float(pos_2_now * scaler),
+           obis => pos_2_now * scaler,
+           obis_full => pos_2_now * scaler,
            "unit" => unit
          },
          [measured_at: meta[:transceived_at]]
@@ -288,14 +287,14 @@ defmodule Parser do
             x_pre_calc_fun: &Timex.to_unix/1,
             x_post_calc_fun: &Timex.to_datetime/1,
             y_pre_calc_fun: fn %{value: value} -> value end,
-            y_post_calc_fun: &(%{value: &1, _interpolated: true})
+            y_post_calc_fun: &(%{value: round(&1), _interpolated: true})
           )
           |> Enum.filter(fn ({data, _meta}) -> Map.get(data, :_interpolated, false) end)
           |> Enum.map(fn {%{value: value}, reading_meta} ->
             {
               %{
                 "obis" => obis,
-                obis => round_as_float(value),
+                obis => value,
                 "unit" => unit,
               },
               reading_meta
@@ -330,8 +329,8 @@ defmodule Parser do
       {
         %{
           "obis" => obis_full,
-          obis => round_as_float(value),
-          obis_full => round_as_float(value),
+          obis => value,
+          obis_full => value,
           "unit" => unit,
         },
         [measured_at: measured_at]
@@ -361,10 +360,6 @@ defmodule Parser do
     minute_seconds = minutes * 60
     rem = rem(DateTime.to_unix(dt), minute_seconds)
     Timex.shift(dt, seconds: (minute_seconds - rem))
-  end
-
-  defp round_as_float(value) do
-    Float.round(value / 1, 3)
   end
 
   def fields() do
@@ -406,6 +401,7 @@ defmodule Parser do
       }
     end)
   end
+
 
 
   #--------- Tests
@@ -513,7 +509,7 @@ defmodule Parser do
         %{meta: %{frame_port: 3}, transceived_at: test_datetime("2019-01-01T12:00:00Z")},
         [
           {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 2671.794, "unit" => "kWh", "1_8_0" => 2671.794}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 2671.749, "unit" => "kWh", "1_8_0" => 2671.749}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 2671.7490000000003, "unit" => "kWh", "1_8_0" => 2671.7490000000003}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
           {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 2671.713, "unit" => "kWh", "1_8_0" => 2671.713}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
           # This value is omitted, because its faulty. {%{"1_8_0" => 0.0, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
           {%{server_id: "090149534B00041A1C26"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
@@ -557,10 +553,10 @@ defmodule Parser do
           {%{"1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
 
           # Calculated 1.8.0
-          {%{"1-0:1.8.0" => 65.336, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
-          {%{"1-0:1.8.0" => 65.836, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
-          {%{"1-0:1.8.0" => 66.336, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
-          {%{"1-0:1.8.0" => 66.836, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
+          {%{"1-0:1.8.0" => 65, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
+          {%{"1-0:1.8.0" => 66, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
+          {%{"1-0:1.8.0" => 66, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
+          {%{"1-0:1.8.0" => 67, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
 
           # Current 2.8.0
           {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
@@ -569,10 +565,10 @@ defmodule Parser do
           {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
 
           # Calculated 2.8.0
-          {%{"1-0:2.8.0" => 0.336, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
-          {%{"1-0:2.8.0" => 0.836, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
-          {%{"1-0:2.8.0" => 1.336, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
-          {%{"1-0:2.8.0" => 1.836, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
+          {%{"1-0:2.8.0" => 0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
+          {%{"1-0:2.8.0" => 1, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
+          {%{"1-0:2.8.0" => 1, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
+          {%{"1-0:2.8.0" => 2, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
 
           {%{server_id: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
           {%{battery: 90}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]}
