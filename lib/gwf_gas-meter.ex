@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for GWF Gas meter with Elster module
   # According to documentation provided by GWF
@@ -8,59 +9,205 @@ defmodule Parser do
   # Changelog
   #   2018-04-18 [as]: Initial version.
   #   2018-08-08 [jb]: Parsing battery and additional function.
+  #   2019-05-16 [jb]: Removed/changed fields (meter_id, manufacturer_id, state). Added interpolation feature. Added obis codes.
   #
 
 
-  def parse(<<ptype::8, manu::integer-little-16, mid::integer-32, medium::8, state::8, accd::integer-little-16, vif::8, volume::integer-little-32, additional_functions::binary-1, battery::binary-1, _::binary>>, _meta) do
-    med = case medium do
-      3 -> "gas"
-      6 -> "warm water"
-      7 -> "water"
-      _ -> "unknown"
+  # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
+  # Default: true
+  def interpolate?(), do: true
+  # Minutes between interpolated values
+  # Default: 15
+  def interpolate_minutes(), do: 15
+
+  # Name of timezone.
+  # Default: "Europe/Berlin"
+  def timezone(), do: "Europe/Berlin"
+
+
+
+  # Parsing message wit protocol type 0x01
+  def parse(<<
+      0x01,
+      manufacturer_id::integer-little-16,
+      meter::binary-4,
+      medium_code::8,
+      state::binary-1,
+      actuality_minutes::integer-little-16,
+      vif::8,
+      volume::integer-little-32,
+      additional_functions::binary-1,
+      battery::binary-1,
+      _checksum::binary
+    >>, meta) do
+
+    with {:ok, medium} <- medium(medium_code),
+         {:ok, obis} <- obis_code(medium),
+         {:ok, vif_factor} <- vif_factor(vif) do
+
+      %{
+        protocol_type: 1,
+        manufacturer_id: manufacturer_id,
+        meter_id: meter_id(meter),
+        medium: medium,
+        obis: obis,
+      }
+      |> Map.merge(state_to_flags(state))
+      |> Map.merge(battery(battery))
+      |> Map.merge(additional_functions(additional_functions))
+      |> case do
+        %{error: 1} = reading ->
+          # There was a error on the device, value is INVALID and not added.
+          reading
+        reading ->
+          reading = Map.merge(reading, %{
+            :volume => round_as_float(volume/vif_factor),
+            obis => round_as_float(volume/vif_factor),
+          })
+
+          # Need to redate reading if it was recorded in the past.
+          measured_at = Timex.shift(meta[:transceived_at], minutes: actuality_minutes * -1)
+
+          [{reading, [measured_at: measured_at]}] ++ build_missing(reading, measured_at, meta)
+      end
+
+    else
+      error ->
+        Logger.error("Problem parsing: #{inspect error}")
+        []
     end
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
+  end
 
-    decimalplaces = case vif do
-      0x16 -> 1
-      0x15 -> 10
-      0x14 -> 100
-      0x13 -> 1000
-    end
+  # Reference: https://www.kbr.de/de/obis-kennzeichen/obis-kennzeichen
+  defp obis_code(:gas), do: {:ok, "7-0:3.0.0"}
+  defp obis_code(:warm_water), do: {:ok, "9-0:1.0.0"}
+  defp obis_code(:water), do: {:ok, "8-0:1.0.0"}
+  defp obis_code(_), do: {:error, :unkown_obis}
 
-    s = case state do
-      0x00 -> "no error"
-      0x04 -> "battery error"
-      0x30 -> "no comm module <-> meter"
-      0x50 -> "jammed comm module <-> meter"
-      0x34 -> "no comms module <-> meter AND battery error"
-      0x55 -> "jammed comm module <-> meter AND batter error"
-      _ -> "unknown error"
-    end
 
-    <<n1::integer-4,n0::integer-4,n3::integer-4,n2::integer-4,n5::integer-4,n4::integer-4,n7::4,n6::integer-4>> = <<mid::32>>
+  defp medium(0x03), do: {:ok, :gas}
+  defp medium(0x06), do: {:ok, :warm_water}
+  defp medium(0x07), do: {:ok, :water}
+  defp medium(_), do: {:error, :unkown_medium}
 
-    <<battery_lifetime_semester::5, battery_link_error::1, _::2>> = battery
+  defp vif_factor(0x16), do: {:ok, 1}
+  defp vif_factor(0x15), do: {:ok, 10}
+  defp vif_factor(0x14), do: {:ok, 100}
+  defp vif_factor(0x13), do: {:ok, 1000}
+  defp vif_factor(_), do: {:error, :unknown_vif}
 
-    <<no_usage::1, backflow::1, battery_low::1, _::1, broken_pipe::1, _::1, continous_flow::1, _::1>> = additional_functions
+  defp meter_id(<<a, b, c, d>>), do: <<d, c, b, a>> |> Base.encode16() |> String.to_integer
 
+  defp state_to_flags(<<_::1, broken_comm::1, no_comm::1, error_flag::1, _::1, battery::1, _::1, _::1>>) do
+    Map.merge(
+      case error_flag do
+        1 -> %{error: 1, error_message: "broken_communication:#{broken_comm} no_communication:#{no_comm}"}
+        0 -> %{}
+      end,
+      case battery do
+        1 -> %{battery_error: 1}
+        0 -> %{}
+      end
+    )
+  end
+
+  defp battery(<<battery_lifetime_semester::5, _lorawan_link_check::1, _::2>>) do
     %{
-      protocol_type: ptype,
-      manufacturer_id: Base.encode16(<<manu::16>>),
-      actuality_minutes: accd,
-      meter_id: Integer.to_string(n7)<>Integer.to_string(n6)<>Integer.to_string(n5)<>Integer.to_string(n4)<>Integer.to_string(n3)<>Integer.to_string(n2)<>Integer.to_string(n1)<>Integer.to_string(n0),
-      medium: med,
-      state: s,
-      volume: volume/decimalplaces,
+      battery_lifetime_semester: battery_lifetime_semester,
+      battery_percent: floor((battery_lifetime_semester / 31) * 100),
+    }
+  end
 
+  defp additional_functions(<<no_usage::1, backflow::1, battery_low::1, _::1, broken_pipe::1, _::1, continous_flow::1, _::1>>) do
+    %{
       continous_flow: continous_flow,
       broken_pipe: broken_pipe,
       battery_low: battery_low,
       backflow: backflow,
       no_usage: no_usage,
-
-      battery_link_error: battery_link_error,
-      battery_lifetime_semester: battery_lifetime_semester,
-      battery_percent: (battery_lifetime_semester / 31) * 100,
     }
+  end
+
+
+  defp build_missing(%{meter_id: meter_id, medium: medium, volume: current_value}, current_measured_at, meta) do
+
+    if interpolate?() do
+
+      last_reading_query = [meter_id: meter_id, medium: medium, volume: :_]
+
+      case get_last_reading(meta, last_reading_query) do
+        %{data: %{:volume => last_value}, measured_at: last_measured_at} ->
+
+           [
+             {%{value: last_value}, [measured_at: last_measured_at]},
+             {%{value: current_value}, [measured_at: current_measured_at]},
+           ]
+           |> TimeSeries.fill_gaps(
+                fn datetime_a, datetime_b ->
+                  # Calculate all tuples with x=nil between a and b where a value should be interpolated
+                  interval = Timex.Interval.new(
+                    from: datetime_a |> Timex.to_datetime(timezone()) |> datetime_add_to_multiple_of_minutes(interpolate_minutes()),
+                    until: datetime_b,
+                    left_open: false,
+                    step: [minutes: interpolate_minutes()]
+                  )
+                  Enum.map(interval, &({nil, [measured_at: &1]}))
+                end,
+                :linear,
+                x_access_path: [Access.elem(1), :measured_at],
+                y_access_path: [Access.elem(0)],
+                x_pre_calc_fun: &Timex.to_unix/1,
+                x_post_calc_fun: &Timex.to_datetime/1,
+                y_pre_calc_fun: fn %{value: value} -> value end,
+                y_post_calc_fun: &(%{value: &1, _interpolated: true})
+              )
+           |> Enum.filter(fn ({data, _meta}) -> Map.get(data, :_interpolated, false) end)
+           |> Enum.map(fn {%{value: value}, reading_meta} ->
+            value = round_as_float(value)
+            {:ok, obis} = obis_code(medium)
+            {
+              %{
+                :meter_id => meter_id,
+                :medium => medium,
+                :volume => value,
+                :obis => obis,
+                obis => value,
+              },
+              reading_meta
+            }
+           end)
+
+        nil ->
+          Logger.info("No result for get_last_reading(#{inspect last_reading_query})")
+          []
+
+        invalid_prev_reading ->
+          Logger.warn("Could not build_missing() because of invalid previous reading: #{inspect invalid_prev_reading}")
+          []
+      end
+
+    else
+      []
+    end
+  end
+  defp build_missing(_current_data, _current_measured_at, _meta) do
+    Logger.warn("Could not build_missing() because of invalid current_data")
+    []
+  end
+
+  # Will shift 2019-04-20 12:34:56 to   2019-04-20 12:45:00
+  defp datetime_add_to_multiple_of_minutes(%DateTime{} = dt, minutes) do
+    minute_seconds = minutes * 60
+    rem = rem(DateTime.to_unix(dt), minute_seconds)
+    Timex.shift(dt, seconds: (minute_seconds - rem))
+  end
+
+  defp round_as_float(value) do
+    Float.round(value / 1, 3)
   end
 
   def fields do
@@ -76,26 +223,171 @@ defmodule Parser do
   def tests() do
     [
       {
-        :parse_hex, "01E61E1831062103000000141900000000D0982D", %{}, %{
-          protocol_type: 1,
-          manufacturer_id: "1EE6",
-          actuality_minutes: 0,
-          meter_id: "21063118",
-          medium: "gas",
-          state: "no error",
-          volume: 0.25,
+        :parse_hex,
+        String.replace("01 E61E 13071620 07 00 C801 13 F8030000 00 E8 7473", " ", ""),
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z")
+        },
+        [
+          {
+            %{
+              :backflow => 0,
+              :battery_lifetime_semester => 29,
+              :battery_low => 0,
+              :battery_percent => 93,
+              :broken_pipe => 0,
+              :continous_flow => 0,
+              :manufacturer_id => 7910,
+              :medium => :water,
+              :meter_id => 20160713,
+              :no_usage => 0,
+              :obis => "8-0:1.0.0",
+              :protocol_type => 1,
+              :volume => 1.016,
+              "8-0:1.0.0" => 1.016
+            },
+            [
+              measured_at: test_datetime("2019-01-01 04:58:56Z"),
+            ]
+          }
+        ]
+      },
 
-          battery_lifetime_semester: 26,  # 31 = max, 0 = min
-          battery_percent: 83.87096774193549, # 100 = max, 0 = min
-          battery_link_error: 0,          # 0 = false, 1 = true
+      {
+        :parse_hex,
+        String.replace("01 E61E 13071620 07 00 C801 13 F8030000 00 E8 7473", " ", ""),
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _last_reading_map: %{
+            [meter_id: 20160713, medium: :water, volume: :_] => %{measured_at: test_datetime("2019-01-01T04:11:11Z"), data: %{volume: 0.45}},
+          },
+        },
+        [
+          {
+            %{
+              :backflow => 0,
+              :battery_lifetime_semester => 29,
+              :battery_low => 0,
+              :battery_percent => 93,
+              :broken_pipe => 0,
+              :continous_flow => 0,
+              :manufacturer_id => 7910,
+              :medium => :water,
+              :meter_id => 20160713,
+              :no_usage => 0,
+              :obis => "8-0:1.0.0",
+              :protocol_type => 1,
+              :volume => 1.016,
+              "8-0:1.0.0" => 1.016
+            },
+            [
+              measured_at: test_datetime("2019-01-01 04:58:56Z"),
+            ]
+          },
+          {%{
+            :medium => :water,
+            :meter_id => 20160713,
+            :obis => "8-0:1.0.0",
+            :volume => 0.495,
+            "8-0:1.0.0" => 0.495
+          }, [measured_at: test_datetime("2019-01-01 04:15:00Z")]},
+          {%{
+            :medium => :water,
+            :meter_id => 20160713,
+            :obis => "8-0:1.0.0",
+            :volume => 0.673,
+            "8-0:1.0.0" => 0.673
+          }, [measured_at: test_datetime("2019-01-01 04:30:00Z")]},
+          {%{
+            :medium => :water,
+            :meter_id => 20160713,
+            :obis => "8-0:1.0.0",
+            :volume => 0.851,
+            "8-0:1.0.0" => 0.851
+          }, [measured_at: test_datetime("2019-01-01 04:45:00Z")]}
+        ]
+      },
 
-          backflow: 0,
-          battery_low: 0,
-          broken_pipe: 0,
-          continous_flow: 0,
-          no_usage: 0,
-        }
-      }
+      {
+        :parse_hex,
+        "01E61E1831062103000000141900000000D0982D",
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z")
+        },
+        [
+          {
+            %{
+              :backflow => 0,
+              :battery_lifetime_semester => 26,
+              :battery_low => 0,
+              :battery_percent => 83,
+              :broken_pipe => 0,
+              :continous_flow => 0,
+              :manufacturer_id => 7910,
+              :medium => :gas,
+              :meter_id => 21063118,
+              :no_usage => 0,
+              :obis => "7-0:3.0.0",
+              :protocol_type => 1,
+              :volume => 0.25,
+              "7-0:3.0.0" => 0.25
+            },
+            [
+              measured_at: test_datetime("2019-01-01 12:34:56Z"),
+            ]
+          }
+        ]
+      },
+
+      {
+        :parse_hex,
+        "01E61E1831062103000000141900000000D0982D",
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _last_reading_map: %{
+            [meter_id: 21063118, medium: :gas, volume: :_] => %{measured_at: test_datetime("2019-01-01T12:11:11Z"), data: %{volume: 0.12}},
+          },
+        },
+        [
+          {
+            %{
+              :backflow => 0,
+              :battery_lifetime_semester => 26,
+              :battery_low => 0,
+              :battery_percent => 83,
+              :broken_pipe => 0,
+              :continous_flow => 0,
+              :manufacturer_id => 7910,
+              :medium => :gas,
+              :meter_id => 21063118,
+              :no_usage => 0,
+              :obis => "7-0:3.0.0",
+              :protocol_type => 1,
+              :volume => 0.25,
+              "7-0:3.0.0" => 0.25
+            }, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+            {%{
+              :medium => :gas,
+              :meter_id => 21063118,
+              :obis => "7-0:3.0.0",
+              :volume => 0.141,
+              "7-0:3.0.0" => 0.141
+            }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
+            {%{
+              :medium => :gas,
+              :meter_id => 21063118,
+              :obis => "7-0:3.0.0",
+              :volume => 0.223,
+              "7-0:3.0.0" => 0.223
+            }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]}
+        ]
+      },
     ]
+  end
+
+  # Helper for testing
+  defp test_datetime(iso8601) do
+    {:ok, datetime, _} = DateTime.from_iso8601(iso8601)
+    datetime
   end
 end
