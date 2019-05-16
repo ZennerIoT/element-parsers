@@ -2,9 +2,10 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
   require Logger
 
-  # ELEMENT IoT Parser for GWF Gas meter with Elster module
-  # According to documentation provided by GWF
-
+  #
+  # ELEMENT IoT Parser for GWF LoRaWAN module for GWF metering units, according to documentation provided by GWF
+  # Supporting Water and Gas.
+  #
   #
   # Changelog
   #   2018-04-18 [as]: Initial version.
