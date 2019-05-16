@@ -26,6 +26,7 @@ defmodule Parser do
       battery_voltage: (25+voltage)/10,
       temperature: temperature-32,
       contact: contact,
+      state: state,
       time_elapsed_since_trigger: time,
       total_count: count
     }
@@ -71,6 +72,7 @@ defmodule Parser do
           battery_state: 100.0,
           battery_voltage: 3.6,
           contact: "closed",
+          state: 0,
           temperature: -27,
           total_count: 7544,
           time_elapsed_since_trigger: 0
@@ -82,6 +84,7 @@ defmodule Parser do
           battery_state: 100.0,
           battery_voltage: 3.6,
           contact: "open",
+          state: 1,
           temperature: -27,
           total_count: 7543,
           time_elapsed_since_trigger: 0

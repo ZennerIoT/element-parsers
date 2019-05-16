@@ -7,7 +7,7 @@ defmodule ParserSdk.MixProject do
       version: "0.1.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
     ]
   end
 
@@ -18,13 +18,16 @@ defmodule ParserSdk.MixProject do
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
+  # Default dependencies
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
-
-      {:timex, "~> 3.1"},
+      {:timex, "~> 3.3"},
+      {:lib_wmbus, git: zisops_git_url("code/lib_wmbus"), ref: "e9ce1107e016acf9ab0ff636f921836b68b95da7"}, # Internal ZIS library available on ELEMENT.
+      {:timeseries, git: zisops_git_url("code/timeseries")}, # Internal ZIS library available on ELEMENT.
     ]
+  end
+
+  def zisops_git_url(repo) do
+    "git@git.zisops.com:#{repo}.git"
   end
 end
