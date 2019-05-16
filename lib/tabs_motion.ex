@@ -2,6 +2,8 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
   require Logger
 
+  # !!! This Parser is not maintained anymore. Use tabs.ex instead !!!
+  #
   # ELEMENT IoT Parser for TrackNet Tabs Motion Sensor
   # According to documentation provided by TrackNet
   # Payload Description Version v1.3
