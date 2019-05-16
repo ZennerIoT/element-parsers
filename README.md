@@ -12,6 +12,7 @@ Have a look at these parsers if you need to write your own parser.
 
 Usecase | Parser File
 ------------|-------------
+Template | [lib/example_template.ex](lib/example_template.ex)
 Frame-Port | [lib/example_frame_port.ex](lib/example_frame_port.ex)
 Variable Length | [lib/example_variable_part.ex](lib/example_variable_part.ex)
 Reading profile data | [lib/example_profile_read.ex](lib/example_profile_read.ex)
@@ -56,10 +57,14 @@ Libelium Smart Environment | [lib/libelium_smart-environment.ex](lib/libelium_sm
 Libelium Smart Parking Sensor v3 | [lib/libelium_smart-parking_v3.exs](lib/libelium_smart-parking_v3.exs)
 Libelium Smart Water | [lib/libelium_smart-water.ex](lib/libelium_smart-water.ex)
 Lobaro GPS Tracker | [lib/lobaro_gps-tracker.ex](lib/lobaro_gps-tracker.ex)
+Lobaro Pressure 26D | [lib/lobaro_pressure26d.ex](lib/lobaro_pressure26d.ex)
 Lobaro WMBUS Bridge | [lib/lobaro_wmbus-bridge.ex](lib/lobaro_wmbus-bridge.ex)
 NAS CM3010 | [lib/nas_cm3010.ex](lib/nas_cm3010.ex)
-NAS UM32023 Digital Pulse Counter | [lib/nas_um32023.ex](lib/nas_um32023.ex)
+NAS Luminaire Controller Zhaga 18 | [lib/nas_luminaire.ex](lib/nas_luminaire.ex)
+NAS UM3023A/UM3033A Digital Pulse Counter | [lib/nas_um30x3.ex](lib/nas_um30x3.ex)
+NetOP Technology Devices | [lib/netop.ex](lib/netop.ex)
 NKE Watteco IN'O | [lib/nke_ino.ex](lib/nke_ino.ex)
+RAK Button | [lib/rak_button.ex](lib/rak_button.ex)
 Sagemcom Siconia | [lib/sagemcom_siconia.ex](lib/sagemcom_siconia.ex)
 Sensing Labs SenLab LED | [lib/sensinglabs_senlabm.ex](lib/sensinglabs_senlabm.ex)
 Sensoneo Singlesensors | [lib/sensoneo_singlesensors.ex](lib/sensoneo_singlesensors.ex)
@@ -71,6 +76,7 @@ Tabs Healthy Home Air Quality Sensor (deprecated) | [lib/tabs_healthy-home.ex](l
 Tabs Object locator (deprecated) | [lib/tabs_object-locator.ex](lib/tabs_object-locator.ex)
 Tabs Pushbutton (deprecated) | [lib/tabs_pushbutton.ex](lib/tabs_pushbutton.ex)
 Tabs Motion (deprecated) | [lib/tabs_motion.ex](lib/tabs_motion.ex)
+yabby GPS | [lib/yabby_gps.ex](lib/yabby_gps.ex)
 ZENNER Water Meter (v1.9) | [lib/zenner_water-meter.ex](lib/zenner_water-meter.ex)
 ZIS DHT22 Digital Temperature and Humidity Sensor Module | [lib/zis_dht-22.ex](lib/zis_dht-22.ex)
 ZIS SmartWaste UltraSonic | [lib/zis_smart-waste-ultrasonic.ex](lib/zis_smart-waste-ultrasonic.ex)
