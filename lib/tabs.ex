@@ -96,14 +96,14 @@ defmodule Parser do
 
   def get_contact_state(<<_rfu::7, 0::1>>) do
     %{
-      contact: 0,
-      contact_state: "closed"
+      state: 0,
+      contact: "closed"
     }
   end
   def get_contact_state(<<_rfu::7, 1::1>>) do
     %{
-      contact: 1,
-      contact_state: "open"
+      state: 1,
+      contact: "open"
     }
   end
 
@@ -197,7 +197,7 @@ defmodule Parser do
         "display" => "Contact"
       },
       %{
-        "field" => "contact_state",
+        "field" => "state",
         "display" => "Contact State"
       },
       %{
@@ -295,8 +295,8 @@ defmodule Parser do
         %{
           battery_state: 100.0,
           battery_voltage: 3.6,
-          contact: 0,
-          contact_state: "closed",
+          state: 0,
+          contact: "closed",
           temperature: -27,
           total_count: 7544,
           time_elapsed_since_trigger: 0
@@ -307,8 +307,8 @@ defmodule Parser do
         %{
           battery_state: 100.0,
           battery_voltage: 3.6,
-          contact: 1,
-          contact_state: "open",
+          state: 1,
+          contact: "open",
           temperature: -27,
           total_count: 7543,
           time_elapsed_since_trigger: 0
