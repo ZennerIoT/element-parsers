@@ -17,35 +17,170 @@ defmodule Parser do
   #   2018-09-04 [jb]: Added tests. Handling Configuration request on port 49
   #   2019-05-07 [gw]: Updated with information from 0.7.0 document. Fix rssi and medium_type mapping.
   #   2019-05-07 [gw]: Also handling UM3033 devices.
+  #   2019-06-17 [jb]: Added obis field for gas_in_liter. Added interpolation of values. Fixed boot message for v0.7.0.
+
+
+  # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
+  # Default: true
+  def interpolate?(), do: true
+  # Minutes between interpolated values
+  # Default: 15
+  def interpolate_minutes(), do: 60
+
+  # Name of timezone.
+  # Default: "Europe/Berlin"
+  def timezone(), do: "Europe/Berlin"
+
+
+
+  defp add_obis([_|_] = readings, meta) do
+    Enum.map(readings, &add_obis(&1, meta))
+  end
+
+  defp add_obis(%{"digital1_reporting_medium_type" => :gas_in_liter, :digital1_reporting => value} = reading, meta) do
+    obis = "7-0:3.0.0"
+    reading
+    |> Map.put(:obis, obis)
+    |> Map.put(obis, round_as_float(value / 1000)) # Convert liter to m3
+    |> add_missing(meta)
+  end
+  defp add_obis(%{"digital2_reporting_medium_type" => :gas_in_liter, :digital2_reporting => value} = reading, meta) do
+    obis = "7-0:3.0.0"
+    reading
+    |> Map.put(:obis, obis)
+    |> Map.put(obis, round_as_float(value / 1000)) # Convert liter to m3
+    |> add_missing(meta)
+  end
+
+  defp add_obis(%{} = data, _meta), do: data
+
+  defp round_as_float(value) do
+    Float.round(value / 1, 3)
+  end
+
+  defp add_missing(%{"7-0:3.0.0" => current_value} = data, meta) do
+
+    if interpolate?() do
+
+      obis = "7-0:3.0.0"
+      current_measured_at = Map.get(meta, :transceived_at)
+      last_reading_query = [obis: obis]
+
+      case get_last_reading(meta, last_reading_query) do
+        %{data: %{^obis => last_value}, measured_at: last_measured_at} ->
+
+          readings = [
+            {%{value: last_value}, [measured_at: last_measured_at]},
+            {%{value: current_value}, [measured_at: current_measured_at]},
+          ]
+          |> TimeSeries.fill_gaps(
+               fn datetime_a, datetime_b ->
+                 # Calculate all tuples with x=nil between a and b where a value should be interpolated
+                 interval = Timex.Interval.new(
+                   from: datetime_a |> Timex.to_datetime(timezone()) |> datetime_add_to_multiple_of_minutes(interpolate_minutes()),
+                   until: datetime_b,
+                   left_open: false,
+                   step: [minutes: interpolate_minutes()]
+                 )
+                 Enum.map(interval, &({nil, [measured_at: &1]}))
+               end,
+               :linear,
+               x_access_path: [Access.elem(1), :measured_at],
+               y_access_path: [Access.elem(0)],
+               x_pre_calc_fun: &Timex.to_unix/1,
+               x_post_calc_fun: &Timex.to_datetime/1,
+               y_pre_calc_fun: fn %{value: value} -> value end,
+               y_post_calc_fun: &(%{value: &1, _interpolated: true})
+             )
+          |> Enum.filter(fn ({data, _meta}) -> Map.get(data, :_interpolated, false) end)
+          |> Enum.map(fn {%{value: value}, reading_meta} ->
+            value = round_as_float(value)
+            {
+              %{
+                :obis => obis,
+                obis => value,
+              },
+              reading_meta
+            }
+          end)
+
+          [data] ++ readings
+
+        nil ->
+          Logger.info("No result for get_last_reading(#{inspect last_reading_query})")
+          [data]
+
+        invalid_prev_reading ->
+          Logger.warn("Could not add_missing() because of invalid previous reading: #{inspect invalid_prev_reading}")
+          [data]
+      end
+
+    else
+      []
+    end
+  end
+  defp add_missing(current_data, _meta), do: current_data
+
+  # Will shift 2019-04-20 12:34:56 to   2019-04-20 12:45:00
+  defp datetime_add_to_multiple_of_minutes(%DateTime{} = dt, minutes) do
+    minute_seconds = minutes * 60
+    rem = rem(DateTime.to_unix(dt), minute_seconds)
+    Timex.shift(dt, seconds: (minute_seconds - rem))
+  end
 
   # Status Message
-  def parse(<<settings::binary-1, battery::unsigned, temp::signed, rssi::signed, interface_status::binary>>, %{meta: %{frame_port:  24}}) do
-    status_map = %{
+  def parse(<<settings::binary-1, battery::unsigned, temp::signed, rssi::signed, interface_status::binary>>, %{meta: %{frame_port:  24}} = meta) do
+    %{
       battery: battery,
       temp: temp,
       rssi: rssi * -1,
     }
-    parse_reporting(status_map, settings, interface_status)
+    |> parse_reporting(settings, interface_status)
+    |> add_obis(meta)
   end
 
   # Status Message
-  def parse(<<settings::binary-1, interface_status::binary>>, %{meta: %{frame_port:  25}}) do
-    parse_reporting(%{}, settings, interface_status)
+  def parse(<<settings::binary-1, interface_status::binary>>, %{meta: %{frame_port:  25}} = meta) do
+    %{}
+    |> parse_reporting(settings, interface_status)
+    |> add_obis(meta)
   end
 
   # Boot Message
-  def parse(<<0x00, serial::4-binary, firmware::3-binary, reset_reason>>, %{meta: %{frame_port:  99}}) do
-    %{
+  def parse(<<0x00, serial::4-binary, firmware::3-binary, rest::binary>>, %{meta: %{frame_port:  99}}) do
+    {%{
       type: :boot,
       serial: Base.encode16(serial),
       firmware: Base.encode16(firmware),
-      reset_reason: reset_reason,
-    }
+    }, rest}
+    |> case do
+      {reading, <<reset_reason, rest::binary>>} ->
+        reset_msg = Map.get(%{0x02 => :watchdog_reset, 0x04 => :soft_reset, 0x10 => :normal_magnet}, reset_reason, :unknown)
+        {Map.put(reading, :reset_reason, reset_msg), rest}
+      default ->
+        default
+    end
+    |> case do
+      {reading, <<battery_info>>} ->
+        battery_voltage = Map.get(%{0x1 => "3.0V", 0x2 => "3.6V"}, battery_info, :unknown)
+        {Map.put(reading, :battery_voltage, battery_voltage), rest}
+      default ->
+        default
+    end
+    |> Kernel.elem(0)
   end
   # Shutdown Message
   def parse(<<0x01>>, %{meta: %{frame_port:  99}}) do
     %{
       type: :shutdown,
+    }
+  end
+  def parse(<<0x01, reason, status_message::binary>>, %{meta: %{frame_port:  99}}) do
+    reason = Map.get(%{0x02 => :hardware_error, 0x31 => :user_magnet, 0x32 => :user_dfu}, reason, :unknown)
+    %{
+      type: :shutdown,
+      reason: reason,
+      status_message: Base.encode16(status_message),
     }
   end
   # Error Code Message
@@ -326,6 +461,61 @@ defmodule Parser do
         },
       },
 
+      {
+        :parse_hex,  "0340060000005000000000", %{meta: %{frame_port: 25}},  [
+          %{
+            :digital1_reporting => 6,
+            :digital2_reporting => 0,
+            :mbus => false,
+            :obis => "7-0:3.0.0",
+            :ssi => false,
+            :user_triggered => false,
+            "7-0:3.0.0" => 0.006,
+            "digital1_reporting_medium_type" => :gas_in_liter,
+            "digital1_reporting_trigger_alert" => :ok,
+            "digital1_reporting_trigger_mode2" => :disabled,
+            "digital1_reporting_value_during_reporting" => :low,
+            "digital2_reporting_medium_type" => :heat_in_wh,
+            "digital2_reporting_trigger_alert" => :ok,
+            "digital2_reporting_trigger_mode2" => :disabled,
+            "digital2_reporting_value_during_reporting" => :low
+          }
+        ],
+      },
+
+      {
+        :parse_hex,
+        "0340060000005000000000",
+        %{
+          meta: %{frame_port: 25},
+          transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _last_reading_map: %{
+            [obis: "7-0:3.0.0"] => %{measured_at: test_datetime("2019-01-01T10:34:11Z"), data: %{:obis => "7-0:3.0.0", "7-0:3.0.0" => 0.003}},
+          },
+        },
+        [
+          %{
+          :digital1_reporting => 6,
+          :digital2_reporting => 0,
+          :mbus => false,
+          :obis => "7-0:3.0.0",
+          :ssi => false,
+          :user_triggered => false,
+          "7-0:3.0.0" => 0.006,
+          "digital1_reporting_medium_type" => :gas_in_liter,
+          "digital1_reporting_trigger_alert" => :ok,
+          "digital1_reporting_trigger_mode2" => :disabled,
+          "digital1_reporting_value_during_reporting" => :low,
+          "digital2_reporting_medium_type" => :heat_in_wh,
+          "digital2_reporting_trigger_alert" => :ok,
+          "digital2_reporting_trigger_mode2" => :disabled,
+          "digital2_reporting_value_during_reporting" => :low
+          },
+          {%{:obis => "7-0:3.0.0", "7-0:3.0.0" => 0.004}, [measured_at: test_datetime("2019-01-01 11:00:00Z")]},
+          {%{:obis => "7-0:3.0.0", "7-0:3.0.0" => 0.005}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]}
+        ],
+      },
+
       { # Example Payload from docs 0.7.0
         :parse_hex, "0F12010000001000000000C0DA365C400B7E5E40C140C9D740DC73D940", %{meta: %{frame_port: 25}}, %{
           :digital1_reporting => 1,
@@ -385,9 +575,26 @@ defmodule Parser do
       },
       {
         :parse_hex,  "00D701164C0007081002", %{meta: %{frame_port: 99}},  %{
-          error: "unparseable_message",
-          meta_frame_port: 99,
-          payload: "00D701164C0007081002"
+          battery_voltage: "3.6V",
+          firmware: "000708",
+          reset_reason: :normal_magnet,
+          serial: "D701164C",
+          type: :boot
+        },
+      },
+      {
+        :parse_hex,  "0131033A0B7C10000000001000000000", %{meta: %{frame_port: 99}}, %{
+          reason: :user_magnet,
+          status_message: "033A0B7C10000000001000000000",
+          type: :shutdown
+        },
+      },
+      {
+        :parse_hex,  "00CA021C4E000722100200", %{meta: %{frame_port: 99}}, %{
+          firmware: "000722",
+          reset_reason: :normal_magnet,
+          serial: "CA021C4E",
+          type: :boot
         },
       },
       {
@@ -548,5 +755,10 @@ defmodule Parser do
     ]
   end
 
+  # Helper for testing
+  defp test_datetime(iso8601) do
+    {:ok, datetime, _} = DateTime.from_iso8601(iso8601)
+    datetime
+  end
 
 end
