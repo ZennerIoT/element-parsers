@@ -26,7 +26,7 @@ defmodule Parser do
       },
       {
         # Profile has factor value =2.
-        :parse_hex, "1337", %{meta: %{frame_port: 42}, fields: %{my_profile: %{my_field: 2}}}, %{value: 9838},
+        :parse_hex, "1337", %{meta: %{frame_port: 42}, device: %{fields: %{my_profile: %{my_field: 2}}}}, %{value: 9838},
       },
     ]
   end
