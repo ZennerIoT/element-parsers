@@ -17,7 +17,8 @@ defmodule Parser do
   #   2018-09-04 [jb]: Added tests. Handling Configuration request on port 49
   #   2019-05-07 [gw]: Updated with information from 0.7.0 document. Fix rssi and medium_type mapping.
   #   2019-05-07 [gw]: Also handling UM3033 devices.
-  #   2019-06-17 [jb]: Added obis field for gas_in_liter. Added interpolation of values. Fixed boot message for v0.7.0.
+  #   2019-05-17 [jb]: Added obis field for gas_in_liter. Added interpolation of values. Fixed boot message for v0.7.0.
+  #   2019-05-22 [gw]: Adjusted fw version on boot message and also return status message from boot message as separate reading.
 
 
   # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
@@ -148,10 +149,11 @@ defmodule Parser do
 
   # Boot Message
   def parse(<<0x00, serial::4-binary, firmware::3-binary, rest::binary>>, %{meta: %{frame_port:  99}}) do
+    <<major::8, minor::8, patch::8>> = firmware
     {%{
       type: :boot,
       serial: Base.encode16(serial),
-      firmware: Base.encode16(firmware),
+      firmware: "#{major}.#{minor}.#{patch}",
     }, rest}
     |> case do
       {reading, <<reset_reason, rest::binary>>} ->
@@ -177,11 +179,13 @@ defmodule Parser do
   end
   def parse(<<0x01, reason, status_message::binary>>, %{meta: %{frame_port:  99}}) do
     reason = Map.get(%{0x02 => :hardware_error, 0x31 => :user_magnet, 0x32 => :user_dfu}, reason, :unknown)
-    %{
-      type: :shutdown,
-      reason: reason,
-      status_message: Base.encode16(status_message),
-    }
+    [
+      %{
+        type: :shutdown,
+        reason: reason,
+      },
+      parse(status_message, %{meta: %{frame_port: 25}})
+    ]
   end
   # Error Code Message
   def parse(<<0x10, error_code>>, %{meta: %{frame_port:  99}}) do
@@ -576,22 +580,38 @@ defmodule Parser do
       {
         :parse_hex,  "00D701164C0007081002", %{meta: %{frame_port: 99}},  %{
           battery_voltage: "3.6V",
-          firmware: "000708",
+          firmware: "0.7.8",
           reset_reason: :normal_magnet,
           serial: "D701164C",
           type: :boot
         },
       },
       {
-        :parse_hex,  "0131033A0B7C10000000001000000000", %{meta: %{frame_port: 99}}, %{
-          reason: :user_magnet,
-          status_message: "033A0B7C10000000001000000000",
-          type: :shutdown
-        },
+        :parse_hex,  "0131033A0B7C10000000001000000000", %{meta: %{frame_port: 99}}, [
+          %{
+            reason: :user_magnet,
+            type: :shutdown,
+          },
+          %{
+            :digital1_reporting => 1080331,
+            :digital2_reporting => 1048576,
+            :mbus => false,
+            :ssi => false,
+            :user_triggered => false,
+            "digital1_reporting_medium_type" => :electricity_in_wh,
+            "digital1_reporting_trigger_alert" => :ok,
+            "digital1_reporting_trigger_mode2" => :enabled,
+            "digital1_reporting_value_during_reporting" => :low,
+            "digital2_reporting_medium_type" => :not_available,
+            "digital2_reporting_trigger_alert" => :ok,
+            "digital2_reporting_trigger_mode2" => :disabled,
+            "digital2_reporting_value_during_reporting" => :low,
+          }
+        ]
       },
       {
         :parse_hex,  "00CA021C4E000722100200", %{meta: %{frame_port: 99}}, %{
-          firmware: "000722",
+          firmware: "0.7.34",
           reset_reason: :normal_magnet,
           serial: "CA021C4E",
           type: :boot
