@@ -12,7 +12,7 @@ defmodule Parser do
   end
 
   def parse(<<value::16>>, %{meta: %{frame_port: 42}} = meta) do
-    factor = get(meta, [:fields, :my_profile, :my_field], 1)
+    factor = get(meta, [:device, :fields, :my_profile, :my_field], 1)
     %{
       value: value * factor,
     }
