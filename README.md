@@ -71,12 +71,7 @@ Sensing Labs SenLab LED | [lib/sensinglabs_senlabm.ex](lib/sensinglabs_senlabm.e
 Sensoneo Singlesensors | [lib/sensoneo_singlesensors.ex](lib/sensoneo_singlesensors.ex)
 Strega Smartvalve| [lib/strega_smartvalve.ex](lib/strega_smartvalve.ex)
 Smilio Action| [lib/smilio_action_fw_2_0.ex](lib/smilio_action_fw_2_0.ex)
-Tabs All in One | [lib/tabs.ex](lib/tabs.ex)
-Tabs Door and Window Sensor (deprecated) | [lib/tabs_doornwindow.ex](lib/tabs_doornwindow.ex)
-Tabs Healthy Home Air Quality Sensor (deprecated) | [lib/tabs_healthy-home.ex](lib/tabs_healthy-home.ex)
-Tabs Object locator (deprecated) | [lib/tabs_object-locator.ex](lib/tabs_object-locator.ex)
-Tabs Pushbutton (deprecated) | [lib/tabs_pushbutton.ex](lib/tabs_pushbutton.ex)
-Tabs Motion (deprecated) | [lib/tabs_motion.ex](lib/tabs_motion.ex)
+Tabs "All in One" | [lib/tabs.ex](lib/tabs.ex)
 yabby GPS | [lib/yabby_gps.ex](lib/yabby_gps.ex)
 ZENNER Water Meter (v1.9) | [lib/zenner_water-meter.ex](lib/zenner_water-meter.ex)
 ZIS DHT22 Digital Temperature and Humidity Sensor Module | [lib/zis_dht-22.ex](lib/zis_dht-22.ex)
@@ -84,3 +79,17 @@ ZIS SmartWaste UltraSonic | [lib/zis_smart-waste-ultrasonic.ex](lib/zis_smart-wa
 ZIS ZISDIS 8 | [lib/zis_zisdis8.ex](lib/zis_zisdis8.ex)
 
 Your device is missing? Contact us at: [https://zenner-iot.com/page/kontakt/](https://zenner-iot.com/page/kontakt/)
+
+
+## Deprecated Parsers
+
+Parsers that have been deprecated. No further development will be done on these files.
+
+Parser | Parser File | Explanation
+------------|-------------|-------------
+Tabs - Door and Window Sensor | [lib/tabs_doornwindow.ex](lib/tabs_doornwindow.ex) | Replaced by `Tabs "All in One"`
+Tabs - Healthy Home Air Quality Sensor | [lib/tabs_healthy-home.ex](lib/tabs_healthy-home.ex) | Replaced by `Tabs "All in One"`
+Tabs - Object locator | [lib/tabs_object-locator.ex](lib/tabs_object-locator.ex) | Replaced by `Tabs "All in One"`
+Tabs - Pushbutton | [lib/tabs_pushbutton.ex](lib/tabs_pushbutton.ex) | Replaced by `Tabs "All in One"`
+Tabs - Motion | [lib/tabs_motion.ex](lib/tabs_motion.ex) | Replaced by `Tabs "All in One"`
+

@@ -4,7 +4,7 @@ defmodule Parser do
 
   require Logger
 
-  #ELEMENT IoT Parser for TrackNet Tabs, including:
+  # ELEMENT IoT Parser for TrackNet Tabs, including:
   #   * Door & Window Sensor
   #   * Healthy Home Sensor
   #   * Motion Sensor
