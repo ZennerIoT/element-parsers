@@ -111,23 +111,21 @@ defmodule Parser do
       meter_id: meter_id,
     }
 
-    to_value = &round_as_float(&1 / 100)
-
     reading = case registers do
       <<register_value::32-little>> ->
         reading
-        |> Map.put(:register_value, to_value.(register_value))
-        |> add_obis(medium, qualifier, 1, to_value.(register_value))
+        |> Map.put(:register_value, round_as_float(register_value / 100))
+        |> add_obis(medium, qualifier, 1, round_as_float(register_value / 100))
         |> add_power_from_last_reading(meta, :register_value, :power)
 
       <<register_value::32-little, register2_value::32-little>> ->
         reading
-        |> Map.put(:register_value, to_value.(register_value))
-        |> add_obis(medium, qualifier, 1, to_value.(register_value))
+        |> Map.put(:register_value, round_as_float(register_value / 100))
+        |> add_obis(medium, qualifier, 1, round_as_float(register_value / 100))
         |> add_power_from_last_reading(meta, :register_value, :power)
 
-        |> Map.put(:register2_value, to_value.(register2_value))
-        |> add_obis(medium, qualifier, 2, to_value.(register_value))
+        |> Map.put(:register2_value, round_as_float(register2_value / 100))
+        |> add_obis(medium, qualifier, 2, round_as_float(register2_value / 100))
         |> add_power_from_last_reading(meta, :register2_value, :power)
     end
 
