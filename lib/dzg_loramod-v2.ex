@@ -14,7 +14,7 @@ defmodule Parser do
   #   2019-05-13 [gw]: Return only the latest value with A_Plus qualifier.
   #   2019-05-14 [jb]: Added full obis code if available. Added interpolation feature.
   #   2019-05-15 [jb]: Rounding all values as float to a precision of 3 decimals.
-  #   2019-07-11 [jb]: Added handling of a-plus-a-minus with register2_value field.
+  #   2019-06-21 [jb]: Added handling of a-plus-a-minus with register2_value field.
 
   # Configuration
 
