@@ -14,6 +14,7 @@ defmodule Parser do
   #   2019-05-13 [gw]: Return only the latest value with A_Plus qualifier.
   #   2019-05-14 [jb]: Added full obis code if available. Added interpolation feature.
   #   2019-05-15 [jb]: Rounding all values as float to a precision of 3 decimals.
+  #   2019-07-11 [jb]: Added handling of a-plus-a-minus with register2_value field.
 
   # Configuration
 
@@ -100,19 +101,35 @@ defmodule Parser do
   #           RegisterValue::32
   #
   # Matching hard on medium 2=electricity_kwh here, to avoid problems with header v2
-  def parse_meter_reading_message(<<1::2, 2::3, qualifier::3, meter_id::32-little, register_value::32-little>>, meta) do
+  def parse_meter_reading_message(<<1::2, 2::3, qualifier::3, meter_id::32-little, registers::binary>>, meta) do
     medium = 2
-    value = round_as_float(register_value / 100)
     reading = %{
       type: "meter_reading",
       header_version: 1,
       medium: medium_name(medium),
       qualifier: medium_qualifier_name(medium, qualifier),
       meter_id: meter_id,
-      register_value: value,
     }
-    |> add_power_from_last_reading(meta, :register_value, :power)
-    |> add_obis(medium, qualifier, 1, value)
+
+    to_value = &round_as_float(&1 / 100)
+
+    reading = case registers do
+      <<register_value::32-little>> ->
+        reading
+        |> Map.put(:register_value, to_value.(register_value))
+        |> add_obis(medium, qualifier, 1, to_value.(register_value))
+        |> add_power_from_last_reading(meta, :register_value, :power)
+
+      <<register_value::32-little, register2_value::32-little>> ->
+        reading
+        |> Map.put(:register_value, to_value.(register_value))
+        |> add_obis(medium, qualifier, 1, to_value.(register_value))
+        |> add_power_from_last_reading(meta, :register_value, :power)
+
+        |> Map.put(:register2_value, to_value.(register2_value))
+        |> add_obis(medium, qualifier, 2, to_value.(register_value))
+        |> add_power_from_last_reading(meta, :register2_value, :power)
+    end
 
     [reading] ++ build_missing(reading, :register_value, meta, %{medium: medium, qualifier: qualifier, register_index: 1})
   end
@@ -623,6 +640,25 @@ defmodule Parser do
             :timestamp_unix => 1266361158,
             :type => "meter_reading",
             "1-0:1.8.0" => 4.63
+          }
+        ]
+      },
+
+      {
+        # Electricity medium with A_Plus qualifier and 3 values
+        :parse_hex, "54EDEF6503D59E040000000000",
+        %{meta: %{frame_port: 8}, transceived_at: test_datetime("2019-01-01T12:34:56Z")},
+        [
+          %{
+            :header_version => 1,
+            :medium => "electricity_kwh",
+            :meter_id => 57012205,
+            :qualifier => "a-plus-a-minus",
+            :register_value => 3028.05,
+            :register2_value => 0.0,
+            :type => "meter_reading",
+            "1-0:1.8.0" => 3028.05,
+            "1-0:2.8.0" => 3028.05
           }
         ]
       },
