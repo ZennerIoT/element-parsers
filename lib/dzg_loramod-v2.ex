@@ -652,11 +652,11 @@ defmodule Parser do
             :medium => "electricity_kwh",
             :meter_id => 57012205,
             :qualifier => "a-plus-a-minus",
-            :register_value => 3028.05,
             :register2_value => 0.0,
+            :register_value => 3028.05,
             :type => "meter_reading",
             "1-0:1.8.0" => 3028.05,
-            "1-0:2.8.0" => 3028.05
+            "1-0:2.8.0" => 0.0
           }
         ]
       },
