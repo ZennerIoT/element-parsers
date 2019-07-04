@@ -78,6 +78,57 @@ defmodule Parser do
         []
     end
   end
+
+  # Parsing message wit protocol type 0x02
+  def parse(<<
+      0x02,
+      manufacturer_id::integer-little-16,
+      meter::bytes-4,
+      medium_code::8,
+      state::bytes-1,
+      actuality_minutes::integer-little-16,
+      vif::8,
+      volume::integer-little-32,
+      additional_functions::bytes-1,
+      battery::bytes-1,
+      _checksum::bytes
+    >>, meta) do
+
+    with {:ok, medium} <- medium(medium_code),
+         {:ok, obis} <- obis_code(medium),
+         {:ok, vif_factor} <- vif_factor_type_2(vif) do
+
+      %{
+        protocol_type: 2,
+        manufacturer_id: manufacturer_id,
+        meter_id: meter_id(meter),
+        medium: medium,
+        obis: obis,
+      }
+      |> Map.merge(state_to_flags_type_2(state))
+      |> Map.merge(battery(battery))
+      |> Map.merge(additional_functions(additional_functions))
+      |> case do
+        %{error: 1} = reading ->
+          # There was a error on the device, value is INVALID and not added.
+          reading
+        reading ->
+          reading = Map.merge(reading, %{
+            :volume => round_as_float(volume * vif_factor),
+            obis => round_as_float(volume * vif_factor),
+          })
+
+          # Need to redate reading if it was recorded in the past.
+          measured_at = Timex.shift(meta[:transceived_at], minutes: actuality_minutes * -1)
+          [{reading, [measured_at: measured_at]}] ++ build_missing(reading, measured_at, meta)
+      end
+
+    else
+      error ->
+        Logger.error("Problem parsing: #{inspect error}")
+        []
+    end
+  end
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
     []
@@ -101,6 +152,32 @@ defmodule Parser do
   defp vif_factor(0x13), do: {:ok, 1000}
   defp vif_factor(_), do: {:error, :unknown_vif}
 
+
+  defp vif_factor_type_2(0x10), do: {:error, :unspecified_vif}
+  defp vif_factor_type_2(0x11), do: {:error, :unspecified_vif}
+  defp vif_factor_type_2(0x12), do: {:error, :unspecified_vif}
+  defp vif_factor_type_2(0x13), do: {:ok, 0.001}
+  defp vif_factor_type_2(0x14), do: {:ok, 0.01}
+  defp vif_factor_type_2(0x15), do: {:ok, 0.1}
+  defp vif_factor_type_2(0x16), do: {:ok, 1}
+  defp vif_factor_type_2(0x17), do: {:ok, 10}
+  defp vif_factor_type_2(_), do: {:error, :out_of_range_vif}
+
+
+  @doc """
+  This function will reverse an 4 byte long binary, encodes it as a String, finally converted to an integer.
+
+  E.g.: <<0x13, 0x07, 0x16, 0x20>> -> 20160713
+
+  Be aware, that a non only numbered hex binary causes the String to integer conversion to fail with:
+  (ArgumentError) argument error
+    :erlang.binary_to_integer
+
+    ---
+  ICO refactoring
+  Decoding a hex binary from little endian to integer(value)
+  :binary.decode_unsigned(meter, :little)
+  """
   defp meter_id(<<a, b, c, d>>), do: <<d, c, b, a>> |> Base.encode16() |> String.to_integer
 
   defp state_to_flags(<<_::1, broken_comm::1, no_comm::1, error_flag::1, _::1, battery::1, _::1, _::1>>) do
@@ -116,6 +193,23 @@ defmodule Parser do
     )
   end
 
+  defp state_to_flags_type_2(<<0x00>>), do: %{} # no error
+  defp state_to_flags_type_2(<<0x04>>), do: %{battery_low: 1}
+  defp state_to_flags_type_2(<<0x30>>), do: %{communication_error_1: 1}
+  defp state_to_flags_type_2(<<0x50>>), do: %{communication_error_2: 1}
+  defp state_to_flags_type_2(<<0x90>>), do: %{communication_error_3: 1}
+  defp state_to_flags_type_2(<<0x34>>), do: %{battery_low: 1, communication_error_1: 1}
+  defp state_to_flags_type_2(<<0x54>>), do: %{battery_low: 1, communication_error_2: 1}
+  defp state_to_flags_type_2(<<0x94>>), do: %{battery_low: 1, communication_error_3: 1}
+  defp state_to_flags_type_2(<<_::6, application_errors::2>> = state) do
+    case application_errors do
+      0b01 -> %{error: 1, error_message: "application_error: application busy, state: #{inspect state}"}
+      0b10 -> %{error: 1, error_message: "application_error: any application error, state: #{inspect state}"}
+      _    -> %{} # 0b011: reserved, 0b00: no error
+    end
+  end
+
+
   defp battery(<<battery_lifetime_semester::5, _lorawan_link_check::1, _::2>>) do
     %{
       battery_lifetime_semester: battery_lifetime_semester,
@@ -123,9 +217,9 @@ defmodule Parser do
     }
   end
 
-  defp additional_functions(<<no_usage::1, backflow::1, battery_low::1, _::1, broken_pipe::1, _::1, continous_flow::1, _::1>>) do
+  defp additional_functions(<<no_usage::1, backflow::1, battery_low::1, _::1, broken_pipe::1, _::1, continuous_flow::1, _::1>>) do
     %{
-      continous_flow: continous_flow,
+      continuous_flow: continuous_flow,
       broken_pipe: broken_pipe,
       battery_low: battery_low,
       backflow: backflow,
@@ -225,6 +319,153 @@ defmodule Parser do
     [
       {
         :parse_hex,
+        String.replace("02 E61E 13071620 07 02 C801 17 F8030000 00 E8 7473", " ", ""),
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z")
+        },
+            %{
+              :backflow => 0,
+              :battery_lifetime_semester => 29,
+              :battery_low => 0,
+              :battery_percent => 93,
+              :broken_pipe => 0,
+              :continuous_flow => 0,
+              :error => 1,
+              :error_message => "application_error: any application error, state: <<2>>",
+              :manufacturer_id => 7910,
+              :medium => :water,
+              :meter_id => 20160713,
+              :no_usage => 0,
+              :obis => "8-0:1.0.0",
+              :protocol_type => 2
+            }
+      },{
+        :parse_hex,
+        String.replace("02 E61E 13071620 07 01 C801 17 F8030000 00 E8 7473", " ", ""),
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z")
+        },
+            %{
+              :backflow => 0,
+              :battery_lifetime_semester => 29,
+              :battery_low => 0,
+              :battery_percent => 93,
+              :broken_pipe => 0,
+              :continuous_flow => 0,
+              :error => 1,
+              :error_message => "application_error: application busy, state: <<1>>",
+              :manufacturer_id => 7910,
+              :medium => :water,
+              :meter_id => 20160713,
+              :no_usage => 0,
+              :obis => "8-0:1.0.0",
+              :protocol_type => 2
+            }
+      },{
+        :parse_hex,
+        String.replace("02 E61E 13071620 07 00 C801 AA F8030000 00 E8 7473", " ", ""),
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z")
+        },
+        [] # [error] Problem parsing: {:error, :out_of_range_vif}
+      },{
+        :parse_hex,
+        String.replace("02 E61E 13071620 07 00 C801 10 F8030000 00 E8 7473", " ", ""),
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z")
+        },
+        [] # [error] Problem parsing: {:error, :unspecified_vif}
+      },{
+        :parse_hex,
+        String.replace("02 E61E 13071620 07 00 C801 17 F8030000 00 E8 7473", " ", ""),
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z")
+        },
+        [
+          {
+            %{
+              :backflow => 0,
+              :battery_lifetime_semester => 29,
+              :battery_low => 0,
+              :battery_percent => 93,
+              :broken_pipe => 0,
+              :continuous_flow => 0,
+              :manufacturer_id => 7910,
+              :medium => :water,
+              :meter_id => 20160713,
+              :no_usage => 0,
+              :obis => "8-0:1.0.0",
+              :protocol_type => 2,
+              :volume => 10160.0,
+              "8-0:1.0.0" => 10160.0
+            },
+            [
+              measured_at: test_datetime("2019-01-01 04:58:56Z"),
+            ]
+          }
+        ]
+      },{
+        :parse_hex,
+        String.replace("02 E61E 13071620 07 00 C801 14 F8030000 00 E8 7473", " ", ""),
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z")
+        },
+        [
+          {
+            %{
+              :backflow => 0,
+              :battery_lifetime_semester => 29,
+              :battery_low => 0,
+              :battery_percent => 93,
+              :broken_pipe => 0,
+              :continuous_flow => 0,
+              :manufacturer_id => 7910,
+              :medium => :water,
+              :meter_id => 20160713,
+              :no_usage => 0,
+              :obis => "8-0:1.0.0",
+              :protocol_type => 2,
+              :volume => 10.16,
+              "8-0:1.0.0" => 10.16
+            },
+            [
+              measured_at: test_datetime("2019-01-01 04:58:56Z"),
+            ]
+          }
+        ]
+      },
+      {
+        :parse_hex,
+        String.replace("02 E61E 13071620 07 00 C801 13 F8030000 00 E8 7473", " ", ""),
+        %{
+          transceived_at: test_datetime("2019-01-01T12:34:56Z")
+        },
+        [
+          {
+            %{
+              :backflow => 0,
+              :battery_lifetime_semester => 29,
+              :battery_low => 0,
+              :battery_percent => 93,
+              :broken_pipe => 0,
+              :continuous_flow => 0,
+              :manufacturer_id => 7910,
+              :medium => :water,
+              :meter_id => 20160713,
+              :no_usage => 0,
+              :obis => "8-0:1.0.0",
+              :protocol_type => 2,
+              :volume => 1.016,
+              "8-0:1.0.0" => 1.016
+            },
+            [
+              measured_at: test_datetime("2019-01-01 04:58:56Z"),
+            ]
+          }
+        ]
+      },
+      {
+        :parse_hex,
         String.replace("01 E61E 13071620 07 00 C801 13 F8030000 00 E8 7473", " ", ""),
         %{
           transceived_at: test_datetime("2019-01-01T12:34:56Z")
@@ -237,7 +478,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 93,
               :broken_pipe => 0,
-              :continous_flow => 0,
+              :continuous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :water,
               :meter_id => 20160713,
@@ -271,7 +512,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 93,
               :broken_pipe => 0,
-              :continous_flow => 0,
+              :continuous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :water,
               :meter_id => 20160713,
@@ -323,7 +564,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 83,
               :broken_pipe => 0,
-              :continous_flow => 0,
+              :continuous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :gas,
               :meter_id => 21063118,
@@ -357,7 +598,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 83,
               :broken_pipe => 0,
-              :continous_flow => 0,
+              :continuous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :gas,
               :meter_id => 21063118,
