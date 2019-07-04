@@ -11,6 +11,7 @@ defmodule Parser do
   #   2018-04-18 [as]: Initial version.
   #   2018-08-08 [jb]: Parsing battery and additional function.
   #   2019-05-16 [jb]: Removed/changed fields (meter_id, manufacturer_id, state). Added interpolation feature. Added obis codes.
+  #   2019-07-04 [ab]: Added support for Type 0x02. Added documentation, also on possible BCD parsing issue. Spelling of continuous fixed. Added additional tests.
   #
 
 
@@ -79,7 +80,7 @@ defmodule Parser do
     end
   end
 
-  # Parsing message wit protocol type 0x02
+  # Parsing message with protocol type 0x02
   def parse(<<
       0x02,
       manufacturer_id::integer-little-16,
@@ -153,6 +154,16 @@ defmodule Parser do
   defp vif_factor(_), do: {:error, :unknown_vif}
 
 
+  @doc """
+  Type 0x02 describes a range of (0x10 - 0x17) for the VIF(Value Information Field) factor
+  Provided documentation specifies values for range of (0x13 - 0x17)
+
+  Ranges -> values:
+  0x10 - 0x12 -> :unspecified_vif
+  0x13 - 0x17 -> values according to documentation
+  0x01 - 0x09 -> :out_of_range_vif
+  0x18 - 0xFF -> :out_of_range_vif
+  """
   defp vif_factor_type_2(0x10), do: {:error, :unspecified_vif}
   defp vif_factor_type_2(0x11), do: {:error, :unspecified_vif}
   defp vif_factor_type_2(0x12), do: {:error, :unspecified_vif}
@@ -193,6 +204,17 @@ defmodule Parser do
     )
   end
 
+  @doc """
+  New states parsing according to type 0x02 specifications.
+
+  First 2 bits will determine errors on application level:
+  0b01 -> application_error -> error
+  0b10 -> application_error -> error
+  0b11 -> reserved          -> empty map
+  0b00 -> no error          -> empty map
+
+  Other 6 bits determine battery and communication states and are matched via hex, e.g. 0x04 -> battery_low
+  """
   defp state_to_flags_type_2(<<0x00>>), do: %{} # no error
   defp state_to_flags_type_2(<<0x04>>), do: %{battery_low: 1}
   defp state_to_flags_type_2(<<0x30>>), do: %{communication_error_1: 1}
