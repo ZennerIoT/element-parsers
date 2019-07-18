@@ -1,6 +1,7 @@
 defmodule Parser do
 
   use Platform.Parsing.Behaviour
+  require Logger
 
   # Parser for Elvaco CMi4110 devices according to "CMi4110 User's Manual English.pdf"
   #
