@@ -12,6 +12,7 @@ defmodule Parser do
   #   2019-05-13 [jb]: Added interpolation feature. Added registers with full OBIS codes.
   #   2019-05-14 [jb]: Rounding all values as float to a precision of 3 decimals.
   #   2019-07-15 [jb]: Fixing interpolation for changes between measurements in a packet.
+  #   2019-07-23 [jb]: Skipping negative values by default.
 
 
   #----- Configuration
@@ -39,6 +40,10 @@ defmodule Parser do
   # Name of timezone.
   # Default: "Europe/Berlin"
   def timezone(), do: "Europe/Berlin"
+
+  # Skip negative values
+  # Default: true
+  def skip_negative_values?(), do: true
 
 
   #----- Implementation
@@ -179,6 +184,7 @@ defmodule Parser do
             unit,
             Timex.shift(meta[:transceived_at], minutes: -1 * interval_minutes() * 3)
           )
+       |> skip_negative_values()
        |> build_missing(meta)
     else
       []
@@ -218,6 +224,7 @@ defmodule Parser do
           unit,
           Timex.shift(meta[:transceived_at], minutes: -1 * interval_minutes() * 3)
         )
+      |> skip_negative_values()
       |> build_missing(meta)
     else
       []
@@ -257,6 +264,15 @@ defmodule Parser do
     []
   end
 
+  defp skip_negative_values(list) do
+    if skip_negative_values?() do
+      Enum.filter(list, fn({%{"obis" => obis} = data, _meta}) ->
+        Map.fetch!(data, obis) >= 0
+      end)
+    else
+      list
+    end
+  end
 
   defp build_missing([{%{"obis" => obis, "unit" => unit}, _current_meta} | _] = current_readings, meta) do
     if interpolate?() do
@@ -317,7 +333,11 @@ defmodule Parser do
       current_readings
     end
   end
-  defp build_missing(current_readings, _last_reading_query) do
+  defp build_missing([], _meta) do
+    # Allow empty current_readings
+    []
+  end
+  defp build_missing(current_readings, _meta) do
     Logger.warn("Could not build_missing() because of invalid current_readings")
     current_readings
   end
@@ -577,6 +597,46 @@ defmodule Parser do
 
           {%{server_id: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
           {%{battery: 90}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]}
+        ]
+      },
+
+
+      # Nachricht mit schlagartig hohem Wert, bei dem jedoch keine negativen werte rauskommen sollen.
+      {
+        :parse_hex,
+        "004A9511030A01484C590200009E1601B91100000001000000010000000100000001FFFFF3CBFFFFF3CBFFFFF3CBFFFFF3CB0175000000000000000000000000000000000000000000000000000000000000000000",
+        %{
+          meta: %{frame_port: 3},
+          transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _last_reading_map: %{},
+        },
+        [
+          {%{
+            "1-0:1.8.0" => 0.001,
+            "1_8_0" => 0.001,
+            "obis" => "1-0:1.8.0",
+            "unit" => "kWh"
+          }, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+          {%{
+            "1-0:1.8.0" => 0.001,
+            "1_8_0" => 0.001,
+            "obis" => "1-0:1.8.0",
+            "unit" => "kWh"
+          }, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
+          {%{
+            "1-0:1.8.0" => 0.001,
+            "1_8_0" => 0.001,
+            "obis" => "1-0:1.8.0",
+            "unit" => "kWh"
+          }, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
+          {%{
+            "1-0:1.8.0" => 0.001,
+            "1_8_0" => 0.001,
+            "obis" => "1-0:1.8.0",
+          "unit" => "kWh"
+          }, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
+          {%{server_id: "0A01484C590200009E16"}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+          {%{battery: 100}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]}
         ]
       },
     ]
