@@ -15,6 +15,7 @@ defmodule Parser do
   #   2019-05-14 [jb]: Added full obis code if available. Added interpolation feature.
   #   2019-05-15 [jb]: Rounding all values as float to a precision of 3 decimals.
   #   2019-06-21 [jb]: Added handling of a-plus-a-minus with register2_value field.
+  #   2019-07-31 [jb]: Added :obis_value key for first register value, supporting MSCONS rule.
 
   # Configuration
 
@@ -116,12 +117,14 @@ defmodule Parser do
         reading
         |> Map.put(:register_value, round_as_float(register_value / 100))
         |> add_obis(medium, qualifier, 1, round_as_float(register_value / 100))
+        |> Map.put(:obis_value, round_as_float(register_value / 100))
         |> add_power_from_last_reading(meta, :register_value, :power)
 
       <<register_value::32-little, register2_value::32-little>> ->
         reading
         |> Map.put(:register_value, round_as_float(register_value / 100))
         |> add_obis(medium, qualifier, 1, round_as_float(register_value / 100))
+        |> Map.put(:obis_value, round_as_float(register_value / 100))
         |> add_power_from_last_reading(meta, :register_value, :power)
 
         |> Map.put(:register2_value, round_as_float(register2_value / 100))
@@ -144,6 +147,7 @@ defmodule Parser do
         |> add_power_from_last_reading(meta, :register_value, :power)
         |> add_power_from_last_reading(meta, :register2_value, :power2)
         |> add_obis(medium, qualifier, 1, value)
+        |> Map.put(:obis_value, value)
         |> add_obis(medium, qualifier, 2, value2)
 
         [reading]
@@ -474,7 +478,8 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 0.13,
             :type => "meter_reading",
-            "1-0:1.8.0" => 0.13
+            "1-0:1.8.0" => 0.13,
+            :obis_value => 0.13
           }
         ],
       },
@@ -519,7 +524,8 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 9.52,
             :type => "meter_reading",
-            "1-0:1.8.0" => 9.52
+            "1-0:1.8.0" => 9.52,
+            :obis_value => 9.52
           },
           {
             %{
@@ -574,6 +580,7 @@ defmodule Parser do
             :timestamp_unix => 1263512103,
             :type => "meter_reading",
             "1-0:1.8.0" => 3.87,
+            :obis_value => 3.87,
             "1-0:2.8.0" => 0.0
           }
         ],
@@ -599,6 +606,7 @@ defmodule Parser do
             :timestamp_unix => 1263511214,
             :type => "meter_reading",
             "1-0:1.8.0" => 3.87,
+            :obis_value => 3.87,
             "1-0:2.8.0" => 0.0
           }
         ]
@@ -656,6 +664,7 @@ defmodule Parser do
             :register_value => 3028.05,
             :type => "meter_reading",
             "1-0:1.8.0" => 3028.05,
+            :obis_value => 3028.05,
             "1-0:2.8.0" => 0.0
           }
         ]
@@ -744,6 +753,7 @@ defmodule Parser do
             :timestamp_unix => 1263511214,
             :type => "meter_reading",
             "1-0:1.8.0" => 3.87,
+            :obis_value => 3.87,
             "1-0:2.8.0" => 0.0
           }
         ]
@@ -773,7 +783,8 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 0.13,
             :type => "meter_reading",
-            "1-0:1.8.0" => 0.13
+            "1-0:1.8.0" => 0.13,
+            :obis_value => 0.13
           },
           {%{
             :medium => "electricity_kwh",
@@ -829,6 +840,7 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 9.52,
             :type => "meter_reading",
+            :obis_value => 9.52,
             "1-0:1.8.0" => 9.52
           },
           {%{
@@ -887,6 +899,7 @@ defmodule Parser do
           :qualifier => "a-plus-a-minus",
           :register2_value => 0.0,
           :register_value => 3.87,
+          :obis_value => 3.87,
           :timestamp => test_datetime("2010-01-14 23:35:03Z"),
           :timestamp_unix => 1263512103,
           :type => "meter_reading",
