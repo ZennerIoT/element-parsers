@@ -520,7 +520,7 @@ defmodule Parser do
             :header_version => 1,
             :medium => "electricity_kwh",
             :meter_id => 33003312,
-            :power => 0.002,
+            :power => 0.001,
             :qualifier => "a-plus",
             :register_value => 9.52,
             :type => "meter_reading",
