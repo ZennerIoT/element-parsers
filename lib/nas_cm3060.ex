@@ -92,6 +92,40 @@ defmodule Parser do
   defp reset_reason(0x32), do: :user_dfu
   defp reset_reason(_), do: :unknown
 
+  def fields() do
+    [
+      %{
+        "field" => "type",
+        "display" => "Messagetype",
+      },
+      %{
+        "field" => "medium_type",
+        "display" => "Mediumtype",
+      },
+      %{
+        "field" => "temperature",
+        "display" => "Temperatur",
+        "unit" => "°C"
+      },
+      %{
+        "field" => "usage_mode",
+        "display" => "Verbrauchsart",
+      },
+      %{
+        "field" => "usage_counter",
+        "display" => "Verbrauch",
+      },
+      %{
+        "field" => "alert",
+        "display" => "Alarm",
+      },
+      %{
+        "field" => "alert_counter",
+        "display" => "Alarmcounter",
+      },
+    ]
+  end
+
   def tests() do
     [
       {
