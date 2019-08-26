@@ -90,7 +90,7 @@ defmodule Parser do
   defp reset_reason(0x20), do: :hardware_error
   defp reset_reason(0x31), do: :user_magnet
   defp reset_reason(0x32), do: :user_dfu
-  defp reset_reason(_), do: :unknown
+  defp reset_reason(reason), do: "unknown_#{reason}"
 
   def fields() do
     [
