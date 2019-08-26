@@ -67,6 +67,7 @@ defmodule TestParser do
   end
   defp run_tests({parser_module, tests}, _file) do
     Enum.map(tests, fn({:parse_hex = test_type, payload_hex, meta, expected_result}) ->
+      payload_hex = String.replace(payload_hex, " ", "")
       payload_binary = Base.decode16!(payload_hex, case: :mixed)
       actual_result = apply(parser_module, :parse, [payload_binary, meta])
 
