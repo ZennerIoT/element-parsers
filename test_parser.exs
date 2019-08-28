@@ -66,23 +66,30 @@ defmodule TestParser do
     []
   end
   defp run_tests({parser_module, tests}, _file) do
-    Enum.map(tests, fn({:parse_hex = test_type, payload_hex, meta, expected_result}) ->
-      payload_hex = String.replace(payload_hex, " ", "")
-      payload_binary = Base.decode16!(payload_hex, case: :mixed)
-      actual_result = apply(parser_module, :parse, [payload_binary, meta])
+    Enum.map(tests, fn
+      ({:parse_hex = test_type, payload_hex, meta, expected_result}) ->
+        payload_hex = String.replace(payload_hex, " ", "")
+        payload_binary = Base.decode16!(payload_hex, case: :mixed)
+        actual_result = apply(parser_module, :parse, [payload_binary, meta])
+        compare_results(actual_result, expected_result, test_type, payload_hex)
 
-      case actual_result do
-        ^expected_result ->
-          success("[#{test_type}] Test payload #{inspect payload_hex} matches expected_result")
-          :ok
-        _ ->
-          error("[#{test_type}] Test payload #{inspect payload_hex} DID NOT MATCH expected_result")
-          IO.inspect(expected_result, label: "EXPECTED")
-          IO.inspect(actual_result, label: "ACTUAL")
-          :error
-      end
+      ({:parse = test_type, payload, meta, expected_result}) ->
+        actual_result = apply(parser_module, :parse, [payload, meta])
+        compare_results(actual_result, expected_result, test_type, payload |> inspect |> String.slice(0, 50))
     end)
   end
+
+  def compare_results(actual_result, expected_result, test_type, payload) when actual_result == expected_result do
+    success("[#{test_type}] Test payload #{inspect payload} matches expected_result")
+    :ok
+  end
+  def compare_results(actual_result, expected_result, test_type, payload) do
+    error("[#{test_type}] Test payload #{inspect payload} DID NOT MATCH expected_result")
+    IO.inspect(expected_result, label: "EXPECTED")
+    IO.inspect(actual_result, label: "ACTUAL")
+    :error
+  end
+
 
   defp exit_program(results) do
     if Enum.member?(results, :error) do
