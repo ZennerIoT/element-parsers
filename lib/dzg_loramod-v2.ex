@@ -16,6 +16,7 @@ defmodule Parser do
   #   2019-05-15 [jb]: Rounding all values as float to a precision of 3 decimals.
   #   2019-06-21 [jb]: Added handling of a-plus-a-minus with register2_value field.
   #   2019-07-31 [jb]: Added :obis_value key for first register value, supporting MSCONS rule.
+  #   2019-08-28 [jb]: Added missing :obis_value key in message format v2.
 
   # Configuration
 
@@ -281,6 +282,7 @@ defmodule Parser do
     |> Map.put(:timestamp, DateTime.from_unix!(timestamp))
     |> add_power_from_last_reading(meta, :register_value, :power)
     |> add_obis(medium, qualifier, 1, value)
+    |> Map.put(:obis_value, value)
 
     [reading] ++ build_missing(reading, :register_value, meta, %{medium: medium, qualifier: qualifier, register_index: 1})
   end
@@ -970,6 +972,30 @@ defmodule Parser do
           :type => "meter_reading",
           "1-0:2.8.0" => 0.0
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]}
+        ]
+      },
+
+      # MeterReading Message with header v2
+      {
+        :parse_hex,
+        "0001A281293700D91C4D4BFC290100EF1B4D4BFA290100451B4D4BF8290100",
+        %{
+          meta: %{frame_port: 8},
+          transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+        },
+        [
+          %{
+            :header_version => 2,
+            :medium => "electricity_kwh",
+            :meter_id => 3615105,
+            :obis_value => 762.84,
+            :qualifier => "a-plus",
+            :register_value => 762.84,
+            :timestamp => test_datetime("2010-01-13 01:07:37Z"),
+            :timestamp_unix => 1263344857,
+            :type => "meter_reading",
+            "1-0:1.8.0" => 762.84
+          }
         ]
       },
     ]
