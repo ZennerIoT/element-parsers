@@ -2,7 +2,7 @@
 # Test if all files in lib/ are linked correctly in README.md
 
 
-parser_files = Path.wildcard("lib/**")
+parser_files = Path.wildcard("lib/**.ex")
 
 readme_content = File.read!("README.md")
 
