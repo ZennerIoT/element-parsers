@@ -11,7 +11,7 @@ defmodule Parser do
   #   2018-04-18 [as]: Initial version.
   #   2018-08-08 [jb]: Parsing battery and additional function.
   #   2019-05-16 [jb]: Removed/changed fields (meter_id, manufacturer_id, state). Added interpolation feature. Added obis codes.
-  #   2019-07-04 [ab]: Added support for Type 0x02. Added documentation, also on possible BCD parsing issue. Spelling of continuous fixed. Added additional tests.
+  #   2019-07-04 [ab]: Added support for message type 0x02.
   #
 
 
@@ -154,16 +154,14 @@ defmodule Parser do
   defp vif_factor(_), do: {:error, :unknown_vif}
 
 
-  @doc """
-  Type 0x02 describes a range of (0x10 - 0x17) for the VIF(Value Information Field) factor
-  Provided documentation specifies values for range of (0x13 - 0x17)
-
-  Ranges -> values:
-  0x10 - 0x12 -> :unspecified_vif
-  0x13 - 0x17 -> values according to documentation
-  0x01 - 0x09 -> :out_of_range_vif
-  0x18 - 0xFF -> :out_of_range_vif
-  """
+  # Type 0x02 describes a range of (0x10 - 0x17) for the VIF(Value Information Field) factor
+  # Provided documentation specifies values for range of (0x13 - 0x17)
+  #
+  # Ranges -> values:
+  # 0x10 - 0x12 -> :unspecified_vif
+  # 0x13 - 0x17 -> values according to documentation
+  # 0x01 - 0x09 -> :out_of_range_vif
+  # 0x18 - 0xFF -> :out_of_range_vif
   defp vif_factor_type_2(0x10), do: {:error, :unspecified_vif}
   defp vif_factor_type_2(0x11), do: {:error, :unspecified_vif}
   defp vif_factor_type_2(0x12), do: {:error, :unspecified_vif}
@@ -175,20 +173,18 @@ defmodule Parser do
   defp vif_factor_type_2(_), do: {:error, :out_of_range_vif}
 
 
-  @doc """
-  This function will reverse an 4 byte long binary, encodes it as a String, finally converted to an integer.
-
-  E.g.: <<0x13, 0x07, 0x16, 0x20>> -> 20160713
-
-  Be aware, that a non only numbered hex binary causes the String to integer conversion to fail with:
-  (ArgumentError) argument error
-    :erlang.binary_to_integer
-
-    ---
-  ICO refactoring
-  Decoding a hex binary from little endian to integer(value)
-  :binary.decode_unsigned(meter, :little)
-  """
+  # This function will reverse an 4 byte long binary, encodes it as a String, finally converted to an integer.
+  #
+  # E.g.: <<0x13, 0x07, 0x16, 0x20>> -> 20160713
+  #
+  # Be aware, that a non only numbered hex binary causes the String to integer conversion to fail with:
+  # (ArgumentError) argument error
+  #   :erlang.binary_to_integer
+  #
+  # ---
+  # ICO refactoring
+  # Decoding a hex binary from little endian to integer(value)
+  # :binary.decode_unsigned(meter, :little)
   defp meter_id(<<a, b, c, d>>), do: <<d, c, b, a>> |> Base.encode16() |> String.to_integer
 
   defp state_to_flags(<<_::1, broken_comm::1, no_comm::1, error_flag::1, _::1, battery::1, _::1, _::1>>) do
@@ -204,17 +200,16 @@ defmodule Parser do
     )
   end
 
-  @doc """
-  New states parsing according to type 0x02 specifications.
-
-  First 2 bits will determine errors on application level:
-  0b01 -> application_error -> error
-  0b10 -> application_error -> error
-  0b11 -> reserved          -> empty map
-  0b00 -> no error          -> empty map
-
-  Other 6 bits determine battery and communication states and are matched via hex, e.g. 0x04 -> battery_low
-  """
+  # New states parsing according to type 0x02 specifications.
+  #
+  # First 2 bits will determine errors on application level:
+  # 0b01 -> application_error -> error
+  # 0b10 -> application_error -> error
+  # 0b11 -> reserved          -> empty map
+  # 0b00 -> no error          -> empty map
+  #
+  # Other 6 bits determine battery and communication states and are matched via hex, e.g. 0x04 -> battery_low
+  #
   defp state_to_flags_type_2(<<0x00>>), do: %{} # no error
   defp state_to_flags_type_2(<<0x04>>), do: %{battery_low: 1}
   defp state_to_flags_type_2(<<0x30>>), do: %{communication_error_1: 1}
@@ -239,9 +234,9 @@ defmodule Parser do
     }
   end
 
-  defp additional_functions(<<no_usage::1, backflow::1, battery_low::1, _::1, broken_pipe::1, _::1, continuous_flow::1, _::1>>) do
+  defp additional_functions(<<no_usage::1, backflow::1, battery_low::1, _::1, broken_pipe::1, _::1, continous_flow::1, _::1>>) do
     %{
-      continuous_flow: continuous_flow,
+      continous_flow: continous_flow,
       broken_pipe: broken_pipe,
       battery_low: battery_low,
       backflow: backflow,
@@ -351,7 +346,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 93,
               :broken_pipe => 0,
-              :continuous_flow => 0,
+              :continous_flow => 0,
               :error => 1,
               :error_message => "application_error: any application error, state: <<2>>",
               :manufacturer_id => 7910,
@@ -373,7 +368,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 93,
               :broken_pipe => 0,
-              :continuous_flow => 0,
+              :continous_flow => 0,
               :error => 1,
               :error_message => "application_error: application busy, state: <<1>>",
               :manufacturer_id => 7910,
@@ -411,7 +406,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 93,
               :broken_pipe => 0,
-              :continuous_flow => 0,
+              :continous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :water,
               :meter_id => 20160713,
@@ -440,7 +435,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 93,
               :broken_pipe => 0,
-              :continuous_flow => 0,
+              :continous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :water,
               :meter_id => 20160713,
@@ -470,7 +465,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 93,
               :broken_pipe => 0,
-              :continuous_flow => 0,
+              :continous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :water,
               :meter_id => 20160713,
@@ -500,7 +495,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 93,
               :broken_pipe => 0,
-              :continuous_flow => 0,
+              :continous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :water,
               :meter_id => 20160713,
@@ -534,7 +529,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 93,
               :broken_pipe => 0,
-              :continuous_flow => 0,
+              :continous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :water,
               :meter_id => 20160713,
@@ -586,7 +581,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 83,
               :broken_pipe => 0,
-              :continuous_flow => 0,
+              :continous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :gas,
               :meter_id => 21063118,
@@ -620,7 +615,7 @@ defmodule Parser do
               :battery_low => 0,
               :battery_percent => 83,
               :broken_pipe => 0,
-              :continuous_flow => 0,
+              :continous_flow => 0,
               :manufacturer_id => 7910,
               :medium => :gas,
               :meter_id => 21063118,
