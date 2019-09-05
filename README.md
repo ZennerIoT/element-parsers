@@ -18,6 +18,7 @@ Variable Length | [lib/example_variable_part.ex](lib/example_variable_part.ex)
 Reading profile data | [lib/example_profile_read.ex](lib/example_profile_read.ex)
 Writing profile data | [lib/example_profile_write.ex](lib/example_profile_write.ex)
 Parsing IEEE754 | [lib/example_ieee754.ex](lib/example_ieee754.ex)
+Dummy data | [lib/dummy.ex](lib/dummy.ex)
 
 
 ## Public Parsers for LoRaWAN Devices
