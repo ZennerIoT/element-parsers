@@ -1,9 +1,15 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for Sensing Labs "SenLab LED"
   # Works for electricity meters with 1000 pulses/kWh. If needed replace '1000' in kWh calculation to your needs
-  
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
+
   def parse(<<0x02, battery, rest::binary>>, _meta) do
 
     # Calculate how long the variable length is. We expect 4 bytes (32bit) behind the variable part.
@@ -17,6 +23,10 @@ defmodule Parser do
       number: number,
       kWh: trunc(number/1000), # if wanted, trunc can be replaced with Float.round(number,x), where x defines the decimals
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def tests() do

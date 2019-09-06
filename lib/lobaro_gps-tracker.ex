@@ -1,11 +1,16 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for Lobaro LoRaWAN GPS Tracker v5.0
   # According to documentation provided by Lobaro
   # Link: https://www.lobaro.com/portfolio/lorawan-gps-tracker/
   # Documentation: https://www.lobaro.com/download/7315/
-
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
   # parsing packet if GPS fix available
   def parse(<<type::big-8, temp::big-16, vbat::big-16, lat_deg::big-8, lat_min::big-8, lat_10000::big-16, long_deg::big-8, long_min::big-8, long_10000::big-16, 0x01, sat_cnt::8>>, _meta) do
@@ -50,6 +55,11 @@ defmodule Parser do
       sat_cnt: sat_cnt, # received Sattelites 
       position: "no GPS fix"
       }
-    
   end
+
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
+  end
+
 end

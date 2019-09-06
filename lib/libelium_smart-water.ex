@@ -1,11 +1,17 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for Libelium Smart Environment Device
   # According to documentation provided by Libelium
   # Link: http://www.libelium.com/development/plug-sense
   # Documentation: http://www.libelium.com/downloads/documentation/waspmote_plug_and_sense_technical_guide.pdf
   # sensors used (Libelium reference numbers): 9328, 9327, 9326, 9329, 9255-P
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
   def parse(<<temp::big-16, opr::big-16, ph::big-16, disox::big-16, conduct::big-16, power::big-16>>, _meta) do
 
@@ -18,6 +24,10 @@ defmodule Parser do
       conduct: conduct, # Conductivity in µS/cm
       power: power      # Battery level in %
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def fields do

@@ -7,6 +7,7 @@ defmodule Parser do
   #
   # Changelog:
   #   2019-05-13 [as]: Initial implementation according to "Yabby_LoRaWAN_Integration_1.3.pdf", provided by ZENNER Connect
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
   def parse(<<latitude::signed-little-32, longitude::signed-little-32, _rfu::5, down::1, failed::1, in_trip::1, speed::little-5, heading::little-3, battery::little-8>>, %{meta: %{frame_port: 1}}) do

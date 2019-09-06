@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for SensoNeo Single Sensor
   # According to documentation provided by Sensoneo
@@ -9,9 +10,8 @@ defmodule Parser do
   # Changelog
   #   2018-09-13 [as]: Initial version.
   #   2018-09-17 [as]: fixed position value, was switched
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
-
-
 
   def parse(<<_uprefix::16, v::binary-4, _tprefix::8, t::binary-3, _dprefix::8, d::binary-3, _pprefix::8, p::binary-1, _rest::binary>>, _meta) do
     voltage = String.to_float(v)
@@ -30,6 +30,10 @@ defmodule Parser do
       distance: distance,
       position: position
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def fields do
