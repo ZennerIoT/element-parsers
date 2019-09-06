@@ -1,6 +1,12 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
 
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
+
   def parse(<<_code::8, status::8, _type::8, meter_value1::little-32, _type2::8, meter_value2::little-32>>, _meta) do
     << _fcnt::4, err::4 >> = << status::8 >>
 
@@ -18,6 +24,10 @@ defmodule Parser do
       error: error
     }
 
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
 

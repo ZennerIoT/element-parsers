@@ -7,6 +7,11 @@ defmodule Parser do
   # Documentation: https://www.adeunis.com/wp-content/uploads/2017/08/TEMP_LoRaWAN_UG_V2.0.0_FR_EN.pdf
   # Test hex payload: "43A2D1015E82FF06"
   # Only parse "data frames" when first byte is "0x43"
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
   def parse(<<67, _status::8, internal_identifier::8, internal_value::signed-16, external_identifier::8, external_value::signed-16>>, _meta) do
   << _internal_register::4, internal_status::4 >> = << internal_identifier::8 >>
@@ -30,6 +35,10 @@ defmodule Parser do
       external_sensor: external_sensor,
       external_temp: external_value/10,
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   # defining fields for visualisation

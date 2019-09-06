@@ -6,9 +6,15 @@ defmodule Parser do
   # According to documentation provided by Adeunis
   # Link: https://www.adeunis.com/en/produit/ftd-868-915-2/
   # Documentation: https://www.adeunis.com/wp-content/uploads/2017/08/FTD_LoRaWAN_EU863-870_UG_FR_GB_V1.2.1.pdf
-
-  # Changelog 18-09-03: AS: added fields for export functionality
-  # Changelog 18-09-20: JB: Completed fields definition; Added field "gps_reception_scale_name"
+  #
+  # Changelog 18-09-03: AS:
+  # Changelog 18-: JB:
+  #
+  # Changelog:
+  #   2018-09-03 [as]: Added fields for export functionality
+  #   2018-09-20 [jb]: Completed fields definition; Added field "gps_reception_scale_name".
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
   def parse(event, meta) do
     << status :: binary-1, rest :: binary >> = event
@@ -22,6 +28,10 @@ defmodule Parser do
       %{latitude: lat, longitude: lng} -> {data, location: {lng, lat}}
       data -> data
     end
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def parse_field([{_, false} | fields], payload, acc) do

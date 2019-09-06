@@ -5,9 +5,14 @@ defmodule Parser do
   # According to documentation provided by Adeunis
   # Link:
   # Documentation: https://www.adeunis.com/wp-content/uploads/2017/08/ANALOG_PWR_LoRaWAN_UG_V2.0.1_FR_EN.pdf
-
+  #
   # massive information provided. if some information is not needed, just comment specific frames
-
+  #
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
 
   def parse(<<code::8, status::8, payload::binary>>, _meta) do
@@ -226,4 +231,9 @@ defmodule Parser do
         }
     end
   end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
+  end
+
 end
