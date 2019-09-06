@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for Adeunis ARF8230AA
   # According to documentation provided by Adeunis

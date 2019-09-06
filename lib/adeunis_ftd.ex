@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
 
   # ELEMENT IoT Parser for Adeunis Field Test Device

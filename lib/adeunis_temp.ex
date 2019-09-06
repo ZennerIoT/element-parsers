@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for Adeunis Temperature Sensor ARF8180BA FW v2.0
   # According to documentation provided by Adeunis
