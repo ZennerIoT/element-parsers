@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # Parser for conbee HybridTag L300
   # https://www.conbee.eu/wp-content/uploads/HybridTAG-L300-Infosheet_06-18-2.pdf
@@ -7,12 +8,17 @@ defmodule Parser do
   # Changelog
   #   2018-08-23 [jb]: Initial version implemented using HybridTAG-L300-Infosheet_06-18-2.pdf
   #   2019-03-20 [jb]: Fixed "Humidity Sensor" for real payload.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
   def parse(data, %{meta: %{frame_port: 1}}) do
     data
     |> parse_packets([])
     |> map_packets
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   #----------------

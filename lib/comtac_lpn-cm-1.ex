@@ -1,10 +1,16 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for comtac LPN CM1
   # According to documentation provided ThingPark Market
   # Link: http://www.comtac.ch/de/produkte/lora/condition-monitoring/lpn-cm-1.html
   # Documentation: https://drive.google.com/file/d/0B6TBYAxODZHHa29GVWFfN0tIYjQ/view
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
   def parse(<<
               status::binary-1,
@@ -33,7 +39,9 @@ defmodule Parser do
           battery_volt: battery / 1000,
         }
   end
-
-  def parse(_, _), do: []
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
+  end
 
 end
