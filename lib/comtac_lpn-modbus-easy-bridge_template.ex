@@ -1,6 +1,6 @@
 defmodule Parser do
-
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for comtac LPN Modbus easy SW / Specification V0.08
   #
@@ -19,8 +19,8 @@ defmodule Parser do
   # ----------- ATTENTION! -----------
   #
   # Changelog
-  #
   #   2018-07-18: [jb] First implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
   def register_enabled?(name), do: [
@@ -72,6 +72,10 @@ defmodule Parser do
     {_, result} = Enum.reduce(registers, {registers_binary, %{}}, &handle_register/2)
 
     result
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   defp handle_register({register, ok}, {registers_binary, result}) do

@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for Bosch Parking Sensor
   # According to documentation provided by Bosch:
@@ -11,7 +12,8 @@ defmodule Parser do
   # 2018-11-12: [jb] Interface v2 implemented
   # 2019-02-19: [jb] Added fields
   # 2019-04-30: [gw] change order of bytes in startup message, according to FW v0.23.3
-
+  # 2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
   # 3.1.1 Parking status
   def parse(<<_reserved::7, state::1>>, %{meta: %{frame_port: 1}}) do
@@ -45,7 +47,10 @@ defmodule Parser do
   end
 
   # Catchall for reparsing
-  def parse(_, _), do: []
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
+  end
 
 
   def park_state_name(0), do: "free"

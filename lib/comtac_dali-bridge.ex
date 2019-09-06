@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # Parser for E1310 DALI Bridge
 
@@ -19,6 +20,11 @@ defmodule Parser do
   #  Bit 7: Query: Power failure (0 = No)
   #  Byte[4]: DALI-Device Versionnr (QueryVersionnr-Cmd)
   #  Byte[5]: DALI-Device Devicetype (QueryDevicetype-Cmd)
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
   def parse(<<
       _::4, #unused
@@ -56,6 +62,9 @@ defmodule Parser do
       dali_device_type: dali_device_type,
     }
   end
-  def parse(_, _), do: []
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
+  end
 
 end

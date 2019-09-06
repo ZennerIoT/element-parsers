@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for comtac LPN DI
   #
@@ -8,6 +9,7 @@ defmodule Parser do
 
   # Changelog
   #   2018-10-01/jb: Initial Version from Document E1347-LPN_DI_EN_V0.04.pdf
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
 
   def parse(<<
     21, app_main_version, app_sub_version,
@@ -43,6 +45,10 @@ defmodule Parser do
       input_variant: %{0 => :di, 1 => :s0}[input_variant],
       error_supply_24v: error_supply_24v
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   defp format_secs_change(0xFFFFFF), do: nil
