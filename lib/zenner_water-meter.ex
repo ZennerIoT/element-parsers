@@ -1,12 +1,14 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for ZENNER Water meters
   # According to documentation provided by ZENNER International
   # Link:  https://www.zenner.com
   #
   # Changelog:
-  #   2018-04-26/jb: Added fields(), tests() and value_m3
+  #   2018-04-26 [jb]: Added fields(), tests() and value_m3
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads
   #
 
   def fields() do
@@ -74,6 +76,10 @@ defmodule Parser do
       _ ->
         []
     end
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def parse_subtype(subtype, <<data :: binary-4 >>) do

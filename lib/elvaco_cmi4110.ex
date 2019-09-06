@@ -11,6 +11,7 @@ defmodule Parser do
   #   2018-03-21 [jb]: initial version
   #   2019-07-02 [gw]: update according to v1.3 of documentation by adding precise error messages.
   #   2019-07-08 [gw]: Use LibWmbus library to parse the dibs. Changes most of the field names previously defined.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
 
   # When using payload style 0, the payload is made up of DIBs on M-Bus format, excluding M-Bus header.
   def parse(<<type::8, dibs_binary::binary,>>, _meta) do
@@ -25,6 +26,10 @@ defmodule Parser do
     Enum.into(dibs, %{
       payload_style: type,
     })
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
 

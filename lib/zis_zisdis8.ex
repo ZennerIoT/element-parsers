@@ -1,9 +1,15 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for ZIS DigitalInputSurveillance 8
   # According to self developed devices
   # not commercially available
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
   def parse(event, _meta) do
     << _stat_foo::6, stat_heartbeat::1, stat_change::1, in1::integer-8, in2::integer-8,in3::integer-8,in4::integer-8,in5::integer-8,in6::integer-8,in7::integer-8,in8::integer-8>> = event
@@ -32,6 +38,10 @@ defmodule Parser do
         input7: in7,
         input8: in8
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def tests() do

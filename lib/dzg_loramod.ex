@@ -1,11 +1,13 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # Parser for DZG devices using the v1.0 LoRaWAN Frame Format from file "LoRaWAN Frame Format 1.0_181218.pdf".
   #
   # Changelog
   #   2018-xx-xx [jb]: Initial version.
   #   2019-06-20 [jb]: Added medium "heatcostallocator".
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
 
   # Test hex payload: "51BBF1BD0228000000"
   def parse(<<header::8, meterid::integer-little-32, register_value::integer-little-32>>, _meta) do
@@ -28,6 +30,10 @@ defmodule Parser do
       medium: medium_name,
       register: register_value * scaler,
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def fields do

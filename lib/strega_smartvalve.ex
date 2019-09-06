@@ -1,6 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
-
+  require Logger
 
   # ELEMENT IoT Parser for Strega Smart Valve
   # According to documentation (v3.0) provided by Strega
@@ -8,6 +8,7 @@ defmodule Parser do
   #
   # Changelog
   #   2018-09-13 [as]: Initial version.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
 
@@ -17,6 +18,10 @@ defmodule Parser do
       valvestatus: if(vt == "1" or vt == "3" , do: "open", else: "closed"),
       lidstatus: if(vt == "2" or vt == "3" , do: "open", else: "closed")
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def fields do

@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # Parser for ELSYS devices according to "Elsys-LoRa-payload_v8.pdf"
   # https://www.elsys.se/en/wp-content/uploads/sites/3/2016/09/Elsys-LoRa-payload_v8.pdf
@@ -9,6 +10,7 @@ defmodule Parser do
   #   2018-04-12 [jb]: Initial implementation, not yet all sTypes implemented
   #   2018-07-16 [as]: Added sTypes 04, 05, 06
   #   2019-02-22 [jb]: Added sTypes 03, 0F, 14. Fields and  Tests.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
 
   def parse(payload, _meta) do
     case parse_parts(payload, %{}) do
@@ -17,6 +19,10 @@ defmodule Parser do
       {:error, {parts, rest}} ->
         Map.put(parts, :unparsed_binary, Base.encode16(rest))
     end
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   # First two bits define length of optional offset

@@ -1,10 +1,16 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for Libelium Smart Parking Sensor with Firmware v3
   # According to documentation, the v3 protocol seems to be compatible with v2, but not with protocol v1.
   # Link: http://www.libelium.com/development/smart-parking/documentation/plug-sense-smart-parking-technical-guide/
   # Docs: http://www.libelium.com/downloads/documentation/smart_parking_technical_guide.pdf
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
   def parse(<<parking_slot_status::1, battery_state::1, _reserved::2, frame_type::4, frame_counter::8, rest::binary>>, _meta) do
 
@@ -22,6 +28,10 @@ defmodule Parser do
     }
 
     parse_frame_rest(frame_type, rest, data)
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   # Info Frame
