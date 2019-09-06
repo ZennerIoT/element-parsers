@@ -45,7 +45,6 @@ defmodule Parser do
       %{desc: :error_codes, value: v} = map ->
         v_as_int = String.to_integer(v)
         <<error::binary>> = Base.decode16!(v)
-        Logger.info(error)
         map
         |> Map.merge(%{:error_codes => (if v_as_int > 0, do: 1, else: 0), :error => build_error_string(error)})
         |> Map.drop([:desc, :value])
