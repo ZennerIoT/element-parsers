@@ -5,9 +5,14 @@ defmodule Parser do
   # According to documentation provided by Adeunis
   # Link: https://www.adeunis.com/en/produit/pulse-2/
   # Documentation: https://www.adeunis.com/wp-content/uploads/2017/08/PULSE_LoRaWAN_UG_V2_FR_GB.pdf
-
+  #
   # basic parser only, default configs used, no thresholds etc
   # not all alarms/errors visualized, please see documentation for further information
+  #
+  # Changelog:
+  #   2019-xx-xx [jb]: Initial implementation.
+  #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #
 
   def parse(<<code::8, status::8, payload::binary>>, _meta) do
     << _fcnt::4, err::4 >> = << status::8 >>
@@ -76,7 +81,9 @@ defmodule Parser do
     end
 
   end
-
-
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
+  end
 
 end
