@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # ELEMENT IoT Parser for Netvox Sensors
   # According to documentation provided by Netvox:
@@ -7,7 +8,7 @@ defmodule Parser do
   # Netvox LoRaWAN Application Command V1.8.2
   #
   # Changelog
-  # 2019-04-30: [kr] initial version (Light Sensors: R311G, R311B,  Water Leak Sensors: R311W, R718WB, R718WA, R718WA2, R718WB2)
+  #   2019-04-30: [kr] initial version (Light Sensors: R311G, R311B,  Water Leak Sensors: R311W, R718WB, R718WA, R718WA2, R718WB2)
 
 
   #----- Implementation
@@ -323,13 +324,13 @@ defmodule Parser do
         "0104000A0B201811190000",
         %{meta: %{frame_port: 6}},
         %{
-           datecode: "20181119",
-           devtype: 4,
-           devtype_name: "R311G Lightsensor",
-           hwversion: "V1.1",
-           reptype: 0,
-           sversion: "V1.0",
-           version: 1
+          datecode: "20181119",
+          devtype: 4,
+          devtype_name: "R311G Light Sensor",
+          hwversion: "V1.1",
+          reptype: 0,
+          sversion: "V1.0",
+          version: 1
         },
       },
 
@@ -339,13 +340,13 @@ defmodule Parser do
         "0104012000360000000000",
         %{meta: %{frame_port: 6}},
         %{
-           bat: 3.2,
-           devtype: 4,
-           devtype_name: "R311G Lightsensor",
-           lowbat: 0,
-           lux: 54,
-           reptype: 1,
-           version: 1
+          bat: 3.2,
+          devtype: 4,
+          devtype_name: "R311G Light Sensor",
+          lowbat: 0,
+          lux: 54,
+          reptype: 1,
+          version: 1
         },
       },
 
@@ -355,16 +356,16 @@ defmodule Parser do
         "0106012000010000000000",
         %{meta: %{frame_port: 6}},
         %{
-           bat: 3.2,
-           devtype: 6,
-           devtype_name: "R311W Leaksensor",
-           lowbat: 0,
-           water1leak: 0,
-           water1leak_text: "No Leak",
-           water2leak: 1,
-           water2leak_text: "Leak",
-           reptype: 1,
-           version: 1
+          bat: 3.2,
+          devtype: 6,
+          devtype_name: "R311W Water leak Sensor",
+          lowbat: 0,
+          reptype: 1,
+          version: 1,
+          water1leak: 0,
+          water1leak_text: "No Leak",
+          water2leak: 1,
+          water2leak_text: "Leak"
         },
       },
     ]
