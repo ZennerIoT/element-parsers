@@ -17,6 +17,7 @@ defmodule Parser do
   #   2019-06-21 [jb]: Added handling of a-plus-a-minus with register2_value field.
   #   2019-07-31 [jb]: Added :obis_value key for first register value, supporting MSCONS rule.
   #   2019-08-28 [jb]: Added missing :obis_value key in message format v2.
+  #   2019-09-30 [jb]: Using meta.transceived_at instead of DateTime.utc_now in add_power_from_last_reading()
 
   # Configuration
 
@@ -328,7 +329,7 @@ defmodule Parser do
     []
   end
 
-  def add_power_from_last_reading(data, meta, register_field, power_field) do
+  def add_power_from_last_reading(data, %{transceived_at: transceived_at} = meta, register_field, power_field) do
     field_value = Map.get(data, register_field)
     case {add_power_from_last_reading?(), is_nil(field_value)} do
       {true, false} ->
@@ -337,10 +338,10 @@ defmodule Parser do
 
             field_last = get(last_data, [register_field])
 
-            now_unix = DateTime.utc_now |> DateTime.to_unix
+            packet_unix = transceived_at |> DateTime.to_unix
             reading_unix = measured_at |> DateTime.to_unix
 
-            time_since_last_reading = now_unix - reading_unix
+            time_since_last_reading = packet_unix - reading_unix
 
             power = (field_value - field_last) / (time_since_last_reading / 3600)
 
@@ -522,7 +523,7 @@ defmodule Parser do
             :header_version => 1,
             :medium => "electricity_kwh",
             :meter_id => 33003312,
-            :power => 0.001,
+            :power => 20.943,
             :qualifier => "a-plus",
             :register_value => 9.52,
             :type => "meter_reading",
@@ -712,7 +713,7 @@ defmodule Parser do
             :header_version => 2,
             :medium => "electricity_kwh",
             :meter_id => 3615095,
-            :power => 0.002,
+            :power => 23.419,
             :qualifier => "a-plus",
             :register_value => 10.5,
             :obis_value => 10.5,
@@ -785,7 +786,7 @@ defmodule Parser do
             :header_version => 1,
             :medium => "electricity_kwh",
             :meter_id => 12340009,
-            :power => 0.0,
+            :power => 0.04,
             :qualifier => "a-plus",
             :register_value => 0.13,
             :type => "meter_reading",
@@ -842,7 +843,7 @@ defmodule Parser do
             :header_version => 1,
             :medium => "electricity_kwh",
             :meter_id => 33003312,
-            :power => 0.002,
+            :power => 9.43,
             :qualifier => "a-plus",
             :register_value => 9.52,
             :type => "meter_reading",
@@ -900,7 +901,7 @@ defmodule Parser do
           :header_version => 2,
           :medium => "electricity_kwh",
           :meter_id => 57009167,
-          :power => 0.001,
+          :power => 3.78,
           :power2 => 0.0,
           :qualifier => "a-plus-a-minus",
           :register2_value => 0.0,
