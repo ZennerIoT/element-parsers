@@ -10,7 +10,7 @@ defmodule Parser do
   #
 
   # Using matching
-  def parse(_payload, %{device: %{location: %{coordinates: [lon, lat]}}} = _meta) do
+  def parse(_payload, %{device: %{location: %{coordinates: {lon, lat}}}} = _meta) do
     %{
       gps_lat: lat,
       gps_lon: lon,
@@ -26,7 +26,7 @@ defmodule Parser do
 
   def tests() do
     [
-      {:parse_hex, "", %{device: %{location: %{coordinates: [9.99, 53.55]}}}, %{gps_lat: 53.55, gps_lon: 9.99}},
+      {:parse_hex, "", %{device: %{location: %{coordinates: {9.99, 53.55}}}}, %{gps_lat: 53.55, gps_lon: 9.99}},
     ]
   end
 end

@@ -11,12 +11,23 @@ defmodule Platform.Parsing.Behaviour do
       def get(meta, [], _) do
         meta
       end
+      # Map access
       def get(meta, [atom | rest], default) when is_atom(atom) and is_map(meta) do
         get(Map.get(meta, atom, Map.get(meta, to_string(atom), default)), rest, default)
       end
+      # List access
       def get(meta, [int | rest], default) when is_integer(int) and is_list(meta) do
         get(Enum.at(meta, int, default), rest, default)
       end
+      # Tuple access
+      def get(meta, [int | rest], default) when is_integer(int) and is_tuple(meta) do
+        try do
+          get(elem(meta, int), rest, default)
+        rescue
+          e in ArgumentError -> default
+        end
+      end
+      # Fallback
       def get(_, _, default) do
         default
       end
