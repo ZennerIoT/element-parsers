@@ -18,6 +18,7 @@ defmodule Parser do
   #   2019-07-31 [jb]: Added :obis_value key for first register value, supporting MSCONS rule.
   #   2019-08-28 [jb]: Added missing :obis_value key in message format v2.
   #   2019-09-30 [jb]: Using meta.transceived_at instead of DateTime.utc_now in add_power_from_last_reading()
+  #   2019-10-10 [jb]: Added key interpolated=1 and :obis_value to interpolated readings.
 
   # Configuration
 
@@ -213,6 +214,8 @@ defmodule Parser do
               current_data
               |> Map.take([:type, :medium, :qualifier, :meter_id])
               |> Map.put(register_field, value)
+              |> Map.put(:obis_value, value)
+              |> Map.put(:interpolated, 1)
               |> add_obis(medium, qualifier, register_index, value),
               reading_meta
             }
@@ -537,7 +540,9 @@ defmodule Parser do
               :qualifier => "a-plus",
               :register_value => 2.562,
               :type => "meter_reading",
-              "1-0:1.8.0" => 2.562
+              "1-0:1.8.0" => 2.562,
+              :obis_value => 2.562,
+              :interpolated => 1,
             },
             [
               measured_at: test_datetime("2019-01-01 12:15:00Z")
@@ -550,7 +555,9 @@ defmodule Parser do
               :qualifier => "a-plus",
               :register_value => 7.798,
               :type => "meter_reading",
-              "1-0:1.8.0" => 7.798
+              "1-0:1.8.0" => 7.798,
+              :obis_value => 7.798,
+              :interpolated => 1,
             },
             [
              measured_at: test_datetime("2019-01-01 12:30:00Z")
@@ -728,7 +735,9 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 2.72,
             :type => "meter_reading",
-            "1-0:1.8.0" => 2.72
+            "1-0:1.8.0" => 2.72,
+            :obis_value => 2.72,
+            :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
           {%{
             :medium => "electricity_kwh",
@@ -736,7 +745,9 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 8.574,
             :type => "meter_reading",
-            "1-0:1.8.0" => 8.574
+            "1-0:1.8.0" => 8.574,
+            :obis_value => 8.574,
+            :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]}
         ]
       },
@@ -799,7 +810,9 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 0.097,
             :type => "meter_reading",
-            "1-0:1.8.0" => 0.097
+            "1-0:1.8.0" => 0.097,
+            :obis_value => 0.097,
+            :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
           {%{
             :medium => "electricity_kwh",
@@ -807,7 +820,9 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 0.107,
             :type => "meter_reading",
-            "1-0:1.8.0" => 0.107
+            "1-0:1.8.0" => 0.107,
+            :obis_value => 0.107,
+            :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
           {%{
             :medium => "electricity_kwh",
@@ -815,7 +830,9 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 0.117,
             :type => "meter_reading",
-            "1-0:1.8.0" => 0.117
+            "1-0:1.8.0" => 0.117,
+            :obis_value => 0.117,
+            :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
           {%{
             :medium => "electricity_kwh",
@@ -823,7 +840,9 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 0.127,
             :type => "meter_reading",
-            "1-0:1.8.0" => 0.127
+            "1-0:1.8.0" => 0.127,
+            :obis_value => 0.127,
+            :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]}
         ]
       },
@@ -856,7 +875,9 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 1.672,
             :type => "meter_reading",
-            "1-0:1.8.0" => 1.672
+            "1-0:1.8.0" => 1.672,
+            :obis_value => 1.672,
+            :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
           {%{
             :medium => "electricity_kwh",
@@ -864,7 +885,9 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 4.03,
             :type => "meter_reading",
-            "1-0:1.8.0" => 4.03
+            "1-0:1.8.0" => 4.03,
+            :obis_value => 4.03,
+            :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
           {%{
             :medium => "electricity_kwh",
@@ -872,7 +895,9 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 6.387,
             :type => "meter_reading",
-            "1-0:1.8.0" => 6.387
+            "1-0:1.8.0" => 6.387,
+            :obis_value => 6.387,
+            :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
           {%{
             :medium => "electricity_kwh",
@@ -880,7 +905,9 @@ defmodule Parser do
             :qualifier => "a-plus",
             :register_value => 8.745,
             :type => "meter_reading",
-            "1-0:1.8.0" => 8.745
+            "1-0:1.8.0" => 8.745,
+            :obis_value => 8.745,
+            :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]}
         ]
       },
@@ -911,7 +938,7 @@ defmodule Parser do
           :timestamp_unix => 1263512103,
           :type => "meter_reading",
           "1-0:1.8.0" => 3.87,
-          "1-0:2.8.0" => 0.0
+          "1-0:2.8.0" => 0.0,
         },
         {%{
           :medium => "electricity_kwh",
@@ -919,7 +946,9 @@ defmodule Parser do
           :qualifier => "a-plus-a-minus",
           :register_value => 0.724,
           :type => "meter_reading",
-          "1-0:1.8.0" => 0.724
+          "1-0:1.8.0" => 0.724,
+          :obis_value => 0.724,
+          :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
         {%{
           :medium => "electricity_kwh",
@@ -927,7 +956,9 @@ defmodule Parser do
           :qualifier => "a-plus-a-minus",
           :register_value => 1.669,
           :type => "meter_reading",
-          "1-0:1.8.0" => 1.669
+          "1-0:1.8.0" => 1.669,
+          :obis_value => 1.669,
+          :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
         {%{
           :medium => "electricity_kwh",
@@ -935,7 +966,9 @@ defmodule Parser do
           :qualifier => "a-plus-a-minus",
           :register_value => 2.614,
           :type => "meter_reading",
-          "1-0:1.8.0" => 2.614
+          "1-0:1.8.0" => 2.614,
+          :obis_value => 2.614,
+          :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
         {%{
           :medium => "electricity_kwh",
@@ -943,7 +976,9 @@ defmodule Parser do
           :qualifier => "a-plus-a-minus",
           :register_value => 3.559,
           :type => "meter_reading",
-          "1-0:1.8.0" => 3.559
+          "1-0:1.8.0" => 3.559,
+          :obis_value => 3.559,
+          :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
         {%{
           :medium => "electricity_kwh",
@@ -951,7 +986,9 @@ defmodule Parser do
           :qualifier => "a-plus-a-minus",
           :register2_value => 0.0,
           :type => "meter_reading",
-          "1-0:2.8.0" => 0.0
+          "1-0:2.8.0" => 0.0,
+          :obis_value => 0.0,
+          :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
         {%{
           :medium => "electricity_kwh",
@@ -959,7 +996,9 @@ defmodule Parser do
           :qualifier => "a-plus-a-minus",
           :register2_value => 0.0,
           :type => "meter_reading",
-          "1-0:2.8.0" => 0.0
+          "1-0:2.8.0" => 0.0,
+          :obis_value => 0.0,
+          :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
         {%{
           :medium => "electricity_kwh",
@@ -967,7 +1006,9 @@ defmodule Parser do
           :qualifier => "a-plus-a-minus",
           :register2_value => 0.0,
           :type => "meter_reading",
-          "1-0:2.8.0" => 0.0
+          "1-0:2.8.0" => 0.0,
+          :obis_value => 0.0,
+          :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
         {%{
           :medium => "electricity_kwh",
@@ -975,7 +1016,9 @@ defmodule Parser do
           :qualifier => "a-plus-a-minus",
           :register2_value => 0.0,
           :type => "meter_reading",
-          "1-0:2.8.0" => 0.0
+          "1-0:2.8.0" => 0.0,
+          :obis_value => 0.0,
+          :interpolated => 1,
           }, [measured_at: test_datetime("2019-01-01 12:30:00Z")]}
         ]
       },
