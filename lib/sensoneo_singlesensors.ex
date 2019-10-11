@@ -11,30 +11,33 @@ defmodule Parser do
   #   2018-09-13 [as]: Initial version.
   #   2018-09-17 [as]: fixed position value, was switched
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #   2019-10-10 [jb]: New implementation for <= v2 payloads.
   #
 
-  def parse(<<_uprefix::16, v::binary-4, _tprefix::8, t::binary-3, _dprefix::8, d::binary-3, _pprefix::8, p::binary-1, _rest::binary>>, _meta) do
-    voltage = String.to_float(v)
-    temperature = String.to_integer(t)
-    distance = String.to_integer(d)
-    position = String.to_integer(p)
-
-    position = case position do
-      1 -> "normal"
-      0 -> "tilt"
+  def parse(<<"(", _::binary>> = payload, %{meta: %{frame_port: 1}}) do
+    ~r/\(U([0-9.]+)T([0-9+-]+)D([0-9]+)P([0-9]+)\)/
+    |> Regex.run(payload)
+    |> case do
+      [_, voltage, temp, distance, position] ->
+        %{
+          voltage: String.to_float(voltage),
+          temperature: String.to_integer(temp),
+          distance: String.to_integer(distance),
+          position: position(position)
+        }
+      _ ->
+        Logger.info("Sensoneo Parser: Unknown payload #{inspect payload}")
+        []
     end
-
-    %{
-      voltage: voltage,
-      temperature: temperature,
-      distance: distance,
-      position: position
-    }
   end
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
     []
   end
+
+  defp position("0"), do: "tilt"
+  defp position("1"), do: "normal"
+  defp position(_), do: "unknown"
 
   def fields do
     [
@@ -62,9 +65,18 @@ defmodule Parser do
 
   def tests() do
     [
+      # Version 1 or 2
       {
-        :parse_hex, "2855332e3539542b323144323534503029", %{}, %{distance: 254, position: "tilt", temperature: 21, voltage: 3.59}
-      }
+        :parse_hex,
+        "2855332E3736542B313444323531503129",
+        %{meta: %{frame_port: 1}},
+        %{
+          distance: 251,
+          position: "normal",
+          temperature: 14,
+          voltage: 3.76
+        }
+      },
     ]
   end
 end
