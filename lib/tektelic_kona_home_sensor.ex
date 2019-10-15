@@ -72,7 +72,7 @@ defmodule Parser do
     parse_frames(rest, [{:motion_count, motion_count}|frames])
   end
   def parse_frames(<<0x0E, 0x00, external_input, rest::binary>>, frames) do
-    parse_frames(rest, [{:external_input, external_input}|frames])
+    parse_frames(rest, [{:external_input, digital(external_input)}|frames])
   end
   def parse_frames(<<0x0F, 0x04, external_input_count, rest::binary>>, frames) do
     parse_frames(rest, [{:external_input_count, external_input_count}|frames])
