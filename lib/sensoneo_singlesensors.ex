@@ -48,7 +48,7 @@ defmodule Parser do
       event_slave_device_tx: binary_and(events, 0x08),
       event_battery_low: binary_and(events, 0x10),
       event_gpsfix: binary_and(events, 0x20),
-      event_startup: binary_and(events, 0x20),
+      event_startup: binary_and(events, 0x40),
     ]
     |> Enum.filter(fn({_, v}) -> v != 0 end)
     |> Enum.into(%{
@@ -71,8 +71,6 @@ defmodule Parser do
     []
   end
 
-  #defp binary_and(events, pattern) when Bitwise.band(events, pattern), do: 1
-  #defp binary_and(_events, _pattern), do: 0
   defp binary_and(events, pattern) do
     require Bitwise
     case Bitwise.band(events, pattern) do
