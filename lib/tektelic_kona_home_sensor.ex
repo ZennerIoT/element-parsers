@@ -24,7 +24,7 @@ defmodule Parser do
     parse_frames(rest, [{:battery, battery_volt}|frames])
   end
   def parse_frames(<<0x01, 0x00, reed_switch, rest::binary>>, frames) do
-    parse_frames(rest, [{:reed_switch, digital(reed_switch)}|frames])
+    parse_frames(rest, [{:reed_switch, digital_inverse(reed_switch)}|frames])
   end
   def parse_frames(<<0x02, 0x00, light_detected, rest::binary>>, frames) do
     parse_frames(rest, [{:light_detected, digital(light_detected)}|frames])
@@ -72,7 +72,7 @@ defmodule Parser do
     parse_frames(rest, [{:motion_count, motion_count}|frames])
   end
   def parse_frames(<<0x0E, 0x00, external_input, rest::binary>>, frames) do
-    parse_frames(rest, [{:external_input, digital(external_input)}|frames])
+    parse_frames(rest, [{:external_input, digital_inverse(external_input)}|frames])
   end
   def parse_frames(<<0x0F, 0x04, external_input_count, rest::binary>>, frames) do
     parse_frames(rest, [{:external_input_count, external_input_count}|frames])
@@ -86,6 +86,8 @@ defmodule Parser do
   def digital(0x00), do: 0
   def digital(0xFF), do: 1
 
+  def digital_inverse(0x00), do: 1
+  def digital_inverse(0xFF), do: 0
 
   # Define fields with human readable name and a SI unit if available.
   def fields() do
@@ -180,13 +182,13 @@ defmodule Parser do
 
       # Examples from docs
       {:parse_hex, "03 67 00 0A 04 68 28", %{meta: %{frame_port: 10}}, %{relative_humidity: 20.0, temperature: 1.0}},
-      {:parse_hex, "04 68 14 01 00 FF 08 04 00 05", %{meta: %{frame_port: 10}}, %{reed_switch: 1, reed_switch_counter: 5, relative_humidity: 10.0}},
+      {:parse_hex, "04 68 14 01 00 FF 08 04 00 05", %{meta: %{frame_port: 10}}, %{reed_switch: 0, reed_switch_counter: 5, relative_humidity: 10.0}},
       {:parse_hex, "04 68 2A 03 67 FF FF 00 FF 01 2C", %{meta: %{frame_port: 10}}, %{battery: 3.0, relative_humidity: 21.0, temperature: -0.1}},
       {:parse_hex, "02 00 FF 07 71 00 3A 00 07 00 53 0E 00 00", %{meta: %{frame_port: 10}}, %{
         acceleration_x: 0.58,
         acceleration_y: 0.07,
         acceleration_z: 0.83,
-        external_input: 0,
+        external_input: 1,
         light_detected: 1
       }},
       {:parse_hex, "0D 04 00 02 06 00 FF", %{meta: %{frame_port: 10}}, %{break_in: 1, motion_count: 2}},
