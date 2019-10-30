@@ -13,6 +13,7 @@ defmodule Parser do
   #   2019-05-14 [jb]: Rounding all values as float to a precision of 3 decimals.
   #   2019-07-15 [jb]: Fixing interpolation for changes between measurements in a packet.
   #   2019-07-23 [jb]: Skipping negative values by default.
+  #   2019-10-30 [jb]: Field server_id is now integer. Added hex string value server_id_hex.
 
 
   #----- Configuration
@@ -245,15 +246,16 @@ defmodule Parser do
     end
   end
 
-  defp _parse_payload(<<3, server_id::binary-10, rest::binary>>, meta) do
+  defp _parse_payload(<<3, server_id_bin::binary-10, rest::binary>>, meta) do
+    <<server_id_int::80>> = server_id_bin
     list =
-      [ {
+      [{
         %{
-          server_id: Base.encode16(server_id)
+          server_id: server_id_int,
+          server_id_hex: Base.encode16(server_id_bin),
         },
         [measured_at: meta[:transceived_at]]
-      }
-      ]
+      }]
     case rest do
       <<>> -> list
       _ -> _parse_payload(rest, meta) ++ list
@@ -391,6 +393,14 @@ defmodule Parser do
   def fields() do
     [
       %{
+        "field" => "server_id",
+        "display" => "ServerId",
+      },
+      %{
+        "field" => "server_id_hex",
+        "display" => "ServerId-Hex",
+      },
+      %{
         "field" => "battery",
         "display" => "Battery",
         "unit" => "%",
@@ -522,7 +532,7 @@ defmodule Parser do
           {%{"obis" => "1-0:2.8.0", "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
           {%{"obis" => "1-0:2.8.0", "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
           {%{"obis" => "1-0:2.8.0", "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
-          {%{server_id: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{server_id: 47247395511192982553728, server_id_hex: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
           {%{battery: 90}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
         ],
       },
@@ -537,7 +547,7 @@ defmodule Parser do
           {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 2671.749, "unit" => "kWh", "1_8_0" => 2671.749}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
           {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 2671.713, "unit" => "kWh", "1_8_0" => 2671.713}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
           # This value is omitted, because its faulty. {%{"1_8_0" => 0.0, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
-          {%{server_id: "090149534B00041A1C26"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{server_id: 42525028739151793101862, server_id_hex: "090149534B00041A1C26"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
           {%{battery: 100}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
         ]
       },
@@ -550,7 +560,7 @@ defmodule Parser do
         [
           {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 1744.868, "unit" => "kWh", "1_8_0" => 1744.868}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
           {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 1744.868, "unit" => "kWh", "1_8_0" => 1744.868}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
-          {%{server_id: "06454D48010E15C1E250"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
+          {%{server_id: 29612592940403080159824, server_id_hex: "06454D48010E15C1E250"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
           {%{battery: 100}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
         ]
       },
@@ -595,7 +605,7 @@ defmodule Parser do
           {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
           {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
 
-          {%{server_id: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+          {%{server_id: 47247395511192982553728, server_id_hex: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
           {%{battery: 90}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]}
         ]
       },
@@ -635,7 +645,7 @@ defmodule Parser do
             "obis" => "1-0:1.8.0",
           "unit" => "kWh"
           }, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
-          {%{server_id: "0A01484C590200009E16"}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+          {%{server_id: 47247321209504247356950, server_id_hex: "0A01484C590200009E16"}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
           {%{battery: 100}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]}
         ]
       },
