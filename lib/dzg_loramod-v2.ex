@@ -77,7 +77,7 @@ defmodule Parser do
 
   # Error handler
   def parse(payload, meta) do
-    Logger.info("Can not parse frame with payload: #{inspect Base.encode16(payload)} on frame port: #{inspect get(meta, [:meta, :frame_port])}")
+    Logger.info("Can not parse frame with payload: #{inspect payload} on frame port: #{inspect get(meta, [:meta, :frame_port])}")
     []
   end
 

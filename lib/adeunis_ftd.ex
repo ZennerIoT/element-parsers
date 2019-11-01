@@ -17,8 +17,7 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
-  def parse(event, meta) do
-    << status :: binary-1, rest :: binary >> = event
+  def parse(<< status :: binary-1, rest :: binary >>, meta) do
     {fields, status_data} = parse_status(status)
     field_data = parse_field(fields, rest, [])
 

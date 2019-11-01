@@ -233,12 +233,9 @@ defmodule Parser do
   end
 
   # Catchall for any other message.
-  def parse(payload, %{meta: %{frame_port:  frame_port}}) do
-    %{
-      error: "unparseable_message",
-      payload: Base.encode16(payload),
-      meta_frame_port: frame_port,
-    }
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   defp parse_reporting(map, <<settings::binary-1>>, interface_status) do

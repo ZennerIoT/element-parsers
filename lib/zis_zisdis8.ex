@@ -11,8 +11,7 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
-  def parse(event, _meta) do
-    << _stat_foo::6, stat_heartbeat::1, stat_change::1, in1::integer-8, in2::integer-8,in3::integer-8,in4::integer-8,in5::integer-8,in6::integer-8,in7::integer-8,in8::integer-8>> = event
+  def parse(<< _stat_foo::6, stat_heartbeat::1, stat_change::1, in1::integer-8, in2::integer-8,in3::integer-8,in4::integer-8,in5::integer-8,in6::integer-8,in7::integer-8,in8::integer-8>>, _meta) do
 
     trigger_txt=[]
 
@@ -25,7 +24,6 @@ defmodule Parser do
       stat_change==1 -> ["change"|trigger_txt]
       true -> trigger_txt
     end
-
 
     %{
         trigger: Enum.join(trigger_txt, " , "),

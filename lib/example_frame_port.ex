@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # Example parser for matching a frame_port (FPort) of a LoRaWAN message.
   #
@@ -14,6 +15,10 @@ defmodule Parser do
     %{
       success: 1
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def tests() do
