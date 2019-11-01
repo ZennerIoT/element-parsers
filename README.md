@@ -67,6 +67,7 @@ Lobaro Pressure 26D | [lib/lobaro_pressure26d.ex](lib/lobaro_pressure26d.ex)
 Lobaro Oskar v2 | [lib/lobaro_oskar_v2.ex](lib/lobaro_oskar_v2.ex)
 Lobaro WMBUS Bridge | _On Request_
 NAS CM3010 | [lib/nas_cm3010.ex](lib/nas_cm3010.ex)
+NAS CM3020 | [lib/nas_cm3020.ex](lib/nas_cm3020.ex)
 NAS CM3030 | [lib/nas_cm3030.ex](lib/nas_cm3030.ex)
 NAS CM3060 | [lib/nas_cm3060.ex](lib/nas_cm3060.ex)
 NAS Luminaire Controller Zhaga 18 | [lib/nas_luminaire.ex](lib/nas_luminaire.ex)
