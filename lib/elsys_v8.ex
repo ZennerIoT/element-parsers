@@ -12,7 +12,7 @@ defmodule Parser do
   #   2019-02-22 [jb]: Added sTypes 03, 0F, 14. Fields and  Tests.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
 
-  def parse(payload, _meta) do
+  def parse(payload, _meta) when is_binary(payload) do
     case parse_parts(payload, %{}) do
       {:ok, parts} ->
         parts

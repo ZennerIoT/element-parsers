@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # Example parser for variable length of payload
   #
@@ -22,6 +23,10 @@ defmodule Parser do
       battery_percent: trunc((battery/254) * 100),
       number: number,
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def tests() do

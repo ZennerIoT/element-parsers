@@ -1,6 +1,7 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
   use Bitwise
+  require Logger
 
   # !!! This Parser is not maintained anymore. Use tabs.ex instead !!!
   #
@@ -53,6 +54,10 @@ defmodule Parser do
         location: {longitude/1000000, latitude/1000000}
       ]
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def fields() do

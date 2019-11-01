@@ -1,5 +1,6 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+  require Logger
 
   # !!! This Parser is not maintained anymore. Use tabs.ex instead !!!
   #
@@ -30,6 +31,10 @@ defmodule Parser do
       time_elapsed_since_trigger: time,
       total_count: count
     }
+  end
+  def parse(payload, meta) do
+    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    []
   end
 
   def fields do
