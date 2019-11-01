@@ -42,8 +42,8 @@ defmodule Parser do
   end
 
   # Boot/Debug Message. Payload description is wrong. Stick to example (debug_info has 10 Byte)
-  def parse(<<0x00, serial::binary-4, firmware::24, reason::8, debug_info::80>>, %{meta: %{frame_port: 99}}) do
-    << a, b, c, d >> = serial
+  def parse(<<0x00, serial::binary-4, firmware::24, reason::8, debug_info::binary>>, %{meta: %{frame_port: 99}}) do
+    <<a, b, c, d>> = serial # need to reverse binary
     << major::8, minor::8, patch::8 >> = << firmware::24 >>
     reason = case reason do
       0x10 -> "Calibration Timeout"
@@ -55,7 +55,7 @@ defmodule Parser do
       serial_nr: Base.encode16(<<d,c,b,a>>),
       firmware: "#{major}.#{minor}.#{patch}",
       reason: reason,
-      debug_info: Base.encode16(<<debug_info::80>>)
+      debug_info: Base.encode16(debug_info),
     }
   end
 
