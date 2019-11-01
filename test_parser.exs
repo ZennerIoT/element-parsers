@@ -65,6 +65,7 @@ defmodule TestParser do
     |> Code.require_file
     |> get_tests_from_parser
     |> run_tests(file)
+    |> check_catchall()
     |> exit_program
   end
 
@@ -74,10 +75,10 @@ defmodule TestParser do
 
   defp run_tests({parser_module, []}, file) do
     warn("WARN: No tests fround in file #{inspect file} with parser_module: #{inspect parser_module}")
-    []
+    {parser_module, [], []}
   end
   defp run_tests({parser_module, tests}, _file) do
-    Enum.map(tests, fn
+    results = Enum.map(tests, fn
       ({:parse_hex = test_type, payload_hex, meta, expected_result}) ->
         payload_hex = String.replace(payload_hex, " ", "")
         payload_binary = Base.decode16!(payload_hex, case: :mixed)
@@ -88,6 +89,23 @@ defmodule TestParser do
         actual_result = apply(parser_module, :parse, [payload, meta])
         compare_results(actual_result, expected_result, test_type, payload |> inspect |> String.slice(0, 50))
     end)
+    {parser_module, [], results}
+  end
+
+  defp check_catchall({parser_module, tests, results}) do
+
+    payload_that_will_not_be_matched = self() # a pid is neither a map nor a binary, so it will not match.
+
+    catchall_result = case apply(parser_module, :parse, [payload_that_will_not_be_matched, %{}]) do
+      [] ->
+        success("[catchall] Catchall returned empty list")
+        :ok
+      return ->
+        error("[catchall] Catchall not working, expected empty list, got: #{inspect return}")
+        :error
+    end
+
+    {parser_module, tests, results ++ [catchall_result]}
   end
 
   def compare_results(actual_result, expected_result, test_type, payload) when actual_result == expected_result do
@@ -102,7 +120,7 @@ defmodule TestParser do
   end
 
 
-  defp exit_program(results) do
+  defp exit_program({_parser_module, _tests, results}) do
     if Enum.member?(results, :error) do
       System.halt(1)
     else
