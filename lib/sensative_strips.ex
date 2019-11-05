@@ -8,6 +8,7 @@ defmodule Parser do
   #
   # Changelog:
   #   2019-09-10 [jb]: Initial implementation according to "Sensative_LoRa-Strips-Manual-Alpha-2.pdf"
+  #   2019-11-05 [jb]: Fixed order of temperature/humidity in 1.1.17, 1.1.18 and 1.1.19.
   #
 
   def parse(<<hist_seq_nr::16, rest::binary>>, %{meta: %{frame_port: 1}}) do
@@ -137,21 +138,21 @@ defmodule Parser do
   end
 
   # 1.1.17 Combined Temperature and Humidity Report
-  def parse_parts(result, <<history::1, 80::7, temp::16, humidity::8, rest::binary>>) do
+  def parse_parts(result, <<history::1, 80::7, humidity::8, temp::16, rest::binary>>) do
     result
     |> Map.merge(%{history: history, temperature: temp/10, humidity: humidity/2})
     |> parse_parts(rest)
   end
 
   # 1.1.18 Combined Average Temperature and Humidity Report
-  def parse_parts(result, <<history::1, 81::7, temp::16, humidity::8, rest::binary>>) do
+  def parse_parts(result, <<history::1, 81::7, humidity::8, temp::16, rest::binary>>) do
     result
     |> Map.merge(%{history: history, temperature_avg: temp/10, humidity_avg: humidity/2})
     |> parse_parts(rest)
   end
 
   # 1.1.19 Combined Temperature and Door Report
-  def parse_parts(result, <<history::1, 82::7, temp::16, _::7, door::1, rest::binary>>) do
+  def parse_parts(result, <<history::1, 82::7, _::7, door::1, temp::16, rest::binary>>) do
     result
     |> Map.merge(%{history: history, temperature_avg: temp/10, door_closed: door})
     |> parse_parts(rest)
@@ -291,6 +292,13 @@ defmodule Parser do
       {:parse_hex, "FFFF0200ED", %{meta: %{frame_port: 1}}, %{history: 0, temperature: 23.7}},
       {:parse_hex, "FFFF0652", %{meta: %{frame_port: 1}}, %{history: 0, humidity: 41.0}},
       {:parse_hex, "FFFF0B00", %{meta: %{frame_port: 1}}, %{history: 0, tamper: 0}},
+      {:parse_hex, "FFFF0163070000516500C1", %{meta: %{frame_port: 1}}, %{
+        ambient_light: 0,
+        battery: 99,
+        history: 0,
+        humidity_avg: 50.5,
+        temperature_avg: 19.3
+      }},
     ]
   end
 end
