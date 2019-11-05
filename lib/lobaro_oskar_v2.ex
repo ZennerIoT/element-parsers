@@ -35,7 +35,8 @@ defmodule Parser do
       %{distance1_mm: dist, tof_us: tof_us, width: width, amplitude: amplitude}
     end
     |> Enum.filter(fn
-      %{width: width, amplitude: amplitude} -> width >= min_width && amplitude >= min_amplitude
+      %{width: width, amplitude: amplitude} ->
+        width >= min_width && amplitude >= min_amplitude
     end)
     |> Enum.sort_by(fn %{distance1_mm: dist} -> dist end)
 
@@ -98,10 +99,11 @@ defmodule Parser do
 
   def tests() do
     [
-      # Test format:
-      # {:parse_hex, received_payload_as_hex, meta_map, expected_result},
+      {:parse_hex, "5B0DE6000158080000113181DB", %{meta: %{frame_port: 2}}, %{distance1_m: 2.136, distance1_mm: 2136, temperature: 23.0}},
 
-      # TODO: Payloads from real device needed.
+      {:parse_hex, "5F0DE90001930100009709EFF5", %{meta: %{frame_port: 2}}, %{distance1_m: 0.403, distance1_mm: 403, temperature: 23.3}},
+
+      {:parse_hex, "2E0AF000017C0100001009A5EB", %{meta: %{frame_port: 2}}, %{distance1_m: 0.38, distance1_mm: 380, temperature: 24.0}},
     ]
   end
 end
