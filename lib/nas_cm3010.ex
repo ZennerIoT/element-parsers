@@ -11,9 +11,16 @@ defmodule Parser do
   # Changelog:
   #   2018-06-26 [as]: Initial implementation according to "Absolute_encoder_communication_module_CM3010.pdf"
   #   2019-08-27 [gw]: Update parser to v1.3.0; added catchall
+  #   2019-11-15 [jb]: Handling 32bit usage payload too.
   #
 
   # Gas Usage Message
+  def parse(<<liters::little-32>>,%{meta: %{frame_port: 16}}) do
+    %{
+      message_type: "usage",
+      gas: liters
+    }
+  end
   def parse(<<liters::little-64>>,%{meta: %{frame_port: 16}}) do
     %{
       message_type: "usage",
@@ -91,6 +98,12 @@ defmodule Parser do
 
   def tests() do
     [
+      {
+        :parse_hex, "4E290000", %{meta: %{frame_port: 16}}, %{
+          message_type: "usage",
+          gas: 10574
+        }
+      },
       {
         :parse_hex, "4E29000000000000", %{meta: %{frame_port: 16}}, %{
           message_type: "usage",
