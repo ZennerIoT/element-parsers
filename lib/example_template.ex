@@ -29,14 +29,15 @@ defmodule Parser do
   # Define fields with human readable name and a SI unit if available.
   def fields() do
     [
-      %{
-        field: "type",
-        display: "Typ",
-      },
+      # The first field should be a numeric value, so it can be used for graphs.
       %{
         field: "distance",
         display: "Distanz",
         unit: "cm",
+      },
+      %{
+        field: "type",
+        display: "Typ",
       },
     ]
   end
