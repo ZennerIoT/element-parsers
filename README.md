@@ -75,6 +75,7 @@ NAS UM3023A/UM3033A Digital Pulse Counter | [lib/nas_um30x3.ex](lib/nas_um30x3.e
 NetOP Technology Devices | [lib/netop.ex](lib/netop.ex)
 Netvox Multiparser | [lib/netvox_multiparser.ex](lib/netvox_multiparser.ex)
 NKE Watteco IN'O | [lib/nke_ino.ex](lib/nke_ino.ex)
+NKE Watteco Remote Temperature | [lib/nke_remote_temperature.ex](lib/nke_remote_temperature.ex)
 RAK Button | [lib/rak_button.ex](lib/rak_button.ex)
 Sagemcom Siconia | [lib/sagemcom_siconia.ex](lib/sagemcom_siconia.ex)
 Sensative Strips Comfort | [lib/sensative_strips.ex](lib/sensative_strips.ex)
