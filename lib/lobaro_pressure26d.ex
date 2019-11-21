@@ -7,13 +7,21 @@ defmodule Parser do
   #
   # Changelog:
   #   2019-05-14 [as]: Initial implementation according to "LoRaWAN-Pressure-Manual.pdf" as provided by Lobaro
-  #
+  #   2019-11-21 [as]: updating parser according to firmware version 0.1.0
 
   def parse(<<pressure::little-float-32, temp::little-16>>, %{meta: %{frame_port: 1}}) do
     %{
       type: :measurement,
       pressure: pressure,
       temperature: temp/100
+    }
+  end
+  def parse(<<pressure::little-float-32, temp::little-16, battery::little-16>>, %{meta: %{frame_port: 1}}) do
+    %{
+      type: :measurement,
+      pressure: pressure,
+      temperature: temp/100,
+      battery: battery
     }
   end
   def parse(payload, meta) do
@@ -32,6 +40,11 @@ defmodule Parser do
         field: "temperature",
         display: "Temperature",
         unit: "°C"
+      },
+      %{
+        field: "battery",
+        display: "Battery voltage",
+        unit: "mV"
       }
     ]
   end
