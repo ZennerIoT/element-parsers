@@ -3,6 +3,9 @@
 set -x
 set -e
 
+# Check there are no files with .exs
+ls lib/*.exs 2> /dev/null && (echo "Found files with .exs ending, change to .ex!" && exit 1)
+
 # Test for link in readme
 elixir test_readme.exs
 
