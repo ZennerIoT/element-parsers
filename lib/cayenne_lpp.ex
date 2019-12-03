@@ -335,6 +335,55 @@ defmodule Parser do
         {%{channel: 1, gps_alt: 10.0, gps_lat: 42.351800000000004, gps_lon: -87.9094},
           [location: {-87.9094, 42.351800000000004}]}
       ]},
+
+      # Customer Payloads
+      {:parse_hex, "066700E607684A038807D3060118C10051A40403021C050303C0", nil, [
+        {%{analog_output: 9.6, channel: 5}, [location: {7.1873000000000005, 51.2774}]},
+        {%{analog_output: 5.4, channel: 4}, [location: {7.1873000000000005, 51.2774}]},
+        {%{channel: 3, gps_alt: 209.0, gps_lat: 51.2774, gps_lon: 7.1873000000000005},
+          [location: {7.1873000000000005, 51.2774}]},
+        {%{channel: 7, humidity: 37.0}, [location: {7.1873000000000005, 51.2774}]},
+        {%{channel: 6, temperature: 23.0}, [location: {7.1873000000000005, 51.2774}]}
+      ]},
+      {:parse_hex, "066700E607684A038807D3070118C10055D2040302580503058C", nil, [
+        {%{analog_output: 14.2, channel: 5},
+          [location: {7.1873000000000005, 51.2775}]},
+        {%{analog_output: 6.0, channel: 4}, [location: {7.1873000000000005, 51.2775}]},
+        {%{
+          channel: 3,
+          gps_alt: 219.70000000000002,
+          gps_lat: 51.2775,
+          gps_lon: 7.1873000000000005
+        }, [location: {7.1873000000000005, 51.2775}]},
+        {%{channel: 7, humidity: 37.0}, [location: {7.1873000000000005, 51.2775}]},
+        {%{channel: 6, temperature: 23.0}, [location: {7.1873000000000005, 51.2775}]}
+      ]},
+      {:parse_hex, "066700E6076848038807D3070118C1005208040301FE050303C0", nil, [
+        {%{analog_output: 9.6, channel: 5}, [location: {7.1873000000000005, 51.2775}]},
+        {%{analog_output: 5.1, channel: 4}, [location: {7.1873000000000005, 51.2775}]},
+        {%{channel: 3, gps_alt: 210.0, gps_lat: 51.2775, gps_lon: 7.1873000000000005},
+          [location: {7.1873000000000005, 51.2775}]},
+        {%{channel: 7, humidity: 36.0}, [location: {7.1873000000000005, 51.2775}]},
+        {%{channel: 6, temperature: 23.0}, [location: {7.1873000000000005, 51.2775}]}
+      ]},
+      {:parse_hex, "066700E6076848038807D3070118C1004D4E040301FE05030456", nil, [
+        {%{analog_output: 11.1, channel: 5},
+          [location: {7.1873000000000005, 51.2775}]},
+        {%{analog_output: 5.1, channel: 4}, [location: {7.1873000000000005, 51.2775}]},
+        {%{channel: 3, gps_alt: 197.9, gps_lat: 51.2775, gps_lon: 7.1873000000000005},
+          [location: {7.1873000000000005, 51.2775}]},
+        {%{channel: 7, humidity: 36.0}, [location: {7.1873000000000005, 51.2775}]},
+        {%{channel: 6, temperature: 23.0}, [location: {7.1873000000000005, 51.2775}]}
+      ]},
+      {:parse_hex, "066700E607684A038807D3080118C10053A204030276050304CE", nil, [
+        {%{analog_output: 12.3, channel: 5},
+          [location: {7.1873000000000005, 51.2776}]},
+        {%{analog_output: 6.3, channel: 4}, [location: {7.1873000000000005, 51.2776}]},
+        {%{channel: 3, gps_alt: 214.1, gps_lat: 51.2776, gps_lon: 7.1873000000000005},
+          [location: {7.1873000000000005, 51.2776}]},
+        {%{channel: 7, humidity: 37.0}, [location: {7.1873000000000005, 51.2776}]},
+        {%{channel: 6, temperature: 23.0}, [location: {7.1873000000000005, 51.2776}]}
+      ]},
     ]
   end
 
