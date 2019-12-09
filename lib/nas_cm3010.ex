@@ -12,6 +12,7 @@ defmodule Parser do
   #   2018-06-26 [as]: Initial implementation according to "Absolute_encoder_communication_module_CM3010.pdf"
   #   2019-08-27 [gw]: Update parser to v1.3.0; added catchall
   #   2019-11-15 [jb]: Handling 32bit usage payload too.
+  #   2019-12-09 [jb]: Fixed boot message for newer longer payloads.
   #
 
   # Gas Usage Message
@@ -38,7 +39,7 @@ defmodule Parser do
   end
 
   # Boot/Debug Message
-  def parse(<<0x00, serial::binary-4, firmware::24, meter_id::little-32>>,%{meta: %{frame_port: 99}}) do
+  def parse(<<0x00, serial::binary-4, firmware::24, meter_id::little-32, _rest::binary>>,%{meta: %{frame_port: 99}}) do
     << a, b, c, d >> = serial
     << major::8, minor::8, patch::8 >> = << firmware::24 >>
     %{
@@ -124,6 +125,14 @@ defmodule Parser do
           serial_nr: "4B02003A",
           firmware: "0.2.152",
           elster_id: 29345943
+        }
+      },
+      {
+        :parse_hex, "007E00124B00041310734856398200000002", %{meta: %{frame_port: 99}}, %{
+          elster_id: 1447588624,
+          firmware: "0.4.19",
+          message_type: "boot",
+          serial_nr: "4B12007E"
         }
       },
       {
