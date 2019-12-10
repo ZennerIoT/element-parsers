@@ -12,7 +12,8 @@ defmodule Parser do
   # 2018-11-12: [jb] Interface v2 implemented
   # 2019-02-19: [jb] Added fields
   # 2019-04-30: [gw] change order of bytes in startup message, according to FW v0.23.3
-  # 2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  # 2019-09-06: [jb] Added parsing catchall for unknown payloads.
+  # 2019-12-10: [jb] Fixed mapping in reset_cause/1
   #
 
   # 3.1.1 Parking status
@@ -57,9 +58,9 @@ defmodule Parser do
   def park_state_name(1), do: "occupied"
   def park_state_name(_), do: "unknown"
 
-  def reset_cause(0), do: "watchdog_reset"
-  def reset_cause(1), do: "power_on_reset"
-  def reset_cause(2), do: "system_request_reset"
+  def reset_cause(1), do: "watchdog_reset"
+  def reset_cause(2), do: "power_on_reset"
+  def reset_cause(3), do: "system_request_reset"
   def reset_cause(_), do: "other_resets"
 
   def fields() do
@@ -124,6 +125,16 @@ defmodule Parser do
           map_state: 0,
           message_type: "startup",
           p_state: "free",
+          reset_cause: "power_on_reset"
+        }
+      },
+      {
+      :parse_hex, "D0000000AB0301F50C0000000017030301", %{meta: %{frame_port: 3}}, %{
+          debug: "D0000000AB0301F50C000000",
+          firmware: "0.23.3",
+          map_state: 1,
+          message_type: "startup",
+          p_state: "occupied",
           reset_cause: "system_request_reset"
         }
       }
