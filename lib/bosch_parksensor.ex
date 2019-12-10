@@ -61,7 +61,7 @@ defmodule Parser do
   def reset_cause(1), do: "watchdog_reset"
   def reset_cause(2), do: "power_on_reset"
   def reset_cause(3), do: "system_request_reset"
-  def reset_cause(_), do: "other_resets"
+  def reset_cause(cause), do: "other_reset:#{cause}"
 
   def fields() do
     [
@@ -129,13 +129,23 @@ defmodule Parser do
         }
       },
       {
-      :parse_hex, "D0000000AB0301F50C0000000017030301", %{meta: %{frame_port: 3}}, %{
+        :parse_hex, "D0000000AB0301F50C0000000017030301", %{meta: %{frame_port: 3}}, %{
           debug: "D0000000AB0301F50C000000",
           firmware: "0.23.3",
           map_state: 1,
           message_type: "startup",
           p_state: "occupied",
           reset_cause: "system_request_reset"
+        }
+      },
+      {
+        :parse_hex, "D0000000AB0301F50C0000000017030401", %{meta: %{frame_port: 3}}, %{
+          debug: "D0000000AB0301F50C000000",
+          firmware: "0.23.3",
+          map_state: 1,
+          message_type: "startup",
+          p_state: "occupied",
+          reset_cause: "other_reset:4"
         }
       }
 
