@@ -14,6 +14,7 @@ defmodule Parser do
   #   2019-07-15 [jb]: Fixing interpolation for changes between measurements in a packet.
   #   2019-07-23 [jb]: Skipping negative values by default.
   #   2019-10-30 [jb]: Field server_id is now integer. Added hex string value server_id_hex.
+  #   2019-12-11 [jb]: Added field obis_value in all readings for MSCONS rule compatability.
 
 
   #----- Configuration
@@ -155,13 +156,15 @@ defmodule Parser do
        {unit, scaler} = _map_unit(unit_1)
        obis = Enum.at(registers(), pos_1_selector)
        obis_full = Enum.at(registers(:full_obis), pos_1_selector)
+       value = round_as_float(pos_1_now * scaler)
        [
          # Always adding the first value, because the _valid flag is set for it.
          {
            %{
              "obis" => obis_full,
-             obis => round_as_float(pos_1_now * scaler),
-             obis_full => round_as_float(pos_1_now * scaler),
+             obis => value,
+             obis_full => value,
+             "obis_value" => value,
              "unit" => unit
            },
            [measured_at: meta[:transceived_at]]
@@ -195,13 +198,15 @@ defmodule Parser do
       {unit, scaler} = _map_unit(unit_2)
       obis = Enum.at(registers(), pos_2_selector)
       obis_full = Enum.at(registers(:full_obis), pos_2_selector)
+      value = round_as_float(pos_2_now * scaler)
       [
        # Always adding the first value, because the _valid flag is set for it.
        {
          %{
            "obis" => obis_full,
-           obis => round_as_float(pos_2_now * scaler),
-           obis_full => round_as_float(pos_2_now * scaler),
+           obis => value,
+           obis_full => value,
+           "obis_value" => value,
            "unit" => unit
          },
          [measured_at: meta[:transceived_at]]
@@ -311,10 +316,12 @@ defmodule Parser do
           )
           |> Enum.filter(fn ({data, _meta}) -> Map.get(data, :_interpolated, false) end)
           |> Enum.map(fn {%{value: value}, reading_meta} ->
+            value = round_as_float(value)
             {
               %{
                 "obis" => obis,
-                obis => round_as_float(value),
+                obis => value,
+                "obis_value" => value,
                 "unit" => unit,
               },
               reading_meta
@@ -349,12 +356,14 @@ defmodule Parser do
   defp _add_valid_reading(list, _obis, 0.0, _unit, _measured_at), do: list
   defp _add_valid_reading(list, _obis, 0, _unit, _measured_at), do: list
   defp _add_valid_reading(list, [obis_full, obis], value, unit, measured_at) do
+    value = round_as_float(value)
     list ++ [
       {
         %{
           "obis" => obis_full,
-          obis => round_as_float(value),
-          obis_full => round_as_float(value),
+          obis => value,
+          obis_full => value,
+          "obis_value" => value,
           "unit" => unit,
         },
         [measured_at: measured_at]
@@ -524,14 +533,14 @@ defmodule Parser do
         "00493511030A01495452000346848001B911000105B8000105B8000105B8000105B8000007D0000007D0000007D0000007D00175000000000000000000000000000000000000000000000000000000000000000000",
         %{meta: %{frame_port: 3}, transceived_at: test_datetime("2019-01-01T12:00:00Z")},
         [
-          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
-          {%{"obis" => "1-0:2.8.0", "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
-          {%{"obis" => "1-0:2.8.0", "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
-          {%{"obis" => "1-0:2.8.0", "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
-          {%{"obis" => "1-0:2.8.0", "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
+          {%{"obis" => "1-0:1.8.0", "obis_value" => 67.0, "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{"obis" => "1-0:1.8.0", "obis_value" => 67.0, "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{"obis" => "1-0:1.8.0", "obis_value" => 67.0, "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
+          {%{"obis" => "1-0:1.8.0", "obis_value" => 67.0, "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
+          {%{"obis" => "1-0:2.8.0", "obis_value" => 2.0, "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{"obis" => "1-0:2.8.0", "obis_value" => 2.0, "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{"obis" => "1-0:2.8.0", "obis_value" => 2.0, "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
+          {%{"obis" => "1-0:2.8.0", "obis_value" => 2.0, "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
           {%{server_id: 47247395511192982553728, server_id_hex: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
           {%{battery: 90}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
         ],
@@ -543,9 +552,9 @@ defmodule Parser do
         "004AE41103090149534B00041A1C260109010028C4B20028C4850028C4610000000000000000000000000000000000000000",
         %{meta: %{frame_port: 3}, transceived_at: test_datetime("2019-01-01T12:00:00Z")},
         [
-          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 2671.794, "unit" => "kWh", "1_8_0" => 2671.794}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 2671.749, "unit" => "kWh", "1_8_0" => 2671.749}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 2671.713, "unit" => "kWh", "1_8_0" => 2671.713}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
+          {%{"obis" => "1-0:1.8.0", "obis_value" => 2671.794, "1-0:1.8.0" => 2671.794, "unit" => "kWh", "1_8_0" => 2671.794}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{"obis" => "1-0:1.8.0", "obis_value" => 2671.749, "1-0:1.8.0" => 2671.749, "unit" => "kWh", "1_8_0" => 2671.749}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{"obis" => "1-0:1.8.0", "obis_value" => 2671.713, "1-0:1.8.0" => 2671.713, "unit" => "kWh", "1_8_0" => 2671.713}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
           # This value is omitted, because its faulty. {%{"1_8_0" => 0.0, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
           {%{server_id: 42525028739151793101862, server_id_hex: "090149534B00041A1C26"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
           {%{battery: 100}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
@@ -558,8 +567,8 @@ defmodule Parser do
         "004A71110306454D48010E15C1E250013901001A9FE4001A9FE40000000000000000000000000000000000000000000000000175001337",
         %{meta: %{frame_port: 3}, transceived_at: test_datetime("2019-01-01T12:00:00Z")},
         [
-          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 1744.868, "unit" => "kWh", "1_8_0" => 1744.868}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 1744.868, "unit" => "kWh", "1_8_0" => 1744.868}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{"obis" => "1-0:1.8.0", "obis_value" => 1744.868, "1-0:1.8.0" => 1744.868, "unit" => "kWh", "1_8_0" => 1744.868}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{"obis" => "1-0:1.8.0", "obis_value" => 1744.868, "1-0:1.8.0" => 1744.868, "unit" => "kWh", "1_8_0" => 1744.868}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
           {%{server_id: 29612592940403080159824, server_id_hex: "06454D48010E15C1E250"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
           {%{battery: 100}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
         ]
@@ -582,28 +591,28 @@ defmodule Parser do
         },
         [
           # Current 1.8.0
-          {%{"1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
-          {%{"1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
-          {%{"1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
-          {%{"1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
+          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
+          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
+          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
 
           # Calculated 1.8.0
-          {%{"1-0:1.8.0" => 66.342, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
-          {%{"1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
-          {%{"1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
-          {%{"1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
+          {%{"obis_value" => 66.342, "1-0:1.8.0" => 66.342, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
+          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
+          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
+          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
 
           # Current 2.8.0
-          {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
-          {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
-          {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
-          {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
+          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
+          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
+          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
 
           # Calculated 2.8.0
-          {%{"1-0:2.8.0" => 1.342, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
-          {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
-          {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
-          {%{"1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
+          {%{"obis_value" => 1.342, "1-0:2.8.0" => 1.342, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
+          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
+          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
+          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
 
           {%{server_id: 47247395511192982553728, server_id_hex: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
           {%{battery: 90}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]}
@@ -623,24 +632,28 @@ defmodule Parser do
         [
           {%{
             "1-0:1.8.0" => 0.001,
+            "obis_value" => 0.001,
             "1_8_0" => 0.001,
             "obis" => "1-0:1.8.0",
             "unit" => "kWh"
           }, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
           {%{
             "1-0:1.8.0" => 0.001,
+            "obis_value" => 0.001,
             "1_8_0" => 0.001,
             "obis" => "1-0:1.8.0",
             "unit" => "kWh"
           }, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
           {%{
             "1-0:1.8.0" => 0.001,
+            "obis_value" => 0.001,
             "1_8_0" => 0.001,
             "obis" => "1-0:1.8.0",
             "unit" => "kWh"
           }, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
           {%{
             "1-0:1.8.0" => 0.001,
+            "obis_value" => 0.001,
             "1_8_0" => 0.001,
             "obis" => "1-0:1.8.0",
           "unit" => "kWh"
