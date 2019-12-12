@@ -19,6 +19,7 @@ defmodule Parser do
   #   2019-08-28 [jb]: Added missing :obis_value key in message format v2.
   #   2019-09-30 [jb]: Using meta.transceived_at instead of DateTime.utc_now in add_power_from_last_reading()
   #   2019-10-10 [jb]: Added key interpolated=1 and :obis_value to interpolated readings.
+  #   2019-12-12 [jb]: Ignoring frame_port for messages without frame header, fame_port=8 was required before.
 
   # Configuration
 
@@ -71,7 +72,7 @@ defmodule Parser do
   end
 
   # Handling MeterReading messages without Header.
-  def parse(<<frame::binary>>, %{meta: %{frame_port: 8}} = meta) do
+  def parse(<<frame::binary>>, meta) do
     parse_meter_reading_message(frame, meta)
   end
 
@@ -1043,6 +1044,28 @@ defmodule Parser do
             :timestamp_unix => 1263344857,
             :type => "meter_reading",
             "1-0:1.8.0" => 762.84
+          }
+        ]
+      },
+
+      # MeterReading Message with header v2
+      {
+        :parse_hex,
+        "51E49ADC0200000000",
+        %{
+          meta: %{frame_port: 2},
+          transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+        },
+        [
+          %{
+            :header_version => 1,
+            :medium => "electricity_kwh",
+            :meter_id => 48012004,
+            :obis_value => 0.0,
+            :qualifier => "a-plus",
+            :register_value => 0.0,
+            :type => "meter_reading",
+            "1-0:1.8.0" => 0.0
           }
         ]
       },
