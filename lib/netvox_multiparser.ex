@@ -1,163 +1,26 @@
 defmodule Parser do
   use Platform.Parsing.Behaviour
+
   require Logger
 
   # ELEMENT IoT Parser for Netvox Sensors
   # According to documentation provided by Netvox:
   #
-  # Netvox LoRaWAN Application Command V1.8.2
+  # Netvox LoRaWAN Application Command V1.8.2 / V1.8.5
   #
-  # Changelog
+  # Changelog:
   #   2019-04-30: [kr] initial version (Light Sensors: R311G, R311B,  Water Leak Sensors: R311W, R718WB, R718WA, R718WA2, R718WB2)
+  #   2019-06-05: [gw] refactoring. Checked with v1.8.5
+  #   2019-07-01: [gw] fix bug
 
-
-  #----- Implementation
-
-  # All Sensors (Reporttype 0x00)
-  def parse(<<version::size(8), devtype::size(8), 0x00, sversion::size(8), hwversion::size(8), datecode::binary-4, _::binary>>, %{meta: %{frame_port: 6 }}) do
+  def parse(<<version::8, device_type::8, report_type::8, rest::binary>>, %{meta: %{frame_port: 6}}) do
     %{
-      version: version,                        # Protocol Version
-      devtype: devtype,                        # Device Type
-      devtype_name: device_type_name(devtype), # Device Type Text
-      reptype: 0,                              # Report Type: 0 for Status (All Sensors)
-      sversion: "V#{sversion/10}",             # Software Version
-      hwversion: "V#{hwversion/10}",           # Hardware Version
-      datecode: Base.encode16(datecode)        # Manufacture Date
+      version: version,                                 # Protocol Version
+      device_type: device_type,                         # Device Type
+      device_type_name: device_type_name(device_type),  # Device Type Text
+      report_type: report_type,                         # Report Type: 0 for Status (All Sensors)
     }
-  end
-
-  # R311G Light Sensor (Reporttype 0x04)
-  def parse(<<version::size(8), 0x04, 0x01, lowbat::1, bat::size(7), lux::size(16), _::binary>>, %{meta: %{frame_port: 6 }}) do
-    %{
-      version: version,                        # Protocol Version
-      devtype: 0x04,                           # Device Type
-      devtype_name: device_type_name(0x04),    # Device Type Text
-      reptype: 1,                              # Report Type (1: for Measurement Report)
-      lowbat: lowbat,                          # Battery Low Indicator (0: Battery OK, 1: low Battery)
-      bat: bat/10,                             # Battery voltage in V
-      lux: lux                                 # Illuminance
-    }
-  end
-
-  # R311B Lightsensor (Reporttype 0x4B)
-  def parse(<<version::size(8), 0x4B, 0x01, lowbat::1, bat::size(7), lux::size(16), _::binary>>, %{meta: %{frame_port: 6 }}) do
-    %{
-      version: version,                        # Protocol Version
-      devtype: 0x4B,                           # Device Type
-      devtype_name: device_type_name(0x4B),    # Device Type Text
-      reptype: 1,                              # Report Type (1: for Measurement Report)
-      lowbat: lowbat,                          # Battery Low Indicator (0: Battery OK, 1: low Battery)
-      bat: bat/10,                             # Battery voltage in V
-      lux: lux                                 # Illuminance
-    }
-  end
-  
-  # R311W Water leak Sensor (Reporttype 0x06)
-  def parse(<<version::size(8), 0x06, 0x01, lowbat::1, bat::size(7), water1leak::size(8), water2leak::size(8), _::binary>>, %{meta: %{frame_port: 6 }}) do
-    %{
-      version: version,                        # Protocol Version
-      devtype: 0x06,                           # Device Type
-      devtype_name: device_type_name(0x06),    # Device Type Text
-      reptype: 1,                              # Report Type (1: for Measurement Report)
-      lowbat: lowbat,                          # Battery Low Indicator (0: Battery OK, 1: low Battery)
-      bat: bat/10,                             # Battery voltage in V
-      water1leak: water1leak,                  # Water 1 Leak state (0: No Leak, 1: Leak)
-      water1leak_text:                         # Water 1 Leak state text
-        case water1leak do
-          0 -> "No Leak"
-          1 -> "Leak"
-        end,
-      water2leak: water2leak,                  # Water 2 Leak state (0: No Leak, 1: Leak)
-      water2leak_text:                         # Water 2 Leak state text
-        case water2leak do
-          0 -> "No Leak"
-          1 -> "Leak"
-        end
-    }
-  end
-
-  # R718WB Water Leak Detector with Rope Sensor (Reporttype 0x12)
-  def parse(<<version::size(8), 0x12, 0x01, lowbat::1, bat::size(7), water1leak::size(8), _::binary>>, %{meta: %{frame_port: 6 }}) do
-    %{
-      version: version,                        # Protocol Version
-      devtype: 0x12,                           # Device Type
-      devtype_name: device_type_name(0x12),    # Device Type Text
-      reptype: 1,                              # Report Type (1: for Measurement Report)
-      lowbat: lowbat,                          # Battery Low Indicator (0: Battery OK, 1: low Battery)
-      bat: bat/10,                             # Battery voltage in V
-      water11eak: water1leak,                  # Water 1 Leak state (0: No Leak, 1: Leak)
-      water11eak_text:                         # Water 1 Leak state text
-        case water1leak do
-          0 -> "No Leak"
-          1 -> "Leak"
-        end
-    }
-  end
-
-  # R718WA Water Leak Detector (Reporttype 0x32)
-  def parse(<<version::size(8), 0x32, 0x01, lowbat::1, bat::size(7), water1leak::size(8), _::binary>>, %{meta: %{frame_port: 6 }}) do
-    %{
-      version: version,                        # Protocol Version
-      devtype: 0x32,                           # Device Type
-      devtype_name: device_type_name(0x32),    # Device Type Text
-      reptype: 1,                              # Report Type (1: for Measurement Report)
-      lowbat: lowbat,                          # Battery Low Indicator (0: Battery OK, 1: low Battery)
-      bat: bat/10,                             # Battery voltage in V
-      water11eak: water1leak,                  # Water 1 Leak state (0: No Leak, 1: Leak)
-      water11eak_text:                         # Water 1 Leak state text
-        case water1leak do
-          0 -> "No Leak"
-          1 -> "Leak"
-        end
-    }
-  end
-
-  # R718WA2 2-Gang Water Leak Detector (Reporttype 0x46)
-  def parse(<<version::size(8), 0x46, 0x01, lowbat::1, bat::size(7), water1leak::size(8), water2leak::size(8), _::binary>>, %{meta: %{frame_port: 6 }}) do
-    %{
-      version: version,                        # Protocol Version
-      devtype: 0x46,                           # Device Type
-      devtype_name: device_type_name(0x46),    # Device Type Text
-      reptype: 1,                              # Report Type (1: for Measurement Report)
-      lowbat: lowbat,                          # Battery Low Indicator (0: Battery OK, 1: low Battery)
-      bat: bat/10,                             # Battery voltage in V
-      water1leak: water1leak,                  # Water 1 Leak state (0: No Leak, 1: Leak)
-      water1leak_text:                         # Water 1 Leak state text
-        case water1leak do
-          0 -> "No Leak"
-          1 -> "Leak"
-        end,
-      water2leak: water2leak,                  # Water 2 Leak state (0: No Leak, 1: Leak)
-      water2leak_text:                         # Water 2 Leak state text
-        case water2leak do
-          0 -> "No Leak"
-          1 -> "Leak"
-        end
-    }
-  end
-
-  # R718WB2 2-Gang Water Leak Detector with Rope Sensor (Reporttype 0x47)
-  def parse(<<version::size(8), 0x47, 0x01, lowbat::1, bat::size(7), water1leak::size(8), water2leak::size(8), _::binary>>, %{meta: %{frame_port: 6 }}) do
-    %{
-      version: version,                        # Protocol Version
-      devtype: 0x47,                           # Device Type
-      devtype_name: device_type_name(0x47),    # Device Type Text
-      reptype: 1,                              # Report Type (1: for Measurement Report)
-      lowbat: lowbat,                          # Battery Low Indicator (0: Battery OK, 1: low Battery)
-      bat: bat/10,                             # Battery voltage in V
-      water1leak: water1leak,                  # Water 1 Leak state (0: No Leak, 1: Leak)
-      water1leak_text:                         # Water 1 Leak state text
-        case water1leak do
-          0 -> "No Leak"
-          1 -> "Leak"
-        end,
-      water2leak: water2leak,                  # Water 2 Leak state (0: No Leak, 1: Leak)
-      water2leak_text:                         # Water 2 Leak state text
-        case water2leak do
-          0 -> "No Leak"
-          1 -> "Leak"
-        end
-    }
+    |> Map.merge(parse_payload(device_type, report_type, rest))
   end
 
   def parse(payload, meta) do
@@ -165,13 +28,64 @@ defmodule Parser do
     []
   end
 
-  # define the names for Device types
+  # All Sensors (Reporttype 0x00)
+  defp parse_payload(_device_type, 0x00, <<sw_version::8, hw_version::8, date_code::binary-4, _rfu::binary-2>>) do
+    %{
+      sw_version: "V#{sw_version/10}",      # Software Version
+      hw_version: "V#{hw_version/10}",      # Hardware Version
+      date_code: Base.encode16(date_code),  # Manufacture Date
+    }
+  end
+
+  # R311G/R311B Light Sensor (Reporttype 0x04/0x4B)
+  defp parse_payload(device_type, 0x01, <<battery::binary-1, lux::16, _rfu::binary-5>>) when device_type in [0x04, 0x4B] do
+    %{
+      lux: lux # Illuminance
+    }
+    |> Map.merge(parse_battery_info(battery))
+  end
+
+  # R311W Water leak Sensor (Reporttype 0x06)
+  # R718WA2 2-Gang Water Leak Detector (Reporttype 0x46)
+  # R718WB2 2-Gang Water Leak Detector with Rope Sensor (Reporttype 0x47)
+  defp parse_payload(0x06, 0x01, <<battery::binary-1, water_leak_1::binary-1, water_leak_2::binary-1, _rfu::binary-5>>) do
+    %{}
+    |> Map.merge(parse_water_leak(1, water_leak_1))
+    |> Map.merge(parse_water_leak(2, water_leak_2))
+    |> Map.merge(parse_battery_info(battery))
+  end
+
+  # R718WB Water Leak Detector with Rope Sensor (Reporttype 0x12)
+  # R718WA Water Leak Detector (Reporttype 0x32)
+  defp parse_payload(device_type, 0x01, <<battery::binary-1, water_leak_1::binary-1, _rfu::binary-6>>) when device_type in [0x12, 0x32] do
+    %{}
+    |> Map.merge(parse_water_leak(1, water_leak_1))
+    |> Map.merge(parse_battery_info(battery))
+  end
+
+  defp parse_battery_info(<<lowbat::1, battery_voltage::7>>) do
+    %{
+      low_battery: lowbat,          # Battery Low Indicator (0: Battery OK, 1: low Battery)
+      battery: battery_voltage/10,  # Battery voltage in V
+    }
+  end
+
+  defp parse_water_leak(i, <<water_leak::8>>) do
+    %{
+      "water_leak_#{i}" => water_leak,
+      "water_leak_#{i}_text" => water_leak_text(water_leak),
+    }
+  end
+
+  defp water_leak_text(0), do: "No Leak"
+  defp water_leak_text(1), do: "Leak"
+
   def device_type_name(0x01), do: "R711 Indoor Temperature Humidity Sensor"
   def device_type_name(0x02), do: "R311A Door/Window Sensor"
   def device_type_name(0x03), do: "RB11E Occupancy/Light/Temperature Sensor"
   def device_type_name(0x04), do: "R311G Light Sensor"
   def device_type_name(0x05), do: "RA07"
-  def device_type_name(0x06), do: "R311W Water leak Sensor"
+  def device_type_name(0x06), do: "R311W Water Leak Sensor"
   def device_type_name(0x07), do: "RB11E1"
   def device_type_name(0x08), do: "R801A Temperature Sensor with a Thermocouple"
   def device_type_name(0x09), do: "R726"
@@ -261,36 +175,36 @@ defmodule Parser do
         display: "Protocol Version",
       },
       %{
-        field: "devtype",
+        field: "device_type",
         display: "Device Type",
       },
       %{
-        field: "devtype_name",
+        field: "device_type_name",
         display: "Device Type Name",
       },
       %{
-        field: "reptype",
+        field: "report_type",
         display: "Report Type",
       },
       %{
-        field: "lowbat",
+        field: "low_battery",
         display: "Low Battery",
       },
       %{
-        field: "bat",
+        field: "battery",
         display: "Battery Voltage",
         unit: "V",
       },
       %{
-        field: "sversion",
+        field: "sw_version",
         display: "Software Version",
       },
       %{
-        field: "hwversion",
+        field: "hw_version",
         display: "Hardware Version",
       },
       %{
-        field: "datecode",
+        field: "date_code",
         display: "Manufacture Date",
       },
 
@@ -303,70 +217,58 @@ defmodule Parser do
 
       # Water Leak Sensors: R311W, R718WB, R718WA, R718WA2, R718WB2
       %{
-        field: "water1leak",
-        display: "Water 1 Leak",
+        field: "water_leak_1",
+        display: "Water Leak 1",
       },
       %{
-        field: "water2leak",
-        display: "Water 2 Leak",
+        field: "water_leak_2",
+        display: "Water Leak 2",
       }
     ]
   end
-
-
-  #--------- Tests
 
   def tests() do
     [
       # Rep Type 0
       {
-        :parse_hex,
-        "0104000A0B201811190000",
-        %{meta: %{frame_port: 6}},
-        %{
-          datecode: "20181119",
-          devtype: 4,
-          devtype_name: "R311G Light Sensor",
-          hwversion: "V1.1",
-          reptype: 0,
-          sversion: "V1.0",
-          version: 1
-        },
+        :parse_hex, "0104000A0B201811190000", %{meta: %{frame_port: 6}}, %{
+        date_code: "20181119",
+        device_type: 4,
+        device_type_name: "R311G Light Sensor",
+        hw_version: "V1.1",
+        report_type: 0,
+        sw_version: "V1.0",
+        version: 1
+      },
       },
 
       # Rep Type 1 (R311G)
       {
-        :parse_hex,
-        "0104012000360000000000",
-        %{meta: %{frame_port: 6}},
-        %{
-          bat: 3.2,
-          devtype: 4,
-          devtype_name: "R311G Light Sensor",
-          lowbat: 0,
-          lux: 54,
-          reptype: 1,
-          version: 1
-        },
+        :parse_hex, "0104012000360000000000", %{meta: %{frame_port: 6}}, %{
+        battery: 3.2,
+        device_type: 4,
+        device_type_name: "R311G Light Sensor",
+        low_battery: 0,
+        lux: 54,
+        report_type: 1,
+        version: 1
+      },
       },
 
       # Rep Type 1 (R311W)
       {
-        :parse_hex,
-        "0106012000010000000000",
-        %{meta: %{frame_port: 6}},
-        %{
-          bat: 3.2,
-          devtype: 6,
-          devtype_name: "R311W Water leak Sensor",
-          lowbat: 0,
-          reptype: 1,
-          version: 1,
-          water1leak: 0,
-          water1leak_text: "No Leak",
-          water2leak: 1,
-          water2leak_text: "Leak"
-        },
+        :parse_hex, "0106012000010000000000", %{meta: %{frame_port: 6}}, %{
+        "water_leak_1" => 0,
+        "water_leak_1_text" => "No Leak",
+        "water_leak_2" => 1,
+        "water_leak_2_text" => "Leak",
+        report_type: 1,
+        version: 1,
+        battery: 3.2,
+        device_type: 6,
+        device_type_name: "R311W Water Leak Sensor",
+        low_battery: 0,
+      },
       },
     ]
   end
