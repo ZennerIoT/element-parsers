@@ -9,6 +9,7 @@ defmodule Parser do
   #   2018-08-23 [jb]: Initial version implemented using HybridTAG-L300-Infosheet_06-18-2.pdf
   #   2019-03-20 [jb]: Fixed "Humidity Sensor" for real payload.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #   2019-12-27 [jb]: Added field "Proximity in %"
   #
 
   def parse(data, %{meta: %{frame_port: 1}}) do
@@ -67,7 +68,10 @@ defmodule Parser do
 
   # Proximity
   def map_packet(<<0x0b, 0x01, value::16>>, acc) do
-    Map.merge(acc, %{proximity: value})
+    Map.merge(acc, %{proximity: value}) # Unit: mm
+  end
+  def map_packet(<<0x0b, 0x06, value::8>>, acc) do
+    Map.merge(acc, %{proximity_percent: value}) # Unit: %
   end
 
   # Tracking
@@ -170,6 +174,11 @@ defmodule Parser do
         "unit" => "mm"
       },
       %{
+        "field" => "proximity_percent",
+        "display" => "Proximity",
+        "unit" => "%"
+      },
+      %{
         "field" => "localisation_id",
         "display" => "Localisation-ID",
       },
@@ -257,6 +266,16 @@ defmodule Parser do
           battery_voltage: 3.3,
           humidity: 34,
           temperature: 22.187454223632813
+        },
+      },
+
+      {
+        :parse_hex,  "040B010089030B060B060201409F802E03510126", %{meta: %{frame_port: 1}},
+        %{
+          battery_voltage: 3.8,
+          proximity: 137,
+          proximity_percent: 11,
+          temperature: 4.984396934509277
         },
       },
     ]
