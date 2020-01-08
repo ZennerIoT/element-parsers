@@ -10,6 +10,7 @@ defmodule Parser do
   #   2019-03-20 [jb]: Fixed "Humidity Sensor" for real payload.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2019-12-27 [jb]: Added field "Proximity in %"
+  #   2020-01-08 [jb]: Added fields for Indoor Localization
   #
 
   def parse(data, %{meta: %{frame_port: 1}}) do
@@ -79,6 +80,18 @@ defmodule Parser do
     Map.merge(acc, %{localisation_id: value})
   end
 
+  # Indoor Localization
+  def map_packet(<<0x12, 0x02, payload::binary>>, acc) do
+    (for <<mac::binary-6, rssi::8-signed <- payload>>, do: {mac, rssi})
+    |> Enum.with_index(1)
+    |> Enum.reduce(acc, fn({{mac, rssi}, index}, acc) ->
+      Map.merge(acc, %{
+        "local_#{index}_mac" => Base.encode16(mac),
+        "local_#{index}_rssi" => rssi,
+      })
+    end)
+  end
+
   # GPS
   def map_packet(<<0x50, 0x01, value::signed-32>>, acc) do
     Map.merge(acc, %{gps_lat: value / 1000000})
@@ -110,7 +123,7 @@ defmodule Parser do
     Map.merge(acc, %{parsing_error: error})
   end
   def map_packet(invalid, acc) do
-    Map.merge(acc, %{invalid_packet_payload: inspect(invalid)})
+    Map.merge(acc, %{invalid_packet_payload: Base.encode16(invalid)})
   end
 
 
@@ -276,6 +289,16 @@ defmodule Parser do
           proximity: 137,
           proximity_percent: 11,
           temperature: 4.984396934509277
+        },
+      },
+
+      {
+        :parse_hex,  "101202AC233F291662C2AC233F291667AC", %{meta: %{frame_port: 1}},
+        %{
+          "local_1_mac" => "AC233F291662",
+          "local_1_rssi" => -62,
+          "local_2_mac" => "AC233F291667",
+          "local_2_rssi" => -84
         },
       },
     ]
