@@ -12,6 +12,7 @@ defmodule Parser do
   #   2019-04-30: [kr] initial version (Light Sensors: R311G, R311B,  Water Leak Sensors: R311W, R718WB, R718WA, R718WA2, R718WB2)
   #   2019-06-05: [gw] refactoring. Checked with v1.8.5
   #   2019-07-01: [gw] fix bug
+  #   2020-01-09: [as] added some sensor types
 
   def parse(<<version::8, device_type::8, report_type::8, rest::binary>>, %{meta: %{frame_port: 6}}) do
     %{
