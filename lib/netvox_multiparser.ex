@@ -37,7 +37,7 @@ defmodule Parser do
     }
   end
 
-  # R311G/R311B Light Sensor (Reporttype 0x04/0x4B)
+  # R311G/R311B Light Sensor (Devicetype 0x04/0x4B)
   defp parse_payload(device_type, 0x01, <<battery::binary-1, lux::16, _rfu::binary-5>>) when device_type in [0x04, 0x4B] do
     %{
       lux: lux # Illuminance
@@ -45,9 +45,9 @@ defmodule Parser do
     |> Map.merge(parse_battery_info(battery))
   end
 
-  # R311W Water leak Sensor (Reporttype 0x06)
-  # R718WA2 2-Gang Water Leak Detector (Reporttype 0x46)
-  # R718WB2 2-Gang Water Leak Detector with Rope Sensor (Reporttype 0x47)
+  # R311W Water leak Sensor (Devicetype 0x06)
+  # R718WA2 2-Gang Water Leak Detector (Devicetype 0x46)
+  # R718WB2 2-Gang Water Leak Detector with Rope Sensor (Devicetype 0x47)
   defp parse_payload(0x06, 0x01, <<battery::binary-1, water_leak_1::binary-1, water_leak_2::binary-1, _rfu::binary-5>>) do
     %{}
     |> Map.merge(parse_water_leak(1, water_leak_1))
@@ -55,13 +55,46 @@ defmodule Parser do
     |> Map.merge(parse_battery_info(battery))
   end
 
-  # R718WB Water Leak Detector with Rope Sensor (Reporttype 0x12)
-  # R718WA Water Leak Detector (Reporttype 0x32)
+  # R718WB Water Leak Detector with Rope Sensor (Devicetype 0x12)
+  # R718WA Water Leak Detector (Devicetype 0x32)
   defp parse_payload(device_type, 0x01, <<battery::binary-1, water_leak_1::binary-1, _rfu::binary-6>>) when device_type in [0x12, 0x32] do
     %{}
     |> Map.merge(parse_water_leak(1, water_leak_1))
     |> Map.merge(parse_battery_info(battery))
   end
+
+  # RB02I Emergency Push Button (Devicetype 0x10)
+  # R718T Push Button Interface(Devicetype 0x31)
+  # R312A R312A Emergency Button(Devicetype 0x4D)
+  # R312 Door Bell Button(Devicetype 0x55)
+  defp parse_payload(device_type, 0x01, <<battery::binary-1, alarm_1::binary-1, _rfu::binary-6>>) when device_type in [0x10, 0x31, 0x4D, 0x55] do
+    %{
+    }
+    |> Map.merge(parse_alarm(1, alarm_1))
+    |> Map.merge(parse_battery_info(battery))
+  end
+
+  # RB11E Occupancy/Light/Temperature Sensor (Devicetype 0x03)
+  # RB11E1 (Devicetype 0x07)
+  defp parse_payload(device_type, 0x01, <<battery::binary-1, temperature::signed-16, lux::16, occupy_1::binary-1, alarm_1::binary-1, _rfu::binary-1>>) when device_type in [0x03, 0x07] do
+    %{
+      lux: lux,
+      temperature: temperature
+    }
+    |> Map.merge(parse_occupy(1, occupy_1))
+    |> Map.merge(parse_alarm(1, alarm_1))
+    |> Map.merge(parse_battery_info(battery))
+  end
+
+  # RA02A Smoke Detector (Devicetype 0x0A)
+  defp parse_payload(device_type, 0x01, <<battery::binary-1, firealarm_1::binary-1, hightempalarm_1::binary-1, _rfu::binary-5>>) when device_type in [0x0A] do
+    %{
+    }
+    |> Map.merge(parse_firealarm(1, firealarm_1))
+    |> Map.merge(parse_hightempalarm(1, hightempalarm_1))
+    |> Map.merge(parse_battery_info(battery))
+  end
+
 
   defp parse_battery_info(<<lowbat::1, battery_voltage::7>>) do
     %{
@@ -77,8 +110,45 @@ defmodule Parser do
     }
   end
 
+  defp parse_alarm(i, <<alarm::8>>) do
+    %{
+      "alarm_#{i}" => alarm,
+      "alarm_#{i}_text" => alarm_text(alarm),
+    }
+  end
+
+  defp parse_firealarm(i, <<firealarm::8>>) do
+    %{
+      "firealarm_#{i}" => firealarm,
+      "firealarm_#{i}_text" => firealarm_text(firealarm),
+    }
+  end
+
+  defp parse_hightempalarm(i, <<hightempalarm::8>>) do
+    %{
+      "hightempalarm_#{i}" => hightempalarm,
+      "hightempalarm_#{i}_text" => hightempalarm_text(hightempalarm),
+    }
+  end
+
+  defp parse_occupy(i, <<occupy::8>>) do
+    %{
+      "occupy_#{i}" => occupy,
+      "occupy_#{i}_text" => occupy_text(occupy),
+    }
+  end
+
+
   defp water_leak_text(0), do: "No Leak"
   defp water_leak_text(1), do: "Leak"
+  defp alarm_text(0), do: "No Alarm"
+  defp alarm_text(1), do: "Alarm"
+  defp firealarm_text(0), do: "No Alarm"
+  defp firealarm_text(1), do: "Alarm"
+  defp hightempalarm_text(0), do: "No Alarm"
+  defp hightempalarm_text(1), do: "Alarm"
+  defp occupy_text(0), do: "Unoccupied"
+  defp occupy_text(1), do: "Occupied"
 
   def device_type_name(0x01), do: "R711 Indoor Temperature Humidity Sensor"
   def device_type_name(0x02), do: "R311A Door/Window Sensor"
@@ -209,10 +279,18 @@ defmodule Parser do
       },
 
       # Light Sensors: R311G, R311B
+      # Occupancy Sensors: RB11E, RB11E1
       %{
         field: "lux",
         display: "Illuminance",
         unit: "lux",
+      },
+
+      # Occupancy Sensors: RB11E, RB11E1
+      %{
+        field: "temperature",
+        display: "Temperature",
+        unit: "°C",
       },
 
       # Water Leak Sensors: R311W, R718WB, R718WA, R718WA2, R718WB2
@@ -223,7 +301,32 @@ defmodule Parser do
       %{
         field: "water_leak_2",
         display: "Water Leak 2",
-      }
+      },
+
+      # Emergency Button Sensors: RB02I, R718T, R312A R312A, R3125
+      # Occupancy Sensors: RB11E, RB11E1
+      %{
+        field: "alarm_1",
+        display: "Alarm 1",
+      },
+
+      # Occupancy Sensors: RB11E, RB11E1
+      %{
+        field: "occupy_1",
+        display: "Occupation",
+      },
+
+      # Smoke Alarm: RA02A
+      %{
+        field: "firealarm_1",
+        display: "Fire Alarm",
+      },
+
+      %{
+        field: "hightempalarm_1",
+        display: "High Temperature Alarm",
+      },
+
     ]
   end
 
