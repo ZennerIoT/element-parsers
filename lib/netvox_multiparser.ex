@@ -80,7 +80,7 @@ defmodule Parser do
   defp parse_payload(device_type, 0x01, <<battery::binary-1, temperature::signed-16, lux::16, occupy_1::binary-1, alarm_1::binary-1, _rfu::binary-1>>) when device_type in [0x03, 0x07] do
     %{
       lux: lux,
-      temperature: temperature
+      temperature: temperature/100
     }
     |> Map.merge(parse_occupy(1, occupy_1))
     |> Map.merge(parse_alarm(1, alarm_1))
