@@ -10,6 +10,7 @@ defmodule Parser do
   # Changelog:
   #   2019-xx-xx [jb]: Initial implementation.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #   2020-01-10 [tr]: Added Payload Version 5.0
   #
 
   # parsing packet if GPS fix available
@@ -24,10 +25,45 @@ defmodule Parser do
       1 -> "active"
       _ -> "unknown"
     end
-      
+
     # return value map
     {%{
       mode: mode,  # active/alive
+      temp: temp/10,   # Temperature in °C
+      vbat: vbat/1000, # Battery level in V
+      sat_cnt: sat_cnt, # received Sattelites
+      position: "GPS fix"
+      },
+    [
+      location: {gpslongitude, gpslatitude}, # GPS coordinates as GEO Point for showing in map
+    ]}
+  end
+
+  # parsing packet if GPS fix available (V 5.0)
+  def parse(<<temp::big-16, vbat::big-16, lat_deg::big-32, long_deg::big-32, alt_cm::big-24, status::binary-1, sat_cnt::8>>, _meta) do
+    <<last_measurement_isvalid::1, op_mode::1, _::6>> = status
+    # calculate the GPS coordinates
+    gpslatitude = lat_deg/100000
+    gpslongitude = long_deg/100000
+    alt_m = alt_cm/100
+
+    last_measurement_isvalid = case last_measurement_isvalid do
+      0 -> "false"
+      1 -> "true"
+      _ -> "unknown"
+    end
+
+    op_mode = case op_mode do
+      0 -> "alive"
+      1 -> "active"
+      _ -> "unknown"
+    end
+
+    # return value map
+    {%{
+      alt_m: alt_m,
+      last_measurement_isvalid: last_measurement_isvalid,
+      op_mode: op_mode,  # active/alive
       temp: temp/10,   # Temperature in °C
       vbat: vbat/1000, # Battery level in V
       sat_cnt: sat_cnt, # received Sattelites
@@ -52,7 +88,7 @@ defmodule Parser do
       mode: mode,  # active/alive
       temp: temp/10,   # Temperature in °C
       vbat: vbat/1000, # Battery level in V
-      sat_cnt: sat_cnt, # received Sattelites 
+      sat_cnt: sat_cnt, # received Sattelites
       position: "no GPS fix"
       }
   end
@@ -60,6 +96,16 @@ defmodule Parser do
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
     []
+  end
+
+  def tests() do
+    [
+      {:parse_hex, "00940C3E00528187000F332600030C0304", %{}},
+
+      {:parse_hex, "00940C3C00528189000F3322000C890304", %{}},
+
+      {:parse_hex, "00940C3C00528179000F3327000F960303", %{}},
+    ]
   end
 
 end
