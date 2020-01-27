@@ -88,6 +88,7 @@ Sensoneo Singlesensors | [lib/sensoneo_singlesensors.ex](lib/sensoneo_singlesens
 Strega Smartvalve| [lib/strega_smartvalve.ex](lib/strega_smartvalve.ex)
 Smilio Action| [lib/smilio_action_fw_2_0.ex](lib/smilio_action_fw_2_0.ex)
 Tabs "All in One" | [lib/tabs.ex](lib/tabs.ex)
+Tekelek 766 RF | [lib/tekelek_766_rf.ex](lib/tekelek_766_rf.ex)
 Tektelic "Kona Home Sensor" | [lib/tektelic_kona_home_sensor.ex](lib/tektelic_kona_home_sensor.ex)
 yabby GPS | [lib/yabby_gps.ex](lib/yabby_gps.ex)
 ZENNER Water Meter (v1.9) | [lib/zenner_water-meter.ex](lib/zenner_water-meter.ex)
