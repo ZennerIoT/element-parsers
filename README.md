@@ -63,6 +63,7 @@ Libelium Smart Cities | [lib/libelium_smart-cities.ex](lib/libelium_smart-cities
 Libelium Smart Environment | [lib/libelium_smart-environment.ex](lib/libelium_smart-environment.ex)
 Libelium Smart Parking Sensor v3 | [lib/libelium_smart-parking_v3.ex](lib/libelium_smart-parking_v3.ex)
 Libelium Smart Water | [lib/libelium_smart-water.ex](lib/libelium_smart-water.ex)
+Lobaro Environment | [lib/lobaro_environmental.ex](lib/lobaro_environmental.ex)
 Lobaro GPS Tracker | [lib/lobaro_gps-tracker.ex](lib/lobaro_gps-tracker.ex)
 Lobaro Pressure 26D | [lib/lobaro_pressure26d.ex](lib/lobaro_pressure26d.ex)
 Lobaro Oskar v2 | [lib/lobaro_oskar_v2.ex](lib/lobaro_oskar_v2.ex)
