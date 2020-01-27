@@ -100,11 +100,38 @@ defmodule Parser do
 
   def tests() do
     [
-      {:parse_hex, "00940C3E00528187000F332600030C0304", %{}},
+      {:parse_hex, "00940C3E00528187000F332600030C0304", %{},{%{
+        alt_m: 7.8,
+        last_measurement_isvalid: "false",
+        op_mode: "alive",
+        position: "GPS fix",
+        sat_cnt: 4,
+        temp: 14.8,
+        vbat: 3.134
+        }, [location: {9.96134, 54.07111}]}
+      },
 
-      {:parse_hex, "00940C3C00528189000F3322000C890304", %{}},
+      {:parse_hex, "00940C3C00528189000F3322000C890304", %{},{%{
+        alt_m: 32.09,
+        last_measurement_isvalid: "false",
+        op_mode: "alive",
+        position: "GPS fix",
+        sat_cnt: 4,
+        temp: 14.8,
+        vbat: 3.132
+        }, [location: {9.9613, 54.07113}]}
+      },
 
-      {:parse_hex, "00940C3C00528179000F3327000F960303", %{}},
+      {:parse_hex, "00940C3C00528179000F3327000F960303", %{},{%{
+        alt_m: 39.9,
+        last_measurement_isvalid: "false",
+        op_mode: "alive",
+        position: "GPS fix",
+        sat_cnt: 3,
+        temp: 14.8,
+        vbat: 3.132
+        }, [location: {9.96135, 54.07097}]}
+        },
     ]
   end
 
