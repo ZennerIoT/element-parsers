@@ -22,7 +22,7 @@ defmodule ParserSdk.MixProject do
   defp deps do
     [
       {:timex, "~> 3.3"},
-      {:lib_wmbus, git: zisops_git_url("code/lib_wmbus"), ref: "bd252dc5522a09102b7c7b976bf29607f69be1cd"}, # Internal ZIS library available on ELEMENT.
+      {:lib_wmbus, git: zisops_git_url("code/lib_wmbus"), ref: "84b93ff1cc61a06bae4bedc42b865e7a97f35be4"}, # Internal ZIS library available on ELEMENT.
       {:timeseries, git: zisops_git_url("code/timeseries")}, # Internal ZIS library available on ELEMENT.
     ]
   end
