@@ -16,7 +16,7 @@ defmodule Parser do
       temperature: temp/100
     }
   end
-  def parse(<<pressure::little-float-32, temp::little-16, battery::little-16>>, %{meta: %{frame_port: 1}}) do
+  def parse(<<pressure::little-float-32, temp::little-signed-16, battery::little-signed-16>>, _meta) do
     %{
       type: :measurement,
       pressure: pressure,
