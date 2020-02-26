@@ -95,6 +95,14 @@ defmodule Parser do
     |> Map.merge(parse_hightempalarm(1, hightempalarm_1))
     |> Map.merge(parse_battery_info(battery))
   end
+  
+  # R718NX 1-Phase Current Meter (Devicetype 0x49)
+  defp parse_payload(device_type, 0x01, <<battery::binary-1, current_t::16, multiplier::8, _rfu::binary-4>>) when device_type in [0x49] do
+    %{
+      current: current_t*multiplier # Illuminance
+    }
+    |> Map.merge(parse_battery_info(battery))
+  end
 
 
   defp parse_battery_info(<<lowbat::1, battery_voltage::7>>) do
@@ -322,11 +330,17 @@ defmodule Parser do
         field: "firealarm_1",
         display: "Fire Alarm",
       },
-
       %{
         field: "hightempalarm_1",
         display: "High Temperature Alarm",
       },
+      
+      # Current Meter
+      %{
+        field: "current",
+        display: "Current",
+        unit: "mA",
+      }
 
     ]
   end
