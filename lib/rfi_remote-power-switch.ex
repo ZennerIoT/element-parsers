@@ -43,7 +43,7 @@ defmodule Parser do
       {
         :parse_hex, "01", %{meta: %{frame_port: 1}},
          %{
-          relais_state: 01,
+          relais_state: 1,
           status: "on",
         }
       },
