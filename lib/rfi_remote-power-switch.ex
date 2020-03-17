@@ -2,10 +2,9 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
   require Logger
 
-  # ELEMENT IoT Parser for Holley e-meter
-  # According to documentation provided by Holley
+  # ELEMENT IoT Parser for RFI Remote Power Switch
   #
-  # Test hex payload: "03000005"
+  # Test hex payload: "01"
   #
   # Changelog:
   #   2020-03-17 [as]: Initial implementation
