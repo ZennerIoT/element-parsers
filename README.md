@@ -81,6 +81,7 @@ NKE Watteco IN'O | [lib/nke_ino.ex](lib/nke_ino.ex)
 NKE Watteco Remote Temperature | [lib/nke_remote_temperature.ex](lib/nke_remote_temperature.ex)
 PNI PlacePods | [lib/pni_placepods.ex](lib/pni_placepods.ex)
 RAK Button | [lib/rak_button.ex](lib/rak_button.ex)
+RFI Remote Power Switch | [lib/rfi_remote-power-switch.ex](lib/rfi_remote-power-switch.ex)
 Sagemcom Siconia | [lib/sagemcom_siconia.ex](lib/sagemcom_siconia.ex)
 Sensative Strips Comfort | [lib/sensative_strips.ex](lib/sensative_strips.ex)
 Sensing Labs SenLab LED | [lib/sensinglabs_senlabm.ex](lib/sensinglabs_senlabm.ex)
@@ -111,4 +112,3 @@ Tabs - Healthy Home Air Quality Sensor | [lib/tabs_healthy-home.ex](lib/tabs_hea
 Tabs - Object locator | [lib/tabs_object-locator.ex](lib/tabs_object-locator.ex) | Replaced by `Tabs "All in One"`
 Tabs - Pushbutton | [lib/tabs_pushbutton.ex](lib/tabs_pushbutton.ex) | Replaced by `Tabs "All in One"`
 Tabs - Motion | [lib/tabs_motion.ex](lib/tabs_motion.ex) | Replaced by `Tabs "All in One"`
-
