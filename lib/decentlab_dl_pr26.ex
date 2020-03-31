@@ -8,6 +8,7 @@ defmodule Parser do
 
   # Changelog
   #   2019-01-07/jb: Initial implementation for 359=KELLER_I2C_PRESSURE_SENSOR
+  #   2020-03-31/jb: Allowing all device_ids now
 
   # Configuration
   # Can be found on the pressure sensor.
@@ -15,12 +16,7 @@ defmodule Parser do
   def pressure_max(), do: 1.0 # bar
 
   # Pressure Sensor
-  def parse(<<2::8,  359::16, rest::binary>>, _meta), do: do_parse(359, rest)
-  def parse(<<2::8, 2565::16, rest::binary>>, _meta), do: do_parse(2565, rest) # undocumented device_id
-  def parse(<<2::8, device_id::16, _rest::binary>>, _meta) do
-    Logger.info("Skipping packet: Unknown device_id: #{inspect device_id}")
-    []
-  end
+  def parse(<<2::8, device_id::16, rest::binary>>, _meta), do: do_parse(device_id, rest)
   def parse(_payload, _meta), do: []
 
 
