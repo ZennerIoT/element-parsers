@@ -7,7 +7,7 @@ defmodule Parser do
   # According to documentation: https://resource.ursalink.com/document/t1_payload_structure_en.pdf
   #
   # Changelog:
-  #   2020-03-27 [jb]: Initial version for payload structure v1.4
+  #   2020-04-27 [jb]: Initial version for payload structure v1.4
   #
 
   def parse(payload, %{meta: %{frame_port: 85}}) do
