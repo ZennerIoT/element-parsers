@@ -5,18 +5,45 @@ defmodule Parser do
   # Parser for conbee HybridTag L300
   # https://www.conbee.eu/wp-content/uploads/HybridTAG-L300-Infosheet_06-18-2.pdf
   #
+  # REQUIRED Profile "conbee" with fields:
+  #   "distance_zero_percent": Integer, distance in cm from sensor if container is "empty"
+  #   "distance_hundred_percent": Integer, distance in cm from sensor if container is "full"
+  #
   # Changelog
   #   2018-08-23 [jb]: Initial version implemented using HybridTAG-L300-Infosheet_06-18-2.pdf
   #   2019-03-20 [jb]: Fixed "Humidity Sensor" for real payload.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2019-12-27 [jb]: Added field "Proximity in %"
   #   2020-01-08 [jb]: Added fields for Indoor Localization
+  #   2020-04-22 [jb]: Added calculated ullage in % from configurable profile
   #
 
-  def parse(data, %{meta: %{frame_port: 1}}) do
+  def ullage_distance_zero_percent(meta) do
+    get(
+      meta,
+      [:device, :fields, :conbee, :distance_zero_percent],
+      200 # guessed max value the device can measure
+    )
+  end
+  def ullage_distance_hundred_percent(meta) do
+    get(
+      meta,
+      [:device, :fields, :conbee, :distance_hundred_percent],
+      0 # guessed min value the device can measure
+    )
+  end
+
+
+  def preloads do
+    [device: [profile_data: [:profile]]]
+  end
+
+
+  def parse(data, %{meta: %{frame_port: 1}} = meta) do
     data
     |> parse_packets([])
     |> map_packets
+    |> add_ullage(meta)
   end
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
@@ -24,6 +51,26 @@ defmodule Parser do
   end
 
   #----------------
+
+
+  def add_ullage(%{proximity: distance} = row, meta) do
+    max = ullage_distance_zero_percent(meta)
+    min = ullage_distance_hundred_percent(meta)
+
+    Map.merge(row, %{ullage: calculate_ullage_percent(distance, min, max)})
+  end
+  def add_ullage(row, _meta), do: row
+
+  def calculate_ullage_percent(_distance, min, max) when min == max, do: 100
+  def calculate_ullage_percent(distance, min, max) do
+    # Move values from min to 0
+    distance = distance - min
+    max = max - min
+    # Calculate percentage
+    percent = (1 - (distance / max)) * 100
+    # Cap to 0..100 as integer
+    percent |> Kernel.min(100) |> Kernel.max(0) |> Kernel.trunc()
+  end
 
   def map_packets(packets) do
     packets
@@ -69,7 +116,7 @@ defmodule Parser do
 
   # Proximity
   def map_packet(<<0x0b, 0x01, value::16>>, acc) do
-    Map.merge(acc, %{proximity: value}) # Unit: mm
+    Map.merge(acc, %{proximity: value}) # Unit: cm
   end
   def map_packet(<<0x0b, 0x06, value::8>>, acc) do
     Map.merge(acc, %{proximity_percent: value}) # Unit: %
@@ -184,11 +231,16 @@ defmodule Parser do
       %{
         "field" => "proximity",
         "display" => "Proximity",
-        "unit" => "mm"
+        "unit" => "cm"
       },
       %{
         "field" => "proximity_percent",
         "display" => "Proximity",
+        "unit" => "%"
+      },
+      %{
+        "field" => "ullage",
+        "display" => "Ullage",
         "unit" => "%"
       },
       %{
@@ -249,7 +301,7 @@ defmodule Parser do
         :parse_hex,  "03050101", %{meta: %{frame_port: 1}}, %{button_1: 1},
       },
       {
-        :parse_hex,  "040B0101F4", %{meta: %{frame_port: 1}}, %{proximity: 500},
+        :parse_hex,  "040B0101F4", %{meta: %{frame_port: 1}}, %{proximity: 500, ullage: 0},
       },
       {
         :parse_hex,  "040F011234", %{meta: %{frame_port: 1}}, %{localisation_id: 4660}, # Missing example in docs.
@@ -288,7 +340,8 @@ defmodule Parser do
           battery_voltage: 3.8,
           proximity: 137,
           proximity_percent: 11,
-          temperature: 4.984396934509277
+          temperature: 4.984396934509277,
+          ullage: 31
         },
       },
 
@@ -299,6 +352,20 @@ defmodule Parser do
           "local_1_rssi" => -62,
           "local_2_mac" => "AC233F291667",
           "local_2_rssi" => -84
+        },
+      },
+
+
+      {
+        :parse_hex,
+        "040B0100B3030B060006020141DAAF1B03510126",
+        %{meta: %{frame_port: 1}, device: %{fields: %{conbee: %{distance_zero_percent: 152, distance_hundred_percent: 25}}}},
+        %{
+          battery_voltage: 3.8,
+          proximity: 179,
+          proximity_percent: 0,
+          temperature: 27.335500717163086,
+          ullage: 0
         },
       },
     ]

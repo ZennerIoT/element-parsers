@@ -526,6 +526,14 @@ defmodule Parser do
         },
       },
 
+      # bei start, register set antwort auf DOWN
+      {
+        :parse_hex,
+        "054A6811",
+        %{meta: %{frame_port: 3}},
+        [{%{battery: 100}, [measured_at: nil]}],
+      },
+
 
       # Regelmäßige Nachricht
       {
