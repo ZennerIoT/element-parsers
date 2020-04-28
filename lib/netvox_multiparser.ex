@@ -13,6 +13,7 @@ defmodule Parser do
   #   2019-06-05: [gw] refactoring. Checked with v1.8.5
   #   2019-07-01: [gw] fix bug
   #   2020-01-09: [as] added some sensor types
+  #   2020-04-28: [as] added some more sensor types
 
   def parse(<<version::8, device_type::8, report_type::8, rest::binary>>, %{meta: %{frame_port: 6}}) do
     %{
@@ -63,6 +64,16 @@ defmodule Parser do
     |> Map.merge(parse_water_leak(1, water_leak_1))
     |> Map.merge(parse_battery_info(battery))
   end
+  
+  # R718WB Water Leak Detector with Rope Sensor (Devicetype 0x12)
+  # R718WA Water Leak Detector (Devicetype 0x32)
+  defp parse_payload(device_type, 0x01, <<battery::binary-1, water_leak_1::binary-1, water_leak_2::binary-1, _rfu::binary-5>>) when device_type in [0x46, 0x47] do
+    %{}
+    |> Map.merge(parse_water_leak(1, water_leak_1))
+    |> Map.merge(parse_water_leak(2, water_leak_2))
+    |> Map.merge(parse_battery_info(battery))
+  end
+
 
   # RB02I Emergency Push Button (Devicetype 0x10)
   # R718T Push Button Interface(Devicetype 0x31)
