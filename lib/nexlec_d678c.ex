@@ -3,11 +3,18 @@ defmodule Parser do
   require Logger
 
   #
-  # ELEMENT IoT Parser for Nexlec D678C Insafe+ Carbon, Temperature and Humidity Sensor.
+  # ELEMENT IoT Parser for Nexelec D678C Insafe+ Carbon, Temperature and Humidity Sensor.
   #
   # Changelog:
   #   2020-02-28 [jb]: Initial implementation according to "D678C_Insafe+_Carbon_LoRa_Technical_Guide_EN.pdf"
+  #   2020-05-04 [jb]: Added config flag "config_add_last_real_time_data_to_button_press?"
   #
+
+  #--- Configuration
+
+  defp config_add_last_real_time_data_to_button_press?(), do: true
+
+  #--- DO NOT EDIT BELOW HERE
 
   # Real-Time Data
   def parse(<<0x72, co2_level, temperature, humidity, iaq_global::3, iaq_src::4, iaq_co2::3, iaq_dry::3, iaq_mould::3, iaq_dm::3, hci::2, frame_index::3>>, _meta) do
@@ -43,13 +50,30 @@ defmodule Parser do
   end
 
   # Button Press
-  def parse(<<0x74, button_press::3, frame_index::3, _::2>>, _meta) do
-    %{
+  def parse(<<0x74, button_press::3, frame_index::3, _::2>>, meta) do
+    row = %{
       product_type: :insafe_carbon_lora,
       message_type: :button_press,
       frame_index: frame_index,
     }
     |> add_from_mapping(:button_press, button_press, mapping(~w(short_press)), :reserved)
+
+    case config_add_last_real_time_data_to_button_press?() do
+      true ->
+        case get_last_reading(meta, [message_type: "real_time_data"]) do
+          %{data: data} ->
+            data
+            |> Map.drop([
+              :message_type, :product_type, :frame_index,
+              "message_type", "product_type", "frame_index",
+            ])
+            |> Map.merge(row)
+          _ ->
+            row
+        end
+      _ ->
+        row
+    end
   end
 
   # Message datalog
@@ -324,6 +348,45 @@ defmodule Parser do
         frame_index: 0,
         message_type: :button_press,
         product_type: :insafe_carbon_lora
+      }},
+
+      # Button press from docs with last realtime reading
+      {:parse_hex, "7400", %{
+        meta: %{frame_port: 1},
+        _last_reading_map: %{
+          [message_type: "real_time_data"] => %{
+            data: %{
+              co2_level: 2120.0,
+              frame_index: 0,
+              hci: "good",
+              humidity: 40.0,
+              iaq_co2: "bad",
+              iaq_dm: "excellent",
+              iaq_dry: "excellent",
+              iaq_global: "bad",
+              iaq_mould: "excellent",
+              iaq_src: "co2",
+              message_type: "real_time_data",
+              product_type: "insafe_carbon_lora",
+              temperature: 23.400000000000002
+            }
+          },
+        },
+      }, %{
+        button_press: "short_press",
+        co2_level: 2120.0,
+        frame_index: 0,
+        hci: "good",
+        humidity: 40.0,
+        iaq_co2: "bad",
+        iaq_dm: "excellent",
+        iaq_dry: "excellent",
+        iaq_global: "bad",
+        iaq_mould: "excellent",
+        iaq_src: "co2",
+        message_type: :button_press,
+        product_type: :insafe_carbon_lora,
+        temperature: 23.400000000000002
       }},
 
       # Message datalog from docs
