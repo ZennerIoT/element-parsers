@@ -24,8 +24,12 @@ defmodule Parser do
   # DOWN Messages:
   #   Configuration
   #     reporting_config_packet
-  #       "00 02 3C000000" and Port 50 => Usage jede 60 Minuten
-  #       "00 02 A0050000" and Port 50 => Usage jede 24 Stunden
+  #       "00 01 3C00" and Port 50 => Usage message every 60min
+  #       "00 01 A005" and Port 50 => Usage message every 24h
+  #       "00 04 00"   and Port 50 => Usage message only on changed value
+  #       "00 04 01"   and Port 50 => Usage message for every value
+  #       "00 02 3C00" and Port 50 => Status message every 24h
+  #       "00 02 400B" and Port 50 => Status message every 48
   #
 
   # Status message
