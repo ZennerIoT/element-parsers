@@ -7,6 +7,7 @@ defmodule Parser do
   # Changelog:
   #   2020-02-24 [jb]: Initial implementation according to E1446-CM-4_EN_V00.pdf
   #   2020-02-28 [jb]: Added "Taupunkt" calculation.
+  #   2020-05-12 [jb]: Fixed single temperature value.
   #
 
 
@@ -104,7 +105,7 @@ defmodule Parser do
       |> parse_payload(rest)
     end)
   end
-  defp parse_payload(acc, <<03, temp::16-signed-little, humi::8, rest::binary>>) do
+  defp parse_payload(acc, <<03, temp::16-signed, humi::8, rest::binary>>) do
     acc
     |> add_temp_and_humidty(temp, humi)
     |> parse_payload(rest)
@@ -402,6 +403,30 @@ defmodule Parser do
         temp_i2c: 1,
         temp_pt100: 0
       }},
+      {:parse_hex, "011204C80302D347",
+        %{
+          meta: %{
+            frame_port: 3,
+          },
+          transceived_at: test_datetime("2020-02-24T12:00:00Z")
+        },
+        %{
+          acc: 0,
+          battery: 100,
+          battery_low: 0,
+          dew_temperature: 2.332753960374585,
+          event_type: :alarming,
+          ext_mem: 0,
+          humidity: 71,
+          last_temp_valid: 1,
+          message_type: :app_data,
+          temp_i2c: 1,
+          temp_pt100: 0,
+          temperature: 7.23,
+          vapor_pressure: 7.225952271070698,
+          water_steam_density: 5.652438820473279
+        }
+      },
     ]
   end
 
