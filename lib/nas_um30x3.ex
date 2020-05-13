@@ -19,24 +19,22 @@ defmodule Parser do
   #   2019-05-07 [gw]: Also handling UM3033 devices.
   #   2019-05-17 [jb]: Added obis field for gas_in_liter. Added interpolation of values. Fixed boot message for v0.7.0.
   #   2019-05-22 [gw]: Adjusted fw version on boot message and also return status message from boot message as separate reading.
+  #   2020-05-13 [jb]: Fixed interpolate: false. Made configuration testable.
 
+  def config() do
+    %{
+      # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated (default: false)
+      interpolate: false,
 
-  # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
-  # Default: true
-  def interpolate?(), do: true
-  # Minutes between interpolated values
-  # Default: 15
-  def interpolate_minutes(), do: 60
+      # Minutes between interpolated values (default: 15)
+      interpolate_minutes: 60,
 
-  # Name of timezone.
-  # Default: "Europe/Berlin"
-  def timezone(), do: "Europe/Berlin"
-
-
-
-  defp add_obis([_|_] = readings, meta) do
-    Enum.map(readings, &add_obis(&1, meta))
+      # Timezone (default: "Europe/Berlin")
+      timezone: "Europe/Berlin",
+    }
   end
+  defp config(key, meta), do: get(meta, [:_config, key], Map.get(config(), key))
+  
 
   defp add_obis(%{"digital1_reporting_medium_type" => :gas_in_liter, :digital1_reporting => value} = reading, meta) do
     obis = "7-0:3.0.0"
@@ -53,6 +51,13 @@ defmodule Parser do
     |> add_missing(meta)
   end
 
+
+  #--- Do not edit blow here! ---
+
+
+  defp add_obis([_|_] = readings, meta) do
+    Enum.map(readings, &add_obis(&1, meta))
+  end
   defp add_obis(%{} = data, _meta), do: data
 
   defp round_as_float(value) do
@@ -61,7 +66,10 @@ defmodule Parser do
 
   defp add_missing(%{"7-0:3.0.0" => current_value} = data, meta) do
 
-    if interpolate?() do
+    if config(:interpolate, meta) do
+
+      interpolate_minutes = config(:interpolate_minutes, meta)
+      timezone = config(:timezone, meta)
 
       obis = "7-0:3.0.0"
       current_measured_at = Map.get(meta, :transceived_at)
@@ -78,10 +86,10 @@ defmodule Parser do
                fn datetime_a, datetime_b ->
                  # Calculate all tuples with x=nil between a and b where a value should be interpolated
                  interval = Timex.Interval.new(
-                   from: datetime_a |> Timex.to_datetime(timezone()) |> datetime_add_to_multiple_of_minutes(interpolate_minutes()),
+                   from: datetime_a |> Timex.to_datetime(timezone) |> datetime_add_to_multiple_of_minutes(interpolate_minutes),
                    until: datetime_b,
                    left_open: false,
-                   step: [minutes: interpolate_minutes()]
+                   step: [minutes: interpolate_minutes]
                  )
                  Enum.map(interval, &({nil, [measured_at: &1]}))
                end,
@@ -117,7 +125,7 @@ defmodule Parser do
       end
 
     else
-      []
+      [data]
     end
   end
   defp add_missing(current_data, _meta), do: current_data
@@ -490,6 +498,9 @@ defmodule Parser do
         %{
           meta: %{frame_port: 25},
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _config: %{
+            interpolate: true,
+          },
           _last_reading_map: %{
             [obis: "7-0:3.0.0"] => %{measured_at: test_datetime("2019-01-01T10:34:11Z"), data: %{:obis => "7-0:3.0.0", "7-0:3.0.0" => 0.003}},
           },
