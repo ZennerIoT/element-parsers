@@ -9,6 +9,9 @@ defmodule Parser do
   # Smilio Action is a system of modular connected buttons (between 1 and 5 buttons on the façade)
   # allowing to report multiple events and trigger automated actions through email, SMS, API or webservices.
   #
+  # If no readings are created, check the "running mode" the device is in.
+  # Configuration Payloads can be generated here: https://skiplyfrance.github.io/configurator.html
+  #
   # Changelog
   #   2019-02-14 [mm]: Initial version.
   #
