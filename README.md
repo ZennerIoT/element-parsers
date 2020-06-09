@@ -94,6 +94,7 @@ Sensoneo Quatrosensors | [lib/sensoneo_quatrosensors.ex](lib/sensoneo_quatrosens
 Sensoneo Singlesensors | [lib/sensoneo_singlesensors.ex](lib/sensoneo_singlesensors.ex)
 Strega Smartvalve| [lib/strega_smartvalve.ex](lib/strega_smartvalve.ex)
 Smilio Action| [lib/smilio_action_fw_2_0.ex](lib/smilio_action_fw_2_0.ex)
+Sontex 79 Heat| [lib/sontext_7x9_heat.ex](lib/sontext_7x9_heat.ex)
 Tabs "All in One" | [lib/tabs.ex](lib/tabs.ex)
 Tekelek 766 RF | [lib/tekelek_766_rf.ex](lib/tekelek_766_rf.ex)
 Tektelic "Kona Home Sensor" | [lib/tektelic_kona_home_sensor.ex](lib/tektelic_kona_home_sensor.ex)
