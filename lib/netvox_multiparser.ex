@@ -14,6 +14,7 @@ defmodule Parser do
   #   2019-07-01: [gw] fix bug
   #   2020-01-09: [as] added some sensor types
   #   2020-04-28: [as] added some more sensor types
+  #   2020-06-16: [as] added 3 phase current meter
 
   def parse(<<version::8, device_type::8, report_type::8, rest::binary>>, %{meta: %{frame_port: 6}}) do
     %{
@@ -110,11 +111,25 @@ defmodule Parser do
   # R718NX 1-Phase Current Meter (Devicetype 0x49)
   defp parse_payload(device_type, 0x01, <<battery::binary-1, current_t::16, multiplier::8, _rfu::binary-4>>) when device_type in [0x49] do
     %{
-      current: current_t*multiplier # Illuminance
+      current: current_t*multiplier
     }
     |> Map.merge(parse_battery_info(battery))
   end
 
+  # R718NX 3-Phase Current Meter (Devicetype 0x4A)
+  defp parse_payload(device_type, 0x01, <<battery::binary-1, current1_t::16, current2_t::16, current3_t::16, multiplier::8>>) when device_type in [0x4A] do
+    %{
+      current1: current1_t*multiplier,
+      current2: current2_t*multiplier,
+      current3: current3_t*multiplier,
+    }
+    |> Map.merge(parse_battery_info(battery))
+  end
+  defp parse_payload(device_type, 0x02, <<battery::binary-1, current1_t::16, current2_t::16, current3_t::16, multiplier::8>>) when device_type in [0x4A] do
+    %{
+    }
+    |> Map.merge(parse_battery_info(battery))
+  end
 
   defp parse_battery_info(<<lowbat::1, battery_voltage::7>>) do
     %{
