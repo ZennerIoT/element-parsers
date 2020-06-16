@@ -14,6 +14,7 @@ defmodule Parser do
   #
   # Changelog:
   #   2020-06-11 [jb]: Initial implementation according to "T0006279_TRM_ver0.6.r1.pdf"
+  #   2020-06-16 [jb]: Fixed call to add_location. Always creating locations ignoring gps_valid flag.
   #
 
   # Real-time sensor data from the MCU, GNSS receiver, and accelerometer, port 10
@@ -46,9 +47,9 @@ defmodule Parser do
     []
   end
 
-  defp add_location({%{gps_valid: 1, gps_lat: gps_lat, gps_lon: gps_lon} = reading, opts}) do
-    # Only add it location is valid
-    {reading, [{gps_lon, gps_lat} |opts]}
+  defp add_location({%{gps_lat: gps_lat, gps_lon: gps_lon} = reading, opts}) do
+    # Always adding location, because the gps_valid flag will be in the NEXT message, which is not intelligent.
+    {reading, [{:location, {gps_lon, gps_lat}} |opts]}
   end
   defp add_location(other), do: other
 
@@ -262,7 +263,7 @@ defmodule Parser do
           gps_lat: 51.0486,
           gps_lon: -114.07079999999999,
           type: :realtime_sensor_data
-        }, []}
+        }, [location: {-114.07079999999999, 51.0486}]}
       },
 
       {
@@ -276,7 +277,7 @@ defmodule Parser do
           gps_valid: 1,
           type: :realtime_sensor_data,
           utc_valid: 1
-        }, [{-114.07079999999999, 51.0486}]}
+        }, [location: {-114.07079999999999, 51.0486}]}
       },
     ]
   end
