@@ -7,7 +7,16 @@ defmodule Parser do
   #
   # Changelog:
   #   2020-06-18 [jb]: Initial implementation according to "ATIM_ACW-DIND160-80-88-44_UG_EN_V1.7.pdf"
+  #   2020-06-23 [jb]: Added feature :append_last_digital_inputs default: false
   #
+
+  def config() do
+    %{
+      # Will append the last digital_inputs from previous packet. Might not work correctly with reparsing.
+      append_last_digital_inputs: false,
+    }
+  end
+  defp config(key, meta), do: get(meta, [:_config, key], Map.get(config(), key))
 
   def parse(<<0x00, _::binary>>, _meta), do: %{type: :undocumented_format_0}
   def parse(<<0x06, _::binary>>, _meta), do: %{type: :undocumented_format_6}
@@ -50,17 +59,19 @@ defmodule Parser do
       command: cmd,
     }
   end
-  def parse(<<0x41, digital_inputs::binary-2>>, _meta) do
+  def parse(<<0x41, digital_inputs::binary-2>>, meta) do
     %{
       type: :digital_inputs,
     }
     |> parse_digital_inputs(digital_inputs)
+    |> append_last_digital_inputs(meta)
   end
-  def parse(<<0x42, digital_inputs::binary-2>>, _meta) do
+  def parse(<<0x42, digital_inputs::binary-2>>, meta) do
     %{
       type: :digital_inputs,
     }
     |> parse_digital_inputs(digital_inputs)
+    |> append_last_digital_inputs(meta)
   end
   def parse(<<0x43, counter>>, _meta) do
     %{
@@ -106,6 +117,38 @@ defmodule Parser do
       input15: i15,
       input16: i16,
     })
+  end
+
+  defp append_last_digital_inputs(row, meta) do
+    if config(:append_last_digital_inputs, meta) do
+      meta
+      |> get_last_reading([input1: :_])
+      |> case do
+        %{data: data} ->
+          Map.merge(row, %{
+            input1_last: Map.get(data, "input1"),
+            input2_last: Map.get(data, "input2"),
+            input3_last: Map.get(data, "input3"),
+            input4_last: Map.get(data, "input4"),
+            input5_last: Map.get(data, "input5"),
+            input6_last: Map.get(data, "input6"),
+            input7_last: Map.get(data, "input7"),
+            input8_last: Map.get(data, "input8"),
+            input9_last: Map.get(data, "input9"),
+            input10_last: Map.get(data, "input10"),
+            input11_last: Map.get(data, "input11"),
+            input12_last: Map.get(data, "input12"),
+            input13_last: Map.get(data, "input13"),
+            input14_last: Map.get(data, "input14"),
+            input15_last: Map.get(data, "input15"),
+            input16_last: Map.get(data, "input16"),
+          })
+        _ ->
+          row
+      end
+    else
+      row
+    end
   end
 
 #  defp parse_temperature(row, <<temp::signed-16>>) do
@@ -204,6 +247,75 @@ defmodule Parser do
       # Frame of digital IN/OUT and temperature
       {:parse_hex, "07100F00", %{meta: %{frame_port: 1}}, %{command: 16, type: :cmd_response}},
 
+      # Testing feature :append_last_digital_inputs
+      {
+        :parse_hex,
+        "42EFFF",
+        %{
+          meta: %{frame_port: 1},
+          _config: %{
+            append_last_digital_inputs: true,
+          },
+          _last_reading_map: %{
+            [input1: :_] =>
+              %{
+                data: %{
+                  "input1" => 0,
+                  "input10" => 0,
+                  "input11" => 0,
+                  "input12" => 0,
+                  "input13" => 0,
+                  "input14" => 0,
+                  "input15" => 0,
+                  "input16" => 0,
+                  "input2" => 0,
+                  "input3" => 0,
+                  "input4" => 0,
+                  "input5" => 1,
+                  "input6" => 0,
+                  "input7" => 0,
+                  "input8" => 0,
+                  "input9" => 0,
+                }
+            },
+          },
+        },
+        %{
+          input11_last: 0,
+          input8: 1,
+          input2: 1,
+          input11: 1,
+          input5_last: 1,
+          input5: 0,
+          input3_last: 0,
+          input9: 1,
+          input7_last: 0,
+          input16: 1,
+          type: :digital_inputs,
+          input1_last: 0,
+          input8_last: 0,
+          input13_last: 0,
+          input6: 1,
+          input1: 1,
+          input14: 1,
+          input16_last: 0,
+          input10_last: 0,
+          input12: 1,
+          input7: 1,
+          input2_last: 0,
+          input4_last: 0,
+          input4: 1,
+          input3: 1,
+          input14_last: 0,
+          input15_last: 0,
+          input15: 1,
+          input10: 1,
+          input13: 1,
+          input12_last: 0,
+          input6_last: 0,
+          input9_last: 0
+        }
+      }
     ]
   end
 end
