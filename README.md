@@ -28,6 +28,7 @@ A list of parser for devices we already integrated in ELEMENT IoT Platform.
 
 Device Name | Parser File
 ------------|-------------
+abeeway Industrial Tracker | [lib/abeeway_industrial_tracker.ex](lib/abeeway_industrial_tracker.ex)
 ADEUNIS ARF8046 | [lib/adeunis_arf8046.ex](lib/adeunis_arf8046.ex)
 ADEUNIS ARF8170BA | [lib/adeunis_arf8170ba.ex](lib/adeunis_arf8170ba.ex)
 ADEUNIS ARF8200AA | [lib/adeunis_arf8200aa.ex](lib/adeunis_arf8200aa.ex)
