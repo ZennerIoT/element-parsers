@@ -19,6 +19,7 @@ defmodule Parser do
   def parse(<<payload::binary>>, %{meta: %{frame_port: frame_port}}) do
     payload
     |> LibWmbus.Dib.parse_dib()
+    |> filter_unknown_data()
     |> Enum.map(fn
       %{memory_address: m, sub_device: sd, tariff: t, data: %{desc: d, unit: "", value: v}} ->
         %{"#{m}_#{sd}_#{t}_#{d}" => v}
@@ -33,6 +34,20 @@ defmodule Parser do
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
     []
+  end
+
+  # Will remove all unknown fields from LibWmbus.Dib.parse_dib(payload) result.
+  defp filter_unknown_data(parse_dib_result) do
+    Enum.filter(parse_dib_result, fn
+      (%{data: %{desc: desc}}) ->
+        case to_string(desc) do
+          <<"unkown_", _::binary>> -> false
+          <<"unknown_", _::binary>> -> false
+          _ -> true
+        end
+      (_) ->
+        true
+    end)
   end
 
   # Define fields with human readable name and a SI unit if available.
@@ -95,7 +110,6 @@ defmodule Parser do
           "0_0_0_power_W" => 0,
           "0_0_0_return_temperature_°C" => 20.68,
           "0_0_0_supply_temperature_°C" => 20.18,
-          "0_0_0_unkown_manufacturer_specific" => "00",
           "0_0_0_volume_m³" => 0.51,
           "20_0_0_date" => ~D[2127-01-01],
           "20_0_0_energy_Wh" => 0,
@@ -115,7 +129,6 @@ defmodule Parser do
           "0_0_0_power_W" => 0,
           "0_0_0_return_temperature_°C" => 22.3,
           "0_0_0_supply_temperature_°C" => 22.16,
-          "0_0_0_unkown_manufacturer_specific" => "00",
           "0_0_0_volume_m³" => 6.64,
           "20_0_0_date" => ~D[2127-01-01],
           "20_0_0_energy_Wh" => 0,

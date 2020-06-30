@@ -20,6 +20,7 @@ defmodule Parser do
   #   2019-05-17 [jb]: Added obis field for gas_in_liter. Added interpolation of values. Fixed boot message for v0.7.0.
   #   2019-05-22 [gw]: Adjusted fw version on boot message and also return status message from boot message as separate reading.
   #   2020-05-13 [jb]: Fixed interpolate: false. Made configuration testable.
+  #   2020-06-29 [jb]: Added filter_unknown_data() filtering :unknown Mbus data.
 
   def config() do
     %{
@@ -311,6 +312,7 @@ defmodule Parser do
   defp filter_and_flatmap_mbus_data(mbus_data) do
     mbus_data
     |> LibWmbus.Dib.parse_dib()
+    |> filter_unknown_data()
     |> Enum.map(fn
       %{data: data} = map ->
         Map.merge(map, data)
@@ -326,6 +328,20 @@ defmodule Parser do
       %{desc: d, value: v} = map ->
         Map.merge(map, %{d => v})
         |> Map.drop([:desc, :value])
+    end)
+  end
+
+  # Will remove all unknown fields from LibWmbus.Dib.parse_dib(payload) result.
+  defp filter_unknown_data(parse_dib_result) do
+    Enum.filter(parse_dib_result, fn
+      (%{data: %{desc: desc}}) ->
+        case to_string(desc) do
+          <<"unkown_", _::binary>> -> false
+          <<"unknown_", _::binary>> -> false
+          _ -> true
+        end
+      (_) ->
+        true
     end)
   end
 
