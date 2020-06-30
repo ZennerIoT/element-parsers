@@ -39,6 +39,7 @@ ASCOEL LoRaWan Magnetic Contact Sensor CM868LR (Temperature/Humidity) | [lib/asc
 ASCOEL LoRaWan Magnetic Contact Sensor CM868LR | [lib/ascoel_cm868lr.ex](lib/ascoel_cm868lr.ex)
 ASCOEL LoRaWAN Pyroelectric Motion Sensor | [lib/ascoel_ir868lr.ex](lib/ascoel_ir868lr.ex)
 ATIM Metering Dry Contacts| [lib/atim_metering_dry_contacts.ex](lib/atim_metering_dry_contacts.ex)
+Axioma Qalcosonic water meter | [lib/axioma_qalcosonic.ex](lib/axioma_qalcosonic.ex)
 BOSCH Park Sensor | [lib/bosch_parksensor.ex](lib/bosch_parksensor.ex)
 Cayenne LPP | [lib/cayenne_lpp.ex](lib/cayenne_lpp.ex)
 Comtac DALI Bridge | [lib/comtac_dali-bridge.ex](lib/comtac_dali-bridge.ex)
