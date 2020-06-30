@@ -12,12 +12,14 @@ defmodule Parser do
   #   2019-07-02 [gw]: update according to v1.3 of documentation by adding precise error messages.
   #   2019-07-08 [gw]: Use LibWmbus library to parse the dibs. Changes most of the field names previously defined.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #   2020-06-29 [jb]: Added filter_unknown_data() filtering :unknown Mbus data.
 
   # When using payload style 0, the payload is made up of DIBs on M-Bus format, excluding M-Bus header.
   def parse(<<type::8, dibs_binary::binary,>>, _meta) do
     dibs =
       dibs_binary
       |> LibWmbus.Dib.parse_dib()
+      |> filter_unknown_data()
       |> merge_data_into_parent()
       |> map_values()
       |> Enum.reduce(Map.new(), fn m, acc -> Map.merge(m, acc) end)
@@ -34,6 +36,20 @@ defmodule Parser do
 
 
   #--- Internals ---
+
+  # Will remove all unknown fields from LibWmbus.Dib.parse_dib(payload) result.
+  defp filter_unknown_data(parse_dib_result) do
+    Enum.filter(parse_dib_result, fn
+      (%{data: %{desc: desc}}) ->
+        case to_string(desc) do
+          <<"unkown_", _::binary>> -> false
+          <<"unknown_", _::binary>> -> false
+          _ -> true
+        end
+      (_) ->
+        true
+    end)
+  end
 
   defp merge_data_into_parent(map) do
     Enum.map(map, fn
