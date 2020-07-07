@@ -100,7 +100,7 @@ defmodule Parser do
         display: "Left to Right",
       },
       %{
-        field: "left_to_right",
+        field: "right_to_left",
         display: "Right to Left",
       },
 
@@ -109,7 +109,7 @@ defmodule Parser do
         display: "Left to Right Summe",
       },
       %{
-        field: "left_to_right_sum",
+        field: "right_to_left_sum",
         display: "Right to Left Summe",
       },
 
