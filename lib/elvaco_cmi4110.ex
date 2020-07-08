@@ -13,6 +13,7 @@ defmodule Parser do
   #   2019-07-08 [gw]: Use LibWmbus library to parse the dibs. Changes most of the field names previously defined.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2020-06-29 [jb]: Added filter_unknown_data() filtering :unknown Mbus data.
+  #   2020-07-08 [jb]: Added all error flags in build_error_string()
 
   # When using payload style 0, the payload is made up of DIBs on M-Bus format, excluding M-Bus header.
   def parse(<<type::8, dibs_binary::binary,>>, _meta) do
@@ -64,51 +65,48 @@ defmodule Parser do
     map
     |> Enum.map(fn
       %{desc: :error_codes, value: v} = map ->
-        v_as_int = String.to_integer(v)
-        <<error::binary>> = Base.decode16!(v)
-        map
-        |> Map.merge(%{:error_codes => (if v_as_int > 0, do: 1, else: 0), :error => build_error_string(error)})
-        |> Map.drop([:desc, :value])
+        Map.merge(map, %{
+          :error_codes => v |> String.to_integer() |> min(1),
+          :error => v |> Base.decode16!() |> build_error_string(),
+        })
       %{desc: :fabrication_block, value: v} = map ->
-        map
-        |> Map.merge(%{:fabrication_block => v, :fabrication_block_unit => "MeterID"})
-        |> Map.drop([:desc, :value])
+        Map.merge(map, %{:fabrication_block => v, :fabrication_block_unit => "MeterID"})
       %{desc: d = :energy, value: v, unit: "Wh"} = map ->
-        map
-        |> Map.merge(%{d => Float.round(v / 1000, 3), :energy_unit => "kWh"})
-        |> Map.drop([:desc, :value])
+        Map.merge(map, %{d => Float.round(v / 1000, 3), :energy_unit => "kWh"})
       %{desc: d, value: v, unit: u} = map ->
-        map
-        |> Map.merge(%{d => v, "#{d}_unit" => u})
-        |> Map.drop([:desc, :value])
-    end )
+        Map.merge(map, %{d => v, "#{d}_unit" => u})
+    end)
+    |> Enum.map(&(Map.drop(&1, [:desc, :value])))
   end
 
   defp build_error_string(<<status::binary-1>>), do: build_error_string(<<0>> <> status)
-  defp build_error_string(<<_rfu::2, _not_relevant_for_lora::2, eeprom_heads_up::1, dirt_heads_up::1, electronic_error::1, eight_hours_exceeded::1,
+  defp build_error_string(<<bit15::1, bit14::1, bit13::1, bit12::1, eeprom_heads_up::1, dirt_heads_up::1, electronic_error::1, eight_hours_exceeded::1,
     internal_memory_disturbance::1, short_circuit_temperature_sensor_cold_side::1, short_circuit_temperature_sensor_warm_side::1,
-    _supply_voltage_low::1, electronic_malfunction::1, disruption_temperature_sensor_cold_side::1, disruption_temperature_sensor_warm_side::1,
+    supply_voltage_low::1, electronic_malfunction::1, disruption_temperature_sensor_cold_side::1, disruption_temperature_sensor_warm_side::1,
     error_flow_measurement::1>>) do
     []
     |> concat_if(eeprom_heads_up, "EEPROM-Vorwarnung")
     |> concat_if(dirt_heads_up, "Verschmutzungs-Vorwarnung der Messstrecke")
     |> concat_if(electronic_error, "F9 - Fehler in der Elektronik (ASIC)")
     |> concat_if(eight_hours_exceeded, "F8 - F1, F2, F3, F5 oder F6 stehen länger als 8 Stunden an")
-    |> concat_if(internal_memory_disturbance, "F7 - Störung im internen Speicher (ROM oder EEPROM")
+    |> concat_if(internal_memory_disturbance, "F7 - Störung im internen Speicher (ROM oder EEPROM)")
     |> concat_if(short_circuit_temperature_sensor_cold_side, "F6 - Kurzschluss Termperaturfühler kalte Seite")
     |> concat_if(short_circuit_temperature_sensor_warm_side, "F5 - Kurzschluss Termperaturfühler warme Seite")
+    |> concat_if(supply_voltage_low, "F4 - Versorgungsspannung niedrig")
     |> concat_if(electronic_malfunction, "F3 - Elektronik für Temperaturauswertung defekt")
     |> concat_if(disruption_temperature_sensor_cold_side, "F2 - Unterbrechung Temperaturfühler kalte Seite")
     |> concat_if(disruption_temperature_sensor_warm_side, "F1 - Unterbrechung Temperaturfühler warme Seite")
-    |> concat_if(error_flow_measurement, "F0 - Fehler bei Durchflussmessung (z.B. Luft im Messrohr")
-    |> List.flatten()
-    |> Enum.into("")
+    |> concat_if(error_flow_measurement, "F0 - Fehler bei Durchflussmessung (z.B. Luft im Messrohr)")
+    |> concat_if(bit12, "Error bit 12 set")
+    |> concat_if(bit13, "Error bit 13 set")
+    |> concat_if(bit14, "Error bit 14 set")
+    |> concat_if(bit15, "Error bit 15 set")
+    |> Enum.reverse
+    |> Enum.join(";")
   end
 
   defp concat_if(acc, 0, _), do: acc
-  defp concat_if([], 1, string), do: [string]
-  defp concat_if(acc, 1, string), do: [acc, ";", string]
-
+  defp concat_if(acc, 1, string), do: [string | acc]
 
   def fields() do
     [
@@ -224,7 +222,7 @@ defmodule Parser do
           "volume_unit" => "m³",
           :energy => 185536.0,
           :energy_unit => "kWh",
-          :error => "Verschmutzungs-Vorwarnung der Messstrecke;F1 - Unterbrechung Temperaturfühler warme Seite;F0 - Fehler bei Durchflussmessung (z.B. Luft im Messrohr",
+          :error => "Verschmutzungs-Vorwarnung der Messstrecke;F1 - Unterbrechung Temperaturfühler warme Seite;F0 - Fehler bei Durchflussmessung (z.B. Luft im Messrohr)",
           :error_codes => 1,
           :fabrication_block => 65911484,
           :fabrication_block_unit => "MeterID",
@@ -235,6 +233,19 @@ defmodule Parser do
           :return_temperature => 0,
           :supply_temperature => 0,
           :volume => 2865.13,
+        }
+      },
+      # From real device with error
+      {
+        :parse_hex, "010C07905510000C786734966902FD170040", %{}, %{
+          energy: 1.0559e6,
+          energy_unit: "kWh",
+          error: "Error bit 14 set",
+          error_codes: 1,
+          fabrication_block: 69963467,
+          fabrication_block_unit: "MeterID",
+          function_field: :current_value,
+          payload_style: 1
         }
       },
     ]
