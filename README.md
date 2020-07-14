@@ -95,8 +95,8 @@ RFI Remote Power Switch | [lib/rfi_remote-power-switch.ex](lib/rfi_remote-power-
 Sagemcom Siconia | [lib/sagemcom_siconia.ex](lib/sagemcom_siconia.ex)
 Sensative Strips Comfort | [lib/sensative_strips.ex](lib/sensative_strips.ex)
 Sensing Labs SenLab LED | [lib/sensinglabs_senlabm.ex](lib/sensinglabs_senlabm.ex)
-Sensoneo Quatrosensors | [lib/sensoneo_quatrosensors.ex](lib/sensoneo_quatrosensors.ex)
-Sensoneo Singlesensors | [lib/sensoneo_singlesensors.ex](lib/sensoneo_singlesensors.ex)
+Sensoneo Quatrosensors | _On Request_
+Sensoneo Singlesensors | _On Request_
 Strega Smartvalve| [lib/strega_smartvalve.ex](lib/strega_smartvalve.ex)
 Smilio Action| [lib/smilio_action_fw_2_0.ex](lib/smilio_action_fw_2_0.ex)
 Sontex 79 Heat| [lib/sontext_7x9_heat.ex](lib/sontext_7x9_heat.ex)
