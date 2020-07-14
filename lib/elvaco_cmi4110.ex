@@ -66,7 +66,7 @@ defmodule Parser do
     |> Enum.map(fn
       %{desc: :error_codes, value: v} = map ->
         Map.merge(map, %{
-          :error_codes => v |> String.to_integer() |> min(1),
+          :error_codes => v |> String.to_integer() |> Kernel.min(1),
           :error => v |> Base.decode16!() |> build_error_string(),
         })
       %{desc: :fabrication_block, value: v} = map ->
