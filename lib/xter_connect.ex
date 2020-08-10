@@ -3,7 +3,7 @@ defmodule Parser do
   require Logger
 
   #
-  # Parser for device Xterc Connect that will count people passing by.
+  # Parser for device Xter Connect that will count people passing by.
   #
   # Changelog:
   #   2020-07-23 [jb]: Initial implementation according to "Payload spec command V203.pdf"
