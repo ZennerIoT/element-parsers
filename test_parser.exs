@@ -41,10 +41,10 @@ defmodule Platform.Parsing.Behaviour do
       end
       def get_last_reading(meta, query) do
         meta
-        |> Map.get(:_last_reading_map, %{})
+        |> Map.get(:_last_reading_map, nil)
         |> case do
           map when is_map(map) -> Access.get(map, query)
-          _ -> nil
+          _ -> Map.get(meta, :_last_reading, nil) # Fallback to last reading if not found, makes writing tests easier
         end
       end
 
