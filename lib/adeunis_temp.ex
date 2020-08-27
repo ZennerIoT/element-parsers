@@ -12,10 +12,11 @@ defmodule Parser do
   #   2019-xx-xx [jb]: Initial implementation.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2020-08-26 [jb]: Support for v3 payloads.
+  #   2020-08-27 [jb]: Added alerts for v3 payloads.
   #
 
   # Version 2 of sensor
-  def parse(<<67, _status::8, internal_identifier::8, internal_value::signed-16, external_identifier::8, external_value::signed-16>>, _meta) do
+  def parse(<<0x43, _status::8, internal_identifier::8, internal_value::signed-16, external_identifier::8, external_value::signed-16>>, _meta) do
     <<_internal_register::4, internal_status::4>> = <<internal_identifier::8>>
     <<_external_register::4, external_status::4>> = <<external_identifier::8>>
 
@@ -136,6 +137,37 @@ defmodule Parser do
     end
   end
 
+  # Periodic data, 2 channel
+  defp parse_body(%{channels: 1} = row, 0x58, <<alarm1, temp1::binary-2>>, _meta) do
+    row
+    |> Map.merge(%{
+      frame_type: :alarm,
+      alarm_ch1: alarm_status(alarm1),
+    })
+    |> add_valid_temp(temp1, :temp_ch1)
+  end
+  defp parse_body(%{channels: 2} = row, 0x58, <<alarm1, temp1::binary-2, alarm2, temp2::binary-2>>, _meta) do
+    row
+    |> Map.merge(%{
+      frame_type: :alarm,
+      alarm_ch1: alarm_status(alarm1),
+      alarm_ch2: alarm_status(alarm2),
+    })
+    |> add_valid_temp(temp1, :temp_ch1)
+    |> add_valid_temp(temp2, :temp_ch2)
+  end
+
+  defp parse_body(row, 0x36, <<alert>>, _meta) do
+    row
+    |> Map.merge(%{
+      frame_type: :alert,
+      alert: Map.get(%{
+        0 => :normal_state,
+        1 => :powersupply_disconnected,
+      }, alert, :unknown)
+    })
+  end
+
   defp parse_body(row, code, payload, _meta) do
     Map.merge(row, %{
       frame_type: :unknown_body,
@@ -143,6 +175,11 @@ defmodule Parser do
       unknown_payload: inspect(payload),
     })
   end
+
+  defp alarm_status(0), do: :no_alarm
+  defp alarm_status(1), do: :high_threshold
+  defp alarm_status(2), do: :low_threshold
+  defp alarm_status(_), do: :unknown
 
   defp times_to_readings(times, reading_template, transceived_at, sampling_period) do
     Enum.map(times, fn ({time, index}) ->
@@ -438,6 +475,72 @@ defmodule Parser do
             temp_ch2: -0.1
           }, [measured_at: ~U[2019-01-01 11:00:00Z]]}
         ]
+      },
+      {
+        :parse_hex,
+        "579000EA014D",
+        %{
+          transceived_at: test_datetime("2019-01-01 12:00:00Z"),
+          _last_reading: %{
+            data: %{
+              "frame_type" => "configuration",
+              "sampling_period" => 3600,
+            },
+          },
+        },
+        [
+          {%{
+            channels: 2,
+            frame_counter: 4,
+            frame_type: :data,
+            temp_ch1: 23.4,
+            temp_ch2: 33.3,
+            version: 3
+          }, [measured_at: ~U[2019-01-01 12:00:00Z]]}
+        ]
+      },
+      {
+        :parse_hex,
+        "58B00000E7000123",
+        %{
+          transceived_at: test_datetime("2019-01-01 12:00:00Z"),
+          _last_reading: %{
+            data: %{
+              "frame_type" => "configuration",
+              "sampling_period" => 3600,
+            },
+          },
+        },
+        %{
+          alarm_ch1: :no_alarm,
+          alarm_ch2: :no_alarm,
+          channels: 2,
+          frame_counter: 5,
+          frame_type: :alarm,
+          temp_ch1: 23.1,
+          temp_ch2: 29.1,
+          version: 3
+        }
+      },
+      {
+        :parse_hex,
+        "36 80 01",
+        %{
+          transceived_at: test_datetime("2019-01-01 12:00:00Z"),
+          _last_reading: %{
+            data: %{
+              "frame_type" => "configuration",
+              "sampling_period" => 3600,
+            },
+          },
+        },
+        %{
+          alert: :powersupply_disconnected,
+          channels: 1,
+          frame_counter: 4,
+          frame_type: :alert,
+          version: 3
+        }
       },
     ]
   end
