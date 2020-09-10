@@ -239,7 +239,7 @@ defmodule Parser do
       },
       %{
         "field" => "temp_ch2",
-        "display" => "Temperature Channel1",
+        "display" => "Temperature Channel2",
         "unit" => "°C"
       },
       %{
