@@ -7,17 +7,19 @@ defmodule Parser do
   # ELEMENT IoT Parser for TrackNet Tabs, including:
   #   * Door & Window Sensor
   #   * Healthy Home Sensor
+  #   * Healthy Home Sensor (including indoor-air-quality & environment temp)
   #   * Motion Sensor
   #   * Object Locator
   #   * Push Button
   #
-  #  This parser replaces the all other Tabs parsers.
+  #  This parser replaces all the other Tabs parsers.
   #
   # According to documentation provided by TrackNet
   # Payload Description Version v1.3 (and 1.4 for the Push Button)
 
   # Changelog
   #   2019-04-04 [gw]: Initial version, combining 5 TrackNet Tabs devices.
+  #   2020-09-23 [gw]: Added support for new Healthy Home Sensor version (with indoor-air-quality)
 
   # Door & Window Sensor
   def parse(<<status::binary-1, battery::binary-1, temp::binary-1, time::little-16, count::little-24>>, %{meta: %{frame_port: 100}}) do
@@ -34,6 +36,17 @@ defmodule Parser do
     |> Map.put(:relative_humidity, rhum)
     |> add_value_or_skip(:co2, co2, [65535])
     |> add_value_or_skip(:voc, voc, [65535])
+  end
+  # Healthy Home Sensor (doc version BQW_02_0005.002)
+  def parse(<<_status, battery::binary-1, board_temp::binary-1, humidity::binary-1, co2::little-16, voc::little-16, iaq::little-16, env_temp::binary-1>>, %{meta: %{frame_port: 103}}) do
+    <<_rfu::1, rhum::7>> = humidity
+
+    read_common_values(battery, board_temp)
+    |> Map.put(:relative_humidity, rhum)
+    |> add_value_or_skip(:co2, co2, [65535])
+    |> add_value_or_skip(:voc, voc, [65535])
+    |> Map.put(:environment_temperature, read_temperature(env_temp))
+    |> Map.put(:iaq, iaq)
   end
   # Motion Sensor
   def parse(<<status::binary-1, battery::binary-1, temp::binary-1, _time::little-16, count::little-24>>, %{meta: %{frame_port: 102}}) do
@@ -220,6 +233,15 @@ defmodule Parser do
         "display" => "Volatile organic compounds",
         "unit" => "ppm"
       },
+      %{
+        "field" => "environment_temperature",
+        "display" => "Environment Temperature",
+        "unit" => "°C"
+      },
+      %{
+        "field" => "iaq",
+        "display" => "Indoor Air Quality"
+      },
       # motion only
       %{
         "field" => "sensor_status",
@@ -338,6 +360,20 @@ defmodule Parser do
           relative_humidity: 37,
           temperature: 21,
           # voc and co2 are filtered because they are 65535
+        }
+      },
+      # New version (doc version BQW_02_0005.002)
+      {
+        :parse_hex, "00073D38F4010000190038", %{meta: %{frame_port: 103}},
+        %{
+          battery_state: 0.0,
+          battery_voltage: 3.2,
+          co2: 500,
+          environment_temperature: 24,
+          iaq: 25,
+          relative_humidity: 56,
+          temperature: 29,
+          voc: 0
         }
       }
     ]
