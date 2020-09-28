@@ -42,7 +42,7 @@ defmodule Parser do
   def parse(<<_status, battery::binary-1, board_temp::binary-1, humidity::binary-1, co2::little-16, voc::little-16, iaq::little-16, env_temp::binary-1>>, %{meta: %{frame_port: 103}}) do
     <<_rfu::1, rhum::7>> = humidity
     <<_rfu::4, voltage::4>> = battery
-    battery_state = 100 * (voltage / 14)
+    battery_state = 100 * (voltage / 14) # according to the documentation this has only 14 instead of the previous 15 steps)
     battery_voltage = (25 + voltage) / 10
 
     %{}
