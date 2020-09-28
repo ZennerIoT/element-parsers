@@ -20,6 +20,7 @@ defmodule Parser do
   # Changelog
   #   2019-04-04 [gw]: Initial version, combining 5 TrackNet Tabs devices.
   #   2020-09-23 [gw]: Added support for new Healthy Home Sensor version (with indoor-air-quality)
+  #   2020-09-28 [gw]: Update battery calculation for new Healthy Home Sensor version
 
   # Door & Window Sensor
   def parse(<<status::binary-1, battery::binary-1, temp::binary-1, time::little-16, count::little-24>>, %{meta: %{frame_port: 100}}) do
@@ -40,8 +41,14 @@ defmodule Parser do
   # Healthy Home Sensor (doc version BQW_02_0005.002)
   def parse(<<_status, battery::binary-1, board_temp::binary-1, humidity::binary-1, co2::little-16, voc::little-16, iaq::little-16, env_temp::binary-1>>, %{meta: %{frame_port: 103}}) do
     <<_rfu::1, rhum::7>> = humidity
+    <<_rfu::4, voltage::4>> = battery
+    battery_state = 100 * (voltage / 14)
+    battery_voltage = (25 + voltage) / 10
 
-    read_common_values(battery, board_temp)
+    %{}
+    |> Map.put(:battery_state, battery_state)
+    |> Map.put(:battery_voltage, battery_voltage)
+    |> Map.put(:temperature, read_temperature(board_temp))
     |> Map.put(:relative_humidity, rhum)
     |> add_value_or_skip(:co2, co2, [65535])
     |> add_value_or_skip(:voc, voc, [65535])
@@ -366,7 +373,7 @@ defmodule Parser do
       {
         :parse_hex, "00073D38F4010000190038", %{meta: %{frame_port: 103}},
         %{
-          battery_state: 0.0,
+          battery_state: 50.0,
           battery_voltage: 3.2,
           co2: 500,
           environment_temperature: 24,
