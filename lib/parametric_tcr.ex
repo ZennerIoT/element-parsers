@@ -7,6 +7,7 @@ defmodule Parser do
   #
   # Changelog:
   #   2020-07-07 [jb]: Initial implementation according to https://parametric.ch/docs/tcr/tcr_payload_v1
+  #   2020-09-29 [jb]: Initial implementation according to https://parametric.ch/docs/tcr/tcr_payload_v2
   #
 
   # Firmware v3
@@ -18,12 +19,33 @@ defmodule Parser do
     sbx_batt::8, # battery gauge when equiped with an SBX solar charger 0…100%
     sbx_pv::16, # Solar panel power when equiped with SBX 0…65535 mW
 
-    temp::16, # Device Temperature -3276.8°C –>3276.7°C
+    temp::16-signed, # Device Temperature -3276.8°C –>3276.7°C
 
     speeds::binary, # speed classes
   >>, %{meta: %{frame_port: 15}}) do
     %{
       solar_battery: sbx_batt,
+      solar_panel_power: sbx_pv,
+      temperature: temp/10,
+    }
+    |> parse_speed_class(0, speeds)
+    |> calc_totals("left")
+    |> calc_totals("right")
+  end
+  # TCR Payload V2
+  def parse(<<
+    0xbe, # Vendor ID, always 0xbe for Parametric Devices
+    0x02, # Device Family, always 0x01 for TCR Devices
+    0x02, # Payload Version
+    sbx_batt::16, # battery voltage when equiped with an SBX solar charger 0…65535mV
+    sbx_pv::16, # Solar panel power when equiped with SBX 0…65535 mW
+
+    temp::16-signed, # Device Temperature -3276.8°C –>3276.7°C
+
+    speeds::binary, # speed classes
+  >>, %{meta: %{frame_port: 15}}) do
+    %{
+      solar_battery_volt: sbx_batt/1000,
       solar_panel_power: sbx_pv,
       temperature: temp/10,
     }
@@ -37,7 +59,7 @@ defmodule Parser do
   def parse(<<
     0xbe, # Vendor ID, always 0xbe for Parametric Devices
     0x02, # Device Family, always 0x01 for TCR Devices
-    0x01, # Payload Version, always 0x01 for V3 Payloads
+    payload_version,
     device_type,
     fw_version::binary-3,
     operating_mode,
@@ -53,10 +75,21 @@ defmodule Parser do
     sc1_start, sc1_end,
     sc2_start, sc2_end,
     sc3_start, sc3_end,
-  >>, %{meta: %{frame_port: 190}}) do
+  >>, %{meta: %{frame_port: 190}}) when payload_version in [0x01, 0x02] do
     <<f1, f2, f3>> = fw_version
+
+    device_type = case payload_version do
+      0x01 -> Map.get(%{0 => :tcr, 1 => :tcr_s}, device_type, device_type)
+      0x02 -> Map.get(%{0 => :tcr_ls, 1 => :tcr_lss, 2 => :tcr_hs, 3 => :tcr_hss}, device_type, device_type)
+      _ -> :unknown
+    end
+
     %{
-      device_type: Map.get(%{0 => :tcr, 1 => :tcr_s}, device_type, device_type),
+      vendor_id: 0xbe,
+      device_family: 0x02,
+      payload_version: payload_version,
+
+      device_type: device_type,
       firmware_version: "V#{f1}.#{f2}.#{f3}",
 
       operating_mode: Map.get(%{0 => :timespan, 1 => :trigger}, operating_mode, operating_mode),
@@ -102,11 +135,17 @@ defmodule Parser do
     |> parse_speed_class(index+1, rest)
   end
   defp parse_speed_class(row, _index, <<>>), do: row
+  defp parse_speed_class(row, _index, rest) do
+    row
+    |> Map.merge(%{
+      "speeds_invalid_binary" => inspect(rest),
+    })
+  end
 
   defp calc_totals(row, direction) do
-    total_count = Map.get(row, "#{direction}_count_class0") + Map.get(row, "#{direction}_count_class1") + Map.get(row, "#{direction}_count_class2") + Map.get(row, "#{direction}_count_class3")
+    total_count = Map.get(row, "#{direction}_count_class0", 0) + Map.get(row, "#{direction}_count_class1", 0) + Map.get(row, "#{direction}_count_class2", 0) + Map.get(row, "#{direction}_count_class3", 0)
 
-    total_avg = (Map.get(row, "#{direction}_count_class0") * Map.get(row, "#{direction}_avg_class0") + Map.get(row, "#{direction}_count_class1") * Map.get(row, "#{direction}_avg_class1") + Map.get(row, "#{direction}_count_class2") * Map.get(row, "#{direction}_avg_class2") + Map.get(row, "#{direction}_count_class3") * Map.get(row, "#{direction}_avg_class3"))
+    total_avg = (Map.get(row, "#{direction}_count_class0", 0) * Map.get(row, "#{direction}_avg_class0", 0) + Map.get(row, "#{direction}_count_class1", 0) * Map.get(row, "#{direction}_avg_class1", 0) + Map.get(row, "#{direction}_count_class2", 0) * Map.get(row, "#{direction}_avg_class2", 0) + Map.get(row, "#{direction}_count_class3", 0) * Map.get(row, "#{direction}_avg_class3", 0))
 
     total_avg = case total_count do
       0 -> 0 # Avoid divide by zero
@@ -177,6 +216,11 @@ defmodule Parser do
         unit: "%",
       },
       %{
+        field: "solar_battery_volt",
+        display: "Solar Battery",
+        unit: "V",
+      },
+      %{
         field: "solar_panel_power",
         display: "Solar Panel Power",
         unit: "mW",
@@ -210,7 +254,10 @@ defmodule Parser do
       {
         :parse_hex,
         "be02016412c218b800000000010600000000020b00000000011e000000000000",
-        %{meta: %{frame_port: 15}},
+        %{
+          meta: %{frame_port: 15},
+          _comment: "payload v1",
+        },
         %{
           :solar_battery => 100,
           :solar_panel_power => 4802,
@@ -241,15 +288,20 @@ defmodule Parser do
       {
         :parse_hex,
         "be020100010000000000000305a00000640000010708191a313278",
-        %{meta: %{frame_port: 190}},
+        %{
+          meta: %{frame_port: 190},
+          _comment: "config v1",
+        },
         %{
           device_class: :a,
+          device_family: 2,
           device_type: :tcr,
           firmware_version: "V1.0.0",
           hold_off_time: 0,
           link_check_intervall: 1440,
           ltr_lane_distance: 0,
           operating_mode: :timespan,
+          payload_version: 1,
           radar_sensitivity: 100,
           rtl_lane_distance: 0,
           speed_class0_end: 7,
@@ -261,7 +313,75 @@ defmodule Parser do
           speed_class3_end: 120,
           speed_class3_start: 50,
           uplink_intervall: 3,
-          uplink_type: :unconfirmed
+          uplink_type: :unconfirmed,
+          vendor_id: 190
+        }
+      },
+
+      {
+        :parse_hex,
+        "be0202646412c218b800000000010600000000020b00000000011e000000000000",
+        %{
+          meta: %{frame_port: 15},
+          _comment: "payload v2",
+        },
+        %{
+          :solar_battery_volt => 25.7,
+          :solar_panel_power => 4802,
+          :temperature => 632.8,
+          "left_avg" => 0,
+          "left_avg_class0" => 0,
+          "left_avg_class1" => 0,
+          "left_avg_class2" => 0,
+          "left_avg_class3" => 0,
+          "left_count" => 0,
+          "left_count_class0" => 0,
+          "left_count_class1" => 0,
+          "left_count_class2" => 0,
+          "left_count_class3" => 0,
+          "right_avg" => 14.5,
+          "right_avg_class0" => 6,
+          "right_avg_class1" => 11,
+          "right_avg_class2" => 30,
+          "right_avg_class3" => 0,
+          "right_count" => 4,
+          "right_count_class0" => 1,
+          "right_count_class1" => 2,
+          "right_count_class2" => 1,
+          "right_count_class3" => 0
+        }
+      },
+
+      {
+        :parse_hex,
+        "be020200010000000000000305a00000640000010708191a313278 ",
+        %{
+          meta: %{frame_port: 190},
+          _comment: "config v2",
+        },
+        %{
+          device_class: :a,
+          device_family: 2,
+          device_type: :tcr_ls,
+          firmware_version: "V1.0.0",
+          hold_off_time: 0,
+          link_check_intervall: 1440,
+          ltr_lane_distance: 0,
+          operating_mode: :timespan,
+          payload_version: 2,
+          radar_sensitivity: 100,
+          rtl_lane_distance: 0,
+          speed_class0_end: 7,
+          speed_class0_start: 1,
+          speed_class1_end: 25,
+          speed_class1_start: 8,
+          speed_class2_end: 49,
+          speed_class2_start: 26,
+          speed_class3_end: 120,
+          speed_class3_start: 50,
+          uplink_intervall: 3,
+          uplink_type: :unconfirmed,
+          vendor_id: 190
         }
       },
     ]
