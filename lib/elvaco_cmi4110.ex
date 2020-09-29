@@ -5,6 +5,8 @@ defmodule Parser do
 
   # Parser for Elvaco CMi4110 devices according to "CMi4110 User's Manual English.pdf"
   #
+  # This Parser will support multiple Elvaco devices like CMi4110 and CMi4140 and other that are sending MBus payloads
+  #
   # CMi4110 is a cost-effective MCM, which is mounted in a Landis+Gyr UH50 meter to, in a very energy-efficient way, deliver high-precision meter data using the LoRaWAN network.
   #
   # Changelog:
