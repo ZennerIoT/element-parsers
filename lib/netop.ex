@@ -9,6 +9,7 @@ defmodule Parser do
   #
   # Changelog:
   #   2019-05-09 [gw]: Initial implementation according to v1.8, including door and manhole sensors.
+  #   2020-10-06 [gw]: Added support for ambient light sensor (v1.9)
   #
 
   # Protocol version 1
@@ -93,6 +94,17 @@ defmodule Parser do
         type: :door_sensor,
         door_status: door_status,
         door_status_name: door_status(door_status),
+      }, rest
+    }
+  end
+
+  # 5.20 Ambient Light Sensor
+  defp parse_sensor_function(0x014, <<ambient_light_level::32, rest::binary>>) do
+    {
+      :ok,
+      %{
+        type: :ambient_light_sensor,
+        ambient_light_level: ambient_light_level / 100
       }, rest
     }
   end
@@ -461,6 +473,11 @@ defmodule Parser do
         display: "Alive Message Period",
         unit: "s",
       },
+      %{
+        field: "ambient_light_level",
+        display: "Ambient Light Level",
+        unit: "lux"
+      }
     ]
   end
 
@@ -615,6 +632,21 @@ defmodule Parser do
             times_closed: 4,
             times_opened: 4,
             serial_number: 268435557,
+          }
+        ]
+      },
+
+      { # 5.20 Ambient Light Sensor
+        :parse_hex, "01100006C388280B0000000000005060BA", %{meta: %{frame_port: 22}}, [
+          %{
+            ambient_light_level: 205.76,
+            type: :ambient_light_sensor,
+            might_have_an_error: 0,
+            sensor_board_type: :ambient_light_sensor_board,
+            slot_number: 1,
+            serial_number: 268437187,
+            timestamp: ~U[1970-01-01 00:00:00Z],
+            timestamp_linux: 0
           }
         ]
       },
