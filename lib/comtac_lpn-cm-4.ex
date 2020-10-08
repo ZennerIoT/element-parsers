@@ -388,7 +388,7 @@ defmodule Parser do
         temp_pt100: 0,
         temperature_max: 50,
         temperature_min: 0,
-        temperature_offset: 0,
+        temperature_offset: 0.0,
         message_type: :config_data
       }},
       {:parse_hex, "010201C80100", %{meta: %{frame_port: 101}}, %{

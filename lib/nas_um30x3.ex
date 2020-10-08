@@ -21,13 +21,14 @@ defmodule Parser do
   #   2019-05-22 [gw]: Adjusted fw version on boot message and also return status message from boot message as separate reading.
   #   2020-05-13 [jb]: Fixed interpolate: false. Made configuration testable.
   #   2020-06-29 [jb]: Added filter_unknown_data() filtering :unknown Mbus data.
+  #   2020-09-28 [jb]: Interpolation now for digital1 and digital2 instead of obis key.
 
   def config() do
     %{
-      # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated (default: false)
+      # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated for digital1 and digital2 (default: false)
       interpolate: false,
 
-      # Minutes between interpolated values (default: 15)
+      # Minutes between interpolated values (default: 60)
       interpolate_minutes: 60,
 
       # Timezone (default: "Europe/Berlin")
@@ -37,99 +38,129 @@ defmodule Parser do
   defp config(key, meta), do: get(meta, [:_config, key], Map.get(config(), key))
   
 
-  defp add_obis(%{"digital1_reporting_medium_type" => :gas_in_liter, :digital1_reporting => value} = reading, meta) do
-    obis = "7-0:3.0.0"
-    reading
-    |> Map.put(:obis, obis)
-    |> Map.put(obis, round_as_float(value / 1000)) # Convert liter to m3
-    |> add_missing(meta)
+  defp add_obis(%{"digital1_reporting_medium_type" => :gas_in_liter, :digital1_reporting => value} = reading) do
+    Map.merge(reading, %{
+      :obis => "7-0:3.0.0",
+       "7-0:3.0.0" => round_as_float(value / 1000), # Convert liter to m3
+    })
   end
-  defp add_obis(%{"digital2_reporting_medium_type" => :gas_in_liter, :digital2_reporting => value} = reading, meta) do
-    obis = "7-0:3.0.0"
-    reading
-    |> Map.put(:obis, obis)
-    |> Map.put(obis, round_as_float(value / 1000)) # Convert liter to m3
-    |> add_missing(meta)
+  defp add_obis(%{"digital2_reporting_medium_type" => :gas_in_liter, :digital2_reporting => value} = reading) do
+    Map.merge(reading, %{
+      :obis => "7-0:3.0.0",
+      "7-0:3.0.0" => round_as_float(value / 1000), # Convert liter to m3
+    })
+  end
+
+  defp add_obis(%{"digital1_reporting_medium_type" => :electricity_in_wh, :digital1_reporting => value} = reading) do
+    Map.merge(reading, %{
+      :obis => "1-0:1.8.0",
+      "1-0:1.8.0" => round_as_float(value / 1000), # Convert wh to kwh
+    })
+  end
+  defp add_obis(%{"digital2_reporting_medium_type" => :electricity_in_wh, :digital2_reporting => value} = reading) do
+    Map.merge(reading, %{
+      :obis => "1-0:1.8.0",
+      "1-0:1.8.0" => round_as_float(value / 1000), # Convert wh to kwh
+    })
   end
 
 
   #--- Do not edit blow here! ---
 
 
-  defp add_obis([_|_] = readings, meta) do
-    Enum.map(readings, &add_obis(&1, meta))
+  defp add_obis([_|_] = readings) do
+    Enum.map(readings, &add_obis(&1))
   end
-  defp add_obis(%{} = data, _meta), do: data
+  defp add_obis(%{} = data), do: data
+  defp add_obis({data, opts}), do: {add_obis(data), opts}
 
   defp round_as_float(value) do
     Float.round(value / 1, 3)
   end
 
-  defp add_missing(%{"7-0:3.0.0" => current_value} = data, meta) do
+  defp interpolate_value(key, current_value, meta) do
+    interpolate_minutes = config(:interpolate_minutes, meta)
+    timezone = config(:timezone, meta)
 
-    if config(:interpolate, meta) do
+    current_measured_at = Map.fetch!(meta, :transceived_at)
+    last_reading_query = [{key, :_}]
 
-      interpolate_minutes = config(:interpolate_minutes, meta)
-      timezone = config(:timezone, meta)
-
-      obis = "7-0:3.0.0"
-      current_measured_at = Map.get(meta, :transceived_at)
-      last_reading_query = [obis: obis]
-
-      case get_last_reading(meta, last_reading_query) do
-        %{data: %{^obis => last_value}, measured_at: last_measured_at} ->
-
-          readings = [
-            {%{value: last_value}, [measured_at: last_measured_at]},
-            {%{value: current_value}, [measured_at: current_measured_at]},
-          ]
-          |> TimeSeries.fill_gaps(
-               fn datetime_a, datetime_b ->
-                 # Calculate all tuples with x=nil between a and b where a value should be interpolated
-                 interval = Timex.Interval.new(
-                   from: datetime_a |> Timex.to_datetime(timezone) |> datetime_add_to_multiple_of_minutes(interpolate_minutes),
-                   until: datetime_b,
-                   left_open: false,
-                   step: [minutes: interpolate_minutes]
-                 )
-                 Enum.map(interval, &({nil, [measured_at: &1]}))
-               end,
-               :linear,
-               x_access_path: [Access.elem(1), :measured_at],
-               y_access_path: [Access.elem(0)],
-               x_pre_calc_fun: &Timex.to_unix/1,
-               x_post_calc_fun: &Timex.to_datetime/1,
-               y_pre_calc_fun: fn %{value: value} -> value end,
-               y_post_calc_fun: &(%{value: &1, _interpolated: true})
-             )
-          |> Enum.filter(fn ({data, _meta}) -> Map.get(data, :_interpolated, false) end)
-          |> Enum.map(fn {%{value: value}, reading_meta} ->
+    case get_last_reading(meta, last_reading_query) do
+      %{data: %{^key => last_value}, measured_at: last_measured_at} ->
+         [
+           {%{value: last_value}, [measured_at: last_measured_at]},
+           {%{value: current_value}, [measured_at: current_measured_at]},
+         ]
+         |> TimeSeries.fill_gaps(
+              fn datetime_a, datetime_b ->
+                # Calculate all tuples with x=nil between a and b where a value should be interpolated
+                interval = Timex.Interval.new(
+                  from: datetime_a |> Timex.to_datetime(timezone) |> datetime_add_to_multiple_of_minutes(interpolate_minutes),
+                  until: datetime_b,
+                  left_open: false,
+                  step: [minutes: interpolate_minutes]
+                )
+                Enum.map(interval, &({nil, [measured_at: &1]}))
+              end,
+              :linear,
+              x_access_path: [Access.elem(1), :measured_at],
+              y_access_path: [Access.elem(0)],
+              x_pre_calc_fun: &Timex.to_unix/1,
+              x_post_calc_fun: &Timex.to_datetime/1,
+              y_pre_calc_fun: fn %{value: value} -> value end,
+              y_post_calc_fun: &(%{value: &1, _interpolated: true})
+            )
+         |> Enum.filter(fn ({data, _meta}) -> Map.get(data, :_interpolated, false) end)
+         |> Enum.map(fn {%{value: value}, reading_meta} ->
             value = round_as_float(value)
+            data = add_obis(%{
+              key => value,
+              "#{key}_interpolated" => 1,
+            })
             {
-              %{
-                :obis => obis,
-                obis => value,
-              },
+              data,
               reading_meta
             }
           end)
 
-          [data] ++ readings
+      nil ->
+        Logger.info("No result for get_last_reading(#{inspect last_reading_query})")
+        []
 
-        nil ->
-          Logger.info("No result for get_last_reading(#{inspect last_reading_query})")
-          [data]
+      invalid_prev_reading ->
+        Logger.warn("Could not interpolate_value(#{key}) because of invalid previous reading: #{inspect invalid_prev_reading}")
+        []
+    end
+  end
 
-        invalid_prev_reading ->
-          Logger.warn("Could not add_missing() because of invalid previous reading: #{inspect invalid_prev_reading}")
-          [data]
+  # Interpolate if enabled.
+  defp add_missing(data, meta) when is_list(data) do
+    Enum.flat_map(data, fn(row) ->
+      add_missing(row, meta)
+    end)
+  end
+  defp add_missing(data, meta) do
+    if config(:interpolate, meta) do
+
+      digital1 = case data do
+        %{:digital1_reporting => value} ->
+          interpolate_value(:digital1_reporting, value, meta)
+        _ ->
+          []
       end
 
+      digital2 = case data do
+        %{:digital2_reporting => value} ->
+          interpolate_value(:digital2_reporting, value, meta)
+        _ ->
+          []
+      end
+
+      [data] ++ digital1 ++ digital2
     else
       [data]
     end
   end
-  defp add_missing(current_data, _meta), do: current_data
 
   # Will shift 2019-04-20 12:34:56 to   2019-04-20 12:45:00
   defp datetime_add_to_multiple_of_minutes(%DateTime{} = dt, minutes) do
@@ -146,14 +177,16 @@ defmodule Parser do
       rssi: rssi * -1,
     }
     |> parse_reporting(settings, interface_status)
-    |> add_obis(meta)
+    |> add_missing(meta)
+    |> add_obis()
   end
 
   # Status Message
   def parse(<<settings::binary-1, interface_status::binary>>, %{meta: %{frame_port:  25}} = meta) do
     %{}
     |> parse_reporting(settings, interface_status)
-    |> add_obis(meta)
+    |> add_missing(meta)
+    |> add_obis()
   end
 
   # Boot Message
@@ -188,12 +221,12 @@ defmodule Parser do
   end
   def parse(<<0x01, reason, status_message::binary>>, %{meta: %{frame_port:  99}}) do
     reason = Map.get(%{0x02 => :hardware_error, 0x31 => :user_magnet, 0x32 => :user_dfu}, reason, :unknown)
-    [
+
+    List.wrap(parse(status_message, %{meta: %{frame_port: 25}})) ++ [
       %{
         type: :shutdown,
         reason: reason,
-      },
-      parse(status_message, %{meta: %{frame_port: 25}})
+      }
     ]
   end
   # Error Code Message
@@ -368,7 +401,7 @@ defmodule Parser do
   def tests() do
     [
       {
-        :parse_hex,  "03E6172C50000000002000000000", %{meta: %{frame_port: 24}},  %{
+        :parse_hex,  "03E6172C50000000002000000000", %{meta: %{frame_port: 24}, _comment: "Simple heat and water"},  [%{
           :battery => 230,
           :digital1_reporting => 0,
           :digital2_reporting => 0,
@@ -385,10 +418,10 @@ defmodule Parser do
           "digital2_reporting_trigger_alert" => :ok,
           "digital2_reporting_trigger_mode2" => :disabled,
           "digital2_reporting_value_during_reporting" => :low
-        },
+        }],
       },
-      { # Example Payload for UM3023 from docs v0.7.0
-        :parse_hex, "0FF61A4B120100000010C40900004039C160404140C9D740", %{meta: %{frame_port: 24}}, %{
+      {
+        :parse_hex, "0FF61A4B120100000010C40900004039C160404140C9D740", %{meta: %{frame_port: 24}, _comment: "Example Payload for UM3023 from docs v0.7.0"}, [%{
           :battery => 246,
           :digital1_reporting => 1,
           :digital2_reporting => 2500,
@@ -409,11 +442,10 @@ defmodule Parser do
           "digital2_reporting_trigger_alert" => :ok,
           "digital2_reporting_trigger_mode2" => :disabled,
           "digital2_reporting_value_during_reporting" => :low,
-        }
+        }]
       },
-      # Commented the following test, as it is using a library that is not publicly available yet
-      { # Example Payload for UM3033 from docs v0.7.0
-        :parse_hex, "63F51B361000000000100000000000000B2D4700009B102D5800000C0616160000046D0A0E5727", %{meta: %{frame_port: 24}}, [
+      {
+        :parse_hex, "63F51B361000000000100000000000000B2D4700009B102D5800000C0616160000046D0A0E5727", %{meta: %{frame_port: 24}, _comment: "Example MBUS Payload for UM3033 from docs v0.7.0"}, [
           %{
             :battery => 245,
             :digital1_reporting => 0,
@@ -469,7 +501,7 @@ defmodule Parser do
         ]
       },
       {
-        :parse_hex,  "0350000000002006000000", %{meta: %{frame_port: 25}},  %{
+        :parse_hex,  "0350000000002006000000", %{meta: %{frame_port: 25}, _comment: "Obis heat and water"}, [%{
           :digital1_reporting => 0,
           :digital2_reporting => 6,
           :mbus => false,
@@ -483,11 +515,11 @@ defmodule Parser do
           "digital2_reporting_trigger_alert" => :ok,
           "digital2_reporting_trigger_mode2" => :disabled,
           "digital2_reporting_value_during_reporting" => :low
-        },
+        }],
       },
 
       {
-        :parse_hex,  "0340060000005000000000", %{meta: %{frame_port: 25}},  [
+        :parse_hex,  "0340060000005000000000", %{meta: %{frame_port: 25}, _comment: "Obis GAS and NO interpolation"},  [
           %{
             :digital1_reporting => 6,
             :digital2_reporting => 0,
@@ -513,39 +545,79 @@ defmodule Parser do
         "0340060000005000000000",
         %{
           meta: %{frame_port: 25},
+          _comment: "Obis GAS and interpolation",
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
           _config: %{
             interpolate: true,
           },
           _last_reading_map: %{
-            [obis: "7-0:3.0.0"] => %{measured_at: test_datetime("2019-01-01T10:34:11Z"), data: %{:obis => "7-0:3.0.0", "7-0:3.0.0" => 0.003}},
+            [digital1_reporting: :_] => %{measured_at: test_datetime("2019-01-01T10:34:11Z"), data: %{:digital1_reporting => 3}},
+            [digital2_reporting: :_] => %{measured_at: test_datetime("2019-01-01T10:34:11Z"), data: %{:digital2_reporting => 0}},
           },
         },
         [
           %{
-          :digital1_reporting => 6,
-          :digital2_reporting => 0,
-          :mbus => false,
-          :obis => "7-0:3.0.0",
-          :ssi => false,
-          :user_triggered => false,
-          "7-0:3.0.0" => 0.006,
-          "digital1_reporting_medium_type" => :gas_in_liter,
-          "digital1_reporting_trigger_alert" => :ok,
-          "digital1_reporting_trigger_mode2" => :disabled,
-          "digital1_reporting_value_during_reporting" => :low,
-          "digital2_reporting_medium_type" => :heat_in_wh,
-          "digital2_reporting_trigger_alert" => :ok,
-          "digital2_reporting_trigger_mode2" => :disabled,
-          "digital2_reporting_value_during_reporting" => :low
+            :digital1_reporting => 6,
+            :digital2_reporting => 0,
+            :mbus => false,
+            :obis => "7-0:3.0.0",
+            :ssi => false,
+            :user_triggered => false,
+            "7-0:3.0.0" => 0.006,
+            "digital1_reporting_medium_type" => :gas_in_liter,
+            "digital1_reporting_trigger_alert" => :ok,
+            "digital1_reporting_trigger_mode2" => :disabled,
+            "digital1_reporting_value_during_reporting" => :low,
+            "digital2_reporting_medium_type" => :heat_in_wh,
+            "digital2_reporting_trigger_alert" => :ok,
+            "digital2_reporting_trigger_mode2" => :disabled,
+            "digital2_reporting_value_during_reporting" => :low
           },
-          {%{:obis => "7-0:3.0.0", "7-0:3.0.0" => 0.004}, [measured_at: test_datetime("2019-01-01 11:00:00Z")]},
-          {%{:obis => "7-0:3.0.0", "7-0:3.0.0" => 0.005}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]}
+          {%{:digital1_reporting => 3.641, "digital1_reporting_interpolated" => 1},
+            [measured_at: ~U[2019-01-01 11:00:00Z]]},
+          {%{:digital1_reporting => 5.132, "digital1_reporting_interpolated" => 1},
+            [measured_at: ~U[2019-01-01 12:00:00Z]]},
+          {%{:digital2_reporting => 0.0, "digital2_reporting_interpolated" => 1},
+            [measured_at: ~U[2019-01-01 11:00:00Z]]},
+          {%{:digital2_reporting => 0.0, "digital2_reporting_interpolated" => 1},
+            [measured_at: ~U[2019-01-01 12:00:00Z]]}
         ],
       },
 
-      { # Example Payload from docs 0.7.0
-        :parse_hex, "0F12010000001000000000C0DA365C400B7E5E40C140C9D740DC73D940", %{meta: %{frame_port: 25}}, %{
+      {
+        :parse_hex,
+        "0110ECF00800",
+        %{
+          meta: %{frame_port: 25},
+          _comment: "Only Digital1 in pulses and interpolation",
+          transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _config: %{
+            interpolate: true,
+          },
+          _last_reading_map: %{
+            [digital1_reporting: :_] => %{measured_at: test_datetime("2019-01-01T10:34:11Z"), data: %{:digital1_reporting => 3}},
+          },
+        },
+        [
+          %{
+            :digital1_reporting => 585964,
+            :mbus => false,
+            :ssi => false,
+            :user_triggered => false,
+            "digital1_reporting_medium_type" => :pulses,
+            "digital1_reporting_trigger_alert" => :ok,
+            "digital1_reporting_trigger_mode2" => :disabled,
+            "digital1_reporting_value_during_reporting" => :low
+          },
+          {%{:digital1_reporting => 125282.998, "digital1_reporting_interpolated" => 1},
+            [measured_at: ~U[2019-01-01 11:00:00Z]]},
+          {%{:digital1_reporting => 416443.744, "digital1_reporting_interpolated" => 1},
+            [measured_at: ~U[2019-01-01 12:00:00Z]]}
+        ],
+      },
+
+      {
+        :parse_hex, "0F12010000001000000000C0DA365C400B7E5E40C140C9D740DC73D940", %{meta: %{frame_port: 25}, _comment: "analog1 volt and analog2 mA and digital1 pulses and digital2 pulses"}, [%{
           :digital1_reporting => 1,
           :digital2_reporting => 0,
           :mbus => false,
@@ -565,7 +637,7 @@ defmodule Parser do
           "digital2_reporting_trigger_alert" => :ok,
           "digital2_reporting_trigger_mode2" => :disabled,
           "digital2_reporting_value_during_reporting" => :low,
-        }
+        }]
       },
       {
         :parse_hex,  "00D002A005000357020000803F27020000803F", %{meta: %{frame_port: 49}},  %{type: :config_req},
@@ -611,27 +683,26 @@ defmodule Parser do
         },
       },
       {
-        :parse_hex,  "0131033A0B7C10000000001000000000", %{meta: %{frame_port: 99}}, [
-          %{
-            reason: :user_magnet,
-            type: :shutdown,
-          },
-          %{
-            :digital1_reporting => 1080331,
-            :digital2_reporting => 1048576,
-            :mbus => false,
-            :ssi => false,
-            :user_triggered => false,
-            "digital1_reporting_medium_type" => :electricity_in_wh,
-            "digital1_reporting_trigger_alert" => :ok,
-            "digital1_reporting_trigger_mode2" => :enabled,
-            "digital1_reporting_value_during_reporting" => :low,
-            "digital2_reporting_medium_type" => :not_available,
-            "digital2_reporting_trigger_alert" => :ok,
-            "digital2_reporting_trigger_mode2" => :disabled,
-            "digital2_reporting_value_during_reporting" => :low,
-          }
-        ]
+        :parse_hex, "0131033A0B7C10000000001000000000", %{meta: %{frame_port: 99}, _comment: "User magnet and digital 1 kwh"}, [
+        %{
+          :digital1_reporting => 1080331,
+          :digital2_reporting => 1048576,
+          :mbus => false,
+          :obis => "1-0:1.8.0",
+          :ssi => false,
+          :user_triggered => false,
+          "1-0:1.8.0" => 1080.331,
+          "digital1_reporting_medium_type" => :electricity_in_wh,
+          "digital1_reporting_trigger_alert" => :ok,
+          "digital1_reporting_trigger_mode2" => :enabled,
+          "digital1_reporting_value_during_reporting" => :low,
+          "digital2_reporting_medium_type" => :not_available,
+          "digital2_reporting_trigger_alert" => :ok,
+          "digital2_reporting_trigger_mode2" => :disabled,
+          "digital2_reporting_value_during_reporting" => :low
+        },
+        %{reason: :user_magnet, type: :shutdown}
+      ]
       },
       {
         :parse_hex,  "00CA021C4E000722100200", %{meta: %{frame_port: 99}}, %{
