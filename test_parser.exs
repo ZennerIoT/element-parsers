@@ -58,74 +58,125 @@ end
 
 defmodule TestParser do
 
-  require Logger
+  def run(args) do
+    default_opts = [
+      test: :all,
+    ]
+    case OptionParser.parse(args, strict: [test: :integer]) do
+      {opts, [test_file], []} ->
+        opts = Keyword.merge(default_opts, opts)
+        test_parser_from_file(test_file, opts)
+      {_opts, _args, []} ->
+        IO.puts("ERROR: Only one test file!")
+        System.halt(2)
+      {_opts, _args, errors} ->
+        IO.puts("ERROR in Args: #{inspect errors}")
+        System.halt(3)
+    end
+  end
 
-  def test_parser_from_file(file) do
+  def test_parser_from_file(file, opts) do
     file
     |> Code.require_file
     |> get_tests_from_parser
-    |> run_tests(file)
-    |> check_catchall()
-    |> exit_program
+    |> run_tests(opts)
+    |> output_summary_and_exit
   end
 
   defp get_tests_from_parser([{parser_module, _}|_]) do
     {parser_module, apply(parser_module, :tests, [])}
   end
 
-  defp run_tests({parser_module, []}, file) do
-    warn("WARN: No tests fround in file #{inspect file} with parser_module: #{inspect parser_module}")
-    {parser_module, [], []}
-  end
-  defp run_tests({parser_module, tests}, _file) do
-    results = Enum.map(tests, fn
-      ({:parse_hex = test_type, payload_hex, meta, expected_result}) ->
-        payload_hex = String.replace(payload_hex, " ", "")
-        payload_binary = Base.decode16!(payload_hex, case: :mixed)
-        actual_result = apply(parser_module, :parse, [payload_binary, meta])
-        compare_results(actual_result, expected_result, test_type, payload_hex)
-
-      ({:parse = test_type, payload, meta, expected_result}) ->
-        actual_result = apply(parser_module, :parse, [payload, meta])
-        compare_results(actual_result, expected_result, test_type, payload |> inspect |> String.slice(0, 50))
+  defp run_tests({parser_module, tests}, opts) do
+    tests
+    |> Enum.with_index(1)
+    |> Enum.filter(fn({_test, index}) ->
+      case Keyword.get(opts, :test) do
+        :all -> true
+        number -> (index == number)
+      end
     end)
-    {parser_module, [], results}
+    |> Enum.map(fn({{test_type, payload, meta, expected_result} = test, index}) ->
+
+      {payload, payload_human} = handle_encoding(test_type, payload)
+
+      actual_result = apply(parser_module, :parse, [payload, meta])
+
+      comment = case meta do
+        %{_comment: comment} -> "(#{comment})"
+        _ -> ""
+      end
+
+      test_result = case actual_result do
+        ^expected_result ->
+          success("[#{test_type}] Test payload #{payload_human} matches expected_result #{comment}")
+          :ok
+        _ ->
+          warn("[#{test_type}] Test payload #{payload_human} DID NOT MATCH expected_result #{comment}")
+          IO.inspect(expected_result, label: "EXPECTED")
+          IO.inspect(actual_result, label: "ACTUAL")
+          :error
+      end
+
+      {test, index, test_result}
+    end)
   end
 
-  defp check_catchall({parser_module, tests, results}) do
+  # Will return {payload, payload_human_readable}
+  defp handle_encoding(:parse_hex, payload_hex) do
+    payload = payload_hex
+              |> to_string
+              |> String.trim
+              |> String.replace(" ", "")
+              |> Base.decode16!(case: :mixed)
+    {payload, to_string(payload_hex)}
+  end
+  defp handle_encoding(:parse_json, json) do
+    json = json |> to_string
+    payload = json |> Jason.decode!
+    payload_human = json |> String.replace("\n", " ") |> String.slice(0..50)
+    {payload, payload_human}
+  end
+  defp handle_encoding(:parse, payload) do
+    payload_human = payload |> inspect |> String.replace("\n", " ") |> String.slice(0..50)
+    {payload, payload_human}
+  end
+  defp handle_encoding(test_type, _payload), do: raise "unknown test type: #{test_type}"
 
-    payload_that_will_not_be_matched = self() # a pid is neither a map nor a binary, so it will not match.
 
-    catchall_result = case apply(parser_module, :parse, [payload_that_will_not_be_matched, %{}]) do
-      [] ->
-        success("[catchall] Catchall returned empty list")
-        :ok
-      return ->
-        error("[catchall] Catchall not working, expected empty list, got: #{inspect return}")
-        :error
+  defp output_summary_and_exit(results) do
+
+    {success, failure, failed} = Enum.reduce(results, {0, 0, []}, fn
+      ({_test, _index, :ok}, {success, failure, failed}) -> {success+1, failure, failed}
+      ({_test, _index, :error} = result, {success, failure, failed}) -> {success, failure+1, [result|failed]}
+    end)
+
+    failed = Enum.reverse(failed)
+
+    IO.puts("")
+    IO.puts("--- TEST SUMMARY:")
+    IO.puts("   Success: #{success}")
+    IO.puts("   Failure: #{failure}")
+
+    exit_code = case failure do
+      0 ->
+        0 # success!
+      _ ->
+        newline()
+        error("    #{failure} tests failed:")
+        newline()
+        Enum.each(failed, fn({{cmd, payload, meta, _result}, index, result}) ->
+          comment = Map.get(meta, :_comment, "")
+          error("     #{String.pad_leading("#"<> to_string(index), 3)}: #{cmd} for #{inspect payload} with result #{inspect result} (#{comment})")
+        end)
+        1 # Thats an error
     end
 
-    {parser_module, tests, results ++ [catchall_result]}
+    System.halt(exit_code)
   end
 
-  def compare_results(actual_result, expected_result, test_type, payload) when actual_result == expected_result do
-    success("[#{test_type}] Test payload #{inspect payload} matches expected_result")
-    :ok
-  end
-  def compare_results(actual_result, expected_result, test_type, payload) do
-    error("[#{test_type}] Test payload #{inspect payload} DID NOT MATCH expected_result")
-    IO.inspect(expected_result, label: "EXPECTED")
-    IO.inspect(actual_result, label: "ACTUAL")
-    :error
-  end
-
-
-  defp exit_program({_parser_module, _tests, results}) do
-    if Enum.member?(results, :error) do
-      System.halt(1)
-    else
-      System.halt(0)
-    end
+  def newline() do
+    IO.puts("")
   end
 
   defp success(line) do
@@ -137,9 +188,7 @@ defmodule TestParser do
   defp error(line) do
     [:red, to_string(line)] |> IO.ANSI.format |> IO.puts
   end
-
 end
 
-[parser_file] = System.argv()
+TestParser.run(System.argv())
 
-TestParser.test_parser_from_file(parser_file)
