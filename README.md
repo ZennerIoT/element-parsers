@@ -85,6 +85,7 @@ NAS UM3023A/UM3033A Digital Pulse Counter | [lib/nas_um30x3.ex](lib/nas_um30x3.e
 NetOP Technology Devices | [lib/netop.ex](lib/netop.ex)
 Netvox Multiparser | [lib/netvox_multiparser.ex](lib/netvox_multiparser.ex)
 Nexelec D678C | [lib/nexelec_d678c.ex](lib/nexelec_d678c.ex)
+NKE Watteco Clos'O | [lib/nke_closo.ex](lib/nke_closo.ex)
 NKE Watteco IN'O | [lib/nke_ino.ex](lib/nke_ino.ex)
 NKE Watteco Remote Temperature | [lib/nke_remote_temperature.ex](lib/nke_remote_temperature.ex)
 NKE Watteco Smart Plug | [lib/nke_smart_plug.ex](lib/nke_smart_plug.ex)
