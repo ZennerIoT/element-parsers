@@ -1,7 +1,6 @@
 language: 'elixir'
 sudo: false
-elixir: '1.8'
-otp_release: '21.1'
+elixir: '1.10'
 install:
   - 'git config --global url."https://$DEPLOY_USER_LIB_WMBUS:$DEPLOY_PASS_LIB_WMBUS@git.zisops.com/code/lib_wmbus.git".insteadOf "git@git.zisops.com:code/lib_wmbus.git"'
   - 'git config --global url."https://$DEPLOY_USER_LIB_SML:$DEPLOY_PASS_LIB_SML@git.zisops.com/code/lib_sml.git".insteadOf "git@git.zisops.com:code/lib_sml.git"'
