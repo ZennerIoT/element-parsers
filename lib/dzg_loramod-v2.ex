@@ -20,6 +20,7 @@ defmodule Parser do
   #   2019-09-30 [jb]: Using meta.transceived_at instead of DateTime.utc_now in add_power_from_last_reading()
   #   2019-10-10 [jb]: Added key interpolated=1 and :obis_value to interpolated readings.
   #   2019-12-12 [jb]: Ignoring frame_port for messages without frame header, fame_port=8 was required before.
+  #   2020-10-26 [jb]: Handling errors when timestamp close to DST borders.
 
   # Configuration
 
@@ -236,6 +237,10 @@ defmodule Parser do
     else
       []
     end
+  rescue
+    e ->
+      Logger.warn("Got a error #{inspect e} in build_missing()")
+      []
   end
   defp build_missing(_current_data, _register_field, _meta, _opts) do
     Logger.warn("Could not build_missing() because of invalid current_data")
