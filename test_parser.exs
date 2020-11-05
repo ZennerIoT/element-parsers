@@ -96,7 +96,7 @@ defmodule TestParser do
         number -> (index == number)
       end
     end)
-    |> Enum.map(fn({{test_type, payload, meta, expected_result} = test, index}) ->
+    |> Enum.map(fn({{test_type, payload, meta, expected_result}, index}) ->
 
       {payload, payload_human} = handle_encoding(test_type, payload)
 
@@ -118,7 +118,7 @@ defmodule TestParser do
           :error
       end
 
-      {test, index, test_result}
+      {{test_type, payload, payload_human, meta, expected_result}, index, test_result}
     end)
   end
 
@@ -165,9 +165,9 @@ defmodule TestParser do
         newline()
         error("    #{failure} tests failed:")
         newline()
-        Enum.each(failed, fn({{cmd, payload, meta, _result}, index, result}) ->
+        Enum.each(failed, fn({{cmd, _payload, payload_human, meta, _result}, index, result}) ->
           comment = Map.get(meta, :_comment, "")
-          error("     #{String.pad_leading("#"<> to_string(index), 3)}: #{cmd} for #{inspect payload} with result #{inspect result} (#{comment})")
+          error("     #{String.pad_leading("#"<> to_string(index), 3)}: #{cmd} for #{inspect payload_human} with result #{inspect result} (#{comment})")
         end)
         1 # Thats an error
     end
