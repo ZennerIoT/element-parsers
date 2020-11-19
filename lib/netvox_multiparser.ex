@@ -8,6 +8,12 @@ defmodule Parser do
   #
   # Netvox LoRaWAN Application Command V1.8.2 / V1.8.5
   #
+  # Online Decoder:
+  #   http://www.netvox.com.cn:8888/page/index
+  #
+  # Payload documentation:
+  #   https://www.alliot.co.uk/wp-content/uploads/2019/08/Netvox-LoRaWAN-Application-Command-V1.9.2-for-public.pdf
+  #
   # Changelog:
   #   2019-04-30: [kr] initial version (Light Sensors: R311G, R311B,  Water Leak Sensors: R311W, R718WB, R718WA, R718WA2, R718WB2)
   #   2019-06-05: [gw] refactoring. Checked with v1.8.5
@@ -15,6 +21,7 @@ defmodule Parser do
   #   2020-01-09: [as] added some sensor types
   #   2020-04-28: [as] added some more sensor types
   #   2020-06-16: [as] added 3 phase current meter
+  #   2020-11-19: [jb] Added support for R711/R718A/R718AB/R720A temperature/humidity sensors.
 
   def parse(<<version::8, device_type::8, report_type::8, rest::binary>>, %{meta: %{frame_port: 6}}) do
     %{
@@ -125,10 +132,26 @@ defmodule Parser do
     }
     |> Map.merge(parse_battery_info(battery))
   end
-  defp parse_payload(device_type, 0x02, <<battery::binary-1, current1_t::16, current2_t::16, current3_t::16, multiplier::8>>) when device_type in [0x4A] do
+  defp parse_payload(device_type, 0x02, <<battery::binary-1, current1_t::16, current2_t::16, current3_t::16,multiplier::8>>) when device_type in [0x4A] do
     %{
     }
     |> Map.merge(parse_battery_info(battery))
+  end
+
+  # R711/R718A/R718AB/R720A
+  defp parse_payload(device_type, 0x01, <<battery::binary-1, temperature::signed-16, humidity::16, _rest::binary>>) when device_type in [0x01, 0x0B, 0x13, 0x6E] do
+    %{
+      temperature: temperature/100,
+      humidity: humidity/100,
+    }
+    |> Map.merge(parse_battery_info(battery))
+  end
+
+  # Catchall
+  defp parse_payload(_device_type, _report_type, payload) do
+    %{
+      unknown_payload: Base.encode16(payload),
+    }
   end
 
   defp parse_battery_info(<<lowbat::1, battery_voltage::7>>) do
@@ -412,6 +435,20 @@ defmodule Parser do
         device_type: 6,
         device_type_name: "R311W Water Leak Sensor",
         low_battery: 0,
+      },
+      },
+
+      # R711
+      {
+        :parse_hex, "01010123087711F7000000", %{meta: %{frame_port: 6}}, %{
+        battery: 3.5,
+        device_type: 1,
+        device_type_name: "R711 Indoor Temperature Humidity Sensor",
+        humidity: 45.99,
+        low_battery: 0,
+        report_type: 1,
+        temperature: 21.67,
+        version: 1
       },
       },
     ]
