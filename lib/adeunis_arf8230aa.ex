@@ -13,9 +13,28 @@ defmodule Parser do
   # Changelog:
   #   2019-xx-xx [jb]: Initial implementation.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
+  #   2020-11-24 [jb]: Added extend_reading with start and impulse extension from profile.
   #
 
-  def parse(<<code::8, status::8, payload::binary>>, _meta) do
+  def preloads do
+    [device: [profile_data: [:profile]]]
+  end
+
+  # Forms from views:
+  # k_wh = float(float(device.fields.gaszahler.startwert)+float(data.counter_a)*float(device.fields.gaszahler.impulswertigkeit))*11.3
+  # zahlerstand_m_3 = float(float(device.fields.gaszahler.startwert)+float(data.counter_a)*float(device.fields.gaszahler.impulswertigkeit))
+#  defp do_extend_reading(%{counter_a: a} = reading, %{device: %{fields: %{"gaszahler" => %{"startwert" => startwert, "impulswertigkeit" => impulswertigkeit}}}}) do
+#    zaehlerstand = Float.round((startwert + a) * impulswertigkeit / 1, 4)
+#    Map.merge(reading, %{
+#      :"7-0:3.0.0" => zaehlerstand,
+#      k_wh: zaehlerstand * 11.3,
+#      zahlerstand_m_3: zaehlerstand,
+#    })
+#  end
+  # Use this function to add more fields to readings for integration purposes. By default doing nothing.
+  defp do_extend_reading(fields, _meta), do: fields
+
+  def parse(<<code::8, status::8, payload::binary>>, meta) do
     << _fcnt::4, err::4 >> = << status::8 >>
 
     error = case err do
@@ -80,11 +99,55 @@ defmodule Parser do
       _ ->
         []
     end
-
+    |> extend_reading(meta)
   end
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
     []
+  end
+
+  # This function will take whatever parse() returns and provides the possibility
+  # to add some more fields to readings using do_extend_reading()
+  defp extend_reading(readings, meta) when is_list(readings), do: Enum.map(readings, &extend_reading(&1, meta))
+  defp extend_reading({fields, opts}, meta), do: {extend_reading(fields, meta), opts}
+  defp extend_reading(%{} = fields, meta), do: do_extend_reading(fields, meta)
+  defp extend_reading(other, _meta), do: other
+
+  def tests() do
+    [
+      {
+        :parse_hex,
+        "46E00000241200000000",
+        %{
+          meta: %{
+            frame_port: 1
+          }
+        },
+        %{counter_a: 9234, counter_b: 0, error: "no error", frame_type: "data frame"}
+      },
+
+      {
+        :parse_hex,
+        "46E00000241200000000",
+        %{
+          meta: %{
+            frame_port: 1
+          },
+          device: %{
+            fields: %{"gaszahler" => %{"startwert" => 100, "impulswertigkeit" => 0.1}}
+          }
+        },
+        %{
+          "7-0:3.0.0": 933.4,
+          counter_a: 9234,
+          counter_b: 0,
+          error: "no error",
+          frame_type: "data frame",
+          k_wh: 10547.42,
+          zahlerstand_m_3: 933.4
+        }
+      },
+    ]
   end
 
 end
