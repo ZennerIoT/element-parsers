@@ -16,6 +16,15 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2020-06-29 [jb]: Added filter_unknown_data() filtering :unknown Mbus data.
   #   2020-07-08 [jb]: Added all error flags in build_error_string()
+  #   2020-11-24 [jb]: Added do_extend_reading and OBIS "6-0:1.0.0" to data.
+
+  defp do_extend_reading(%{energy: energy, energy_unit: "kWh"} = reading) do
+    Map.merge(reading, %{
+      :"6-0:1.0.0" => energy,
+    })
+  end
+  # Use this function to add more fields to readings for integration purposes. By default doing nothing.
+  defp do_extend_reading(fields), do: fields
 
   # When using payload style 0, the payload is made up of DIBs on M-Bus format, excluding M-Bus header.
   def parse(<<type::8, dibs_binary::binary,>>, _meta) do
@@ -31,6 +40,7 @@ defmodule Parser do
     Enum.into(dibs, %{
       payload_style: type,
     })
+    |> extend_reading()
   end
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
@@ -39,6 +49,13 @@ defmodule Parser do
 
 
   #--- Internals ---
+
+  # This function will take whatever parse() returns and provides the possibility
+  # to add some more fields to readings using do_extend_reading()
+  defp extend_reading(readings) when is_list(readings), do: Enum.map(readings, &extend_reading(&1))
+  defp extend_reading({fields, opts}), do: {extend_reading(fields), opts}
+  defp extend_reading(%{} = fields), do: do_extend_reading(fields)
+  defp extend_reading(other), do: other
 
   # Will remove all unknown fields from LibWmbus.Dib.parse_dib(payload) result.
   defp filter_unknown_data(parse_dib_result) do
@@ -161,9 +178,10 @@ defmodule Parser do
           "return_temperature_unit" => "°C",
           "supply_temperature_unit" => "°C",
           "volume_unit" => "m³",
-          datetime: ~N[2018-03-20 17:50:00],
+          :"6-0:1.0.0" => 124638.0,
           energy: 124638.0,
           energy_unit: "kWh",
+          datetime: ~N[2018-03-20 17:50:00],
           error_codes: 0,
           error: "",
           fabrication_block: 68824789,
@@ -181,6 +199,7 @@ defmodule Parser do
       # From real device
       {
         :parse_hex, "000C06150110000C782791206802FD170600", %{}, %{
+          "6-0:1.0.0": 100115.0,
           energy: 100115.0,
           energy_unit: "kWh",
           error_codes: 1,
@@ -200,6 +219,7 @@ defmodule Parser do
           "return_temperature_unit" => "°C",
           "supply_temperature_unit" => "°C",
           "volume_unit" => "m³",
+          :"6-0:1.0.0" => 238874.0,
           energy: 238874.0,
           energy_unit: "kWh",
           error_codes: 0,
@@ -223,6 +243,7 @@ defmodule Parser do
           "supply_temperature_unit" => "°C",
           "volume_unit" => "m³",
           :energy => 185536.0,
+          :"6-0:1.0.0" => 185536.0,
           :energy_unit => "kWh",
           :error => "Verschmutzungs-Vorwarnung der Messstrecke;F1 - Unterbrechung Temperaturfühler warme Seite;F0 - Fehler bei Durchflussmessung (z.B. Luft im Messrohr)",
           :error_codes => 1,
@@ -241,6 +262,7 @@ defmodule Parser do
       {
         :parse_hex, "010C07905510000C786734966902FD170040", %{}, %{
           energy: 1.0559e6,
+         "6-0:1.0.0": 1.0559e6,
           energy_unit: "kWh",
           error: "Error bit 14 set",
           error_codes: 1,
