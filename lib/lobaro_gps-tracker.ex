@@ -13,6 +13,7 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2020-01-10 [tr]: Added Payload Version 5.0.
   #   2020-11-04 [tr]: Added Payload Version 7.0 and 7.1 and disabled output of GPS data of 5.0 version when no sat. is available.
+  #   2020-11-25 [jb]: Fixed negative Temperature for v5.0
   #
 
   # Payload version 7.0 and higher status message
@@ -71,7 +72,7 @@ defmodule Parser do
   end
 
   # parsing packet if GPS fix available
-  def parse(<<type::big-8, temp::big-16, vbat::big-16, lat_deg::big-8, lat_min::big-8, lat_10000::big-16, long_deg::big-8, long_min::big-8, long_10000::big-16, 0x01, sat_cnt::8>>, _meta) do
+  def parse(<<type::big-8, temp::16-signed, vbat::big-16, lat_deg::big-8, lat_min::big-8, lat_10000::big-16, long_deg::big-8, long_min::big-8, long_10000::big-16, 0x01, sat_cnt::8>>, _meta) do
 
     # calculate the GPS coordinates
     gpslatitude = lat_deg + (lat_min/60) + (lat_10000/600000)
@@ -97,7 +98,7 @@ defmodule Parser do
   end
 
   # parsing packet if GPS fix available (V 5.0)
-  def parse(<<temp::big-16, vbat::big-16, lat_deg::big-32, long_deg::big-32, alt_cm::big-24, status::binary-1, sat_cnt::8>>, _meta) do
+  def parse(<<temp::16-signed, vbat::big-16, lat_deg::big-32, long_deg::big-32, alt_cm::big-24, status::binary-1, sat_cnt::8>>, _meta) do
     <<last_measurement_isvalid::1, op_mode::1, _::6>> = status
     last_measurement_isvalid = case last_measurement_isvalid do
       0 -> "false"
@@ -136,8 +137,7 @@ defmodule Parser do
       }
     )
     # return value map
-    {data,
-    meta}
+    {data,  meta}
   end
 
 
@@ -309,6 +309,19 @@ defmodule Parser do
         vbat: 3.132
         }, [location: {9.96135, 54.07097}]}
         },
+
+      {:parse_hex, "FFFB0BB9004A2D1A000E40E5007C10030A", %{},{%{
+        alt_m: 317.6,
+        gpslatitude: 48.6121,
+        gpslongitude: 9.34117,
+        last_measurement_isvalid: "false",
+        op_mode: "alive",
+        position: "GPS fix",
+        sat_cnt: 10,
+        temp: -0.5,
+        vbat: 3.001
+      }, [location: {9.34117, 48.6121}]}
+      },
     ]
   end
 
