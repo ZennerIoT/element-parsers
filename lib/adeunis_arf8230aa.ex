@@ -126,27 +126,27 @@ defmodule Parser do
         %{counter_a: 9234, counter_b: 0, error: "no error", frame_type: "data frame"}
       },
 
-      {
-        :parse_hex,
-        "46E00000241200000000",
-        %{
-          meta: %{
-            frame_port: 1
-          },
-          device: %{
-            fields: %{"gaszahler" => %{"startwert" => 100, "impulswertigkeit" => 0.1}}
-          }
-        },
-        %{
-          "7-0:3.0.0": 933.4,
-          counter_a: 9234,
-          counter_b: 0,
-          error: "no error",
-          frame_type: "data frame",
-          k_wh: 10547.42,
-          zahlerstand_m_3: 933.4
-        }
-      },
+#      {
+#        :parse_hex,
+#        "46E00000241200000000",
+#        %{
+#          meta: %{
+#            frame_port: 1
+#          },
+#          device: %{
+#            fields: %{"gaszahler" => %{"startwert" => 100, "impulswertigkeit" => 0.1}}
+#          }
+#        },
+#        %{
+#          "7-0:3.0.0": 933.4,
+#          counter_a: 9234,
+#          counter_b: 0,
+#          error: "no error",
+#          frame_type: "data frame",
+#          k_wh: 10547.42,
+#          zahlerstand_m_3: 933.4
+#        }
+#      },
     ]
   end
 
