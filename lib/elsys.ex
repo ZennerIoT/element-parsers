@@ -15,15 +15,24 @@ defmodule Parser do
   #   2019-02-22 [jb]: Added sTypes 03, 0F, 14. Fields and Tests.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2020-04-07 [jb]: Added all missing sTypes. Fixed negative temperature bugs. Removed offset=0 values.
-  #   2020-12-15 [jb]: Updating to Payload v1.11. Adding sTypes 00, 10, 13, 1A, 1B, 3E
+  #   2020-12-15 [jb]: Updating to Payload v1.11. Adding sTypes 00, 10, 13, 1A, 1B, 3E. Removed _unit fields. Added location.
 
   def parse(payload, _meta) when is_binary(payload) do
-    case parse_parts(payload, %{}) do
+    payload
+    |> parse_parts(%{})
+    |> case do
       {:ok, parts} ->
         parts
 
       {:error, {parts, rest}} ->
         Map.put(parts, :unparsed_binary, Base.encode16(rest))
+    end
+    |> case do
+      %{"gps_lat_1" => lat, "gps_lon_1" => lon} = row ->
+        {row, [location: {lon, lat}]}
+
+      row ->
+        row
     end
   end
 
@@ -50,14 +59,14 @@ defmodule Parser do
         <<nob::2, 0x01::6, temp::16-signed, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :temperature, temp / 10, %{offset: offset, unit: "C"}))
+    parse_parts(rest, add_part(parts, :temperature, temp / 10, %{offset: offset}))
   end
 
   def parse_parts(
         <<nob::2, 0x02::6, humidity::8, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :humidity, humidity, %{offset: offset, unit: "%"}))
+    parse_parts(rest, add_part(parts, :humidity, humidity, %{offset: offset}))
   end
 
   # Acceleration/level; X,Y,Z ‐127‐127(63=1G)
@@ -69,15 +78,15 @@ defmodule Parser do
     parse_parts(
       rest,
       parts
-      |> add_part(:acceleration_sum, x / 63 + y / 63 + z / 63, %{offset: offset, unit: "G"})
-      |> add_part(:acceleration_x, x / 63, %{offset: offset, unit: "G"})
-      |> add_part(:acceleration_y, y / 63, %{offset: offset, unit: "G"})
-      |> add_part(:acceleration_z, z / 63, %{offset: offset, unit: "G"})
+      |> add_part(:acceleration_sum, x / 63 + y / 63 + z / 63, %{offset: offset})
+      |> add_part(:acceleration_x, x / 63, %{offset: offset})
+      |> add_part(:acceleration_y, y / 63, %{offset: offset})
+      |> add_part(:acceleration_z, z / 63, %{offset: offset})
     )
   end
 
   def parse_parts(<<nob::2, 0x04::6, lux::16, offset::unit(8)-size(nob), rest::bitstring>>, parts) do
-    parse_parts(rest, add_part(parts, :lux, lux, %{offset: offset, unit: "lux"}))
+    parse_parts(rest, add_part(parts, :lux, lux, %{offset: offset}))
   end
 
   def parse_parts(
@@ -88,36 +97,36 @@ defmodule Parser do
   end
 
   def parse_parts(<<nob::2, 0x06::6, co2::16, offset::unit(8)-size(nob), rest::bitstring>>, parts) do
-    parse_parts(rest, add_part(parts, :co2, co2, %{offset: offset, unit: "ppm"}))
+    parse_parts(rest, add_part(parts, :co2, co2, %{offset: offset}))
   end
 
   def parse_parts(
         <<nob::2, 0x07::6, battery::16, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :battery, battery, %{offset: offset, unit: "mV"}))
+    parse_parts(rest, add_part(parts, :battery, battery, %{offset: offset}))
   end
 
   def parse_parts(
         <<nob::2, 0x08::6, analog1::16, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :analog1, analog1, %{offset: offset, unit: "mV"}))
+    parse_parts(rest, add_part(parts, :analog1, analog1, %{offset: offset}))
   end
 
   def parse_parts(
         <<nob::2, 0x09::6, gps::binary-6, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    <<lat::24, lon::24>> = gps
+    <<lat::24-signed, lon::24-signed>> = gps
 
     parse_parts(
       rest,
       parts
-      # TODO: Not documented how data looks like and no example payload at hand
-      |> add_part(:gps_lat, lat, %{offset: offset, unit: "?"})
-      # TODO: Not documented how data looks like and no example payload at hand
-      |> add_part(:gps_lon, lon, %{offset: offset, unit: "?"})
+      # TODO: Not documented how data looks like and no example payload at hand. Guessed here!
+      |> add_part(:gps_lat, lat / 10000, %{offset: offset})
+      # TODO: Not documented how data looks like and no example payload at hand. Guessed here!
+      |> add_part(:gps_lon, lon / 10000, %{offset: offset})
     )
   end
 
@@ -127,7 +136,7 @@ defmodule Parser do
       ) do
     parse_parts(
       rest,
-      add_part(parts, :pulse_count, pulse_count, %{offset: offset, unit: "count"})
+      add_part(parts, :pulse_count, pulse_count, %{offset: offset})
     )
   end
 
@@ -137,7 +146,7 @@ defmodule Parser do
       ) do
     parse_parts(
       rest,
-      add_part(parts, :pulse_count_abs, pulse_count_abs, %{offset: offset, unit: "count"})
+      add_part(parts, :pulse_count_abs, pulse_count_abs, %{offset: offset})
     )
   end
 
@@ -145,14 +154,14 @@ defmodule Parser do
         <<nob::2, 0x0C::6, temp::16-signed, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :external_temp1, temp / 10, %{offset: offset, unit: "C"}))
+    parse_parts(rest, add_part(parts, :external_temp1, temp / 10, %{offset: offset}))
   end
 
   def parse_parts(
         <<nob::2, 0x0D::6, on_off::8, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :digital1, on_off, %{offset: offset, unit: "bool"}))
+    parse_parts(rest, add_part(parts, :digital1, on_off, %{offset: offset}))
   end
 
   def parse_parts(
@@ -161,7 +170,7 @@ defmodule Parser do
       ) do
     parse_parts(
       rest,
-      add_part(parts, :external_distance, distance, %{offset: offset, unit: "mm"})
+      add_part(parts, :external_distance, distance, %{offset: offset})
     )
   end
 
@@ -172,7 +181,7 @@ defmodule Parser do
       ) do
     parse_parts(
       rest,
-      add_part(parts, :acceleration_motion, motion, %{offset: offset, unit: "count"})
+      add_part(parts, :acceleration_motion, motion, %{offset: offset})
     )
   end
 
@@ -185,8 +194,8 @@ defmodule Parser do
     parse_parts(
       rest,
       parts
-      |> add_part(:internal_temp, temp_internal / 10, %{offset: offset, unit: "C"})
-      |> add_part(:external_temp, temp_external / 10, %{offset: offset, unit: "C"})
+      |> add_part(:internal_temp, temp_internal / 10, %{offset: offset})
+      |> add_part(:external_temp, temp_external / 10, %{offset: offset})
     )
   end
 
@@ -194,7 +203,7 @@ defmodule Parser do
         <<nob::2, 0x11::6, occupancy::8, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :occupancy, occupancy, %{offset: offset, unit: "count"}))
+    parse_parts(rest, add_part(parts, :occupancy, occupancy, %{offset: offset}))
   end
 
   def parse_parts(
@@ -222,7 +231,7 @@ defmodule Parser do
         <<nob::2, 0x14::6, pressure::32, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :pressure, pressure, %{offset: offset, unit: "hPa"}))
+    parse_parts(rest, add_part(parts, :pressure, pressure, %{offset: offset}))
   end
 
   def parse_parts(
@@ -234,8 +243,8 @@ defmodule Parser do
     parse_parts(
       rest,
       parts
-      |> add_part(:sound_peak, peak, %{offset: offset, unit: "dB"})
-      |> add_part(:sound_avg, avg, %{offset: offset, unit: "dB"})
+      |> add_part(:sound_peak, peak, %{offset: offset})
+      |> add_part(:sound_avg, avg, %{offset: offset})
     )
   end
 
@@ -245,7 +254,7 @@ defmodule Parser do
       ) do
     parse_parts(
       rest,
-      add_part(parts, :pulse_count2, pulse_count, %{offset: offset, unit: "count"})
+      add_part(parts, :pulse_count2, pulse_count, %{offset: offset})
     )
   end
 
@@ -255,7 +264,7 @@ defmodule Parser do
       ) do
     parse_parts(
       rest,
-      add_part(parts, :pulse_count2_abs, pulse_count_abs, %{offset: offset, unit: "count"})
+      add_part(parts, :pulse_count2_abs, pulse_count_abs, %{offset: offset})
     )
   end
 
@@ -263,28 +272,28 @@ defmodule Parser do
         <<nob::2, 0x18::6, analog2::16, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :analog2, analog2, %{offset: offset, unit: "mV"}))
+    parse_parts(rest, add_part(parts, :analog2, analog2, %{offset: offset}))
   end
 
   def parse_parts(
         <<nob::2, 0x19::6, temp::16-signed, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :external_temp2, temp / 10, %{offset: offset, unit: "C"}))
+    parse_parts(rest, add_part(parts, :external_temp2, temp / 10, %{offset: offset}))
   end
 
   def parse_parts(
         <<nob::2, 0x1A::6, on_off::8, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :digital2, on_off, %{offset: offset, unit: "bool"}))
+    parse_parts(rest, add_part(parts, :digital2, on_off, %{offset: offset}))
   end
 
   def parse_parts(
         <<nob::2, 0x1B::6, analog::32-signed, offset::unit(8)-size(nob), rest::bitstring>>,
         parts
       ) do
-    parse_parts(rest, add_part(parts, :external_analog_uv, analog, %{offset: offset, unit: "uV"}))
+    parse_parts(rest, add_part(parts, :external_analog_uv, analog, %{offset: offset}))
   end
 
   def parse_parts(
@@ -381,133 +390,146 @@ defmodule Parser do
 
   def tests() do
     [
-      {:parse_hex, "0100D5022703FB00C1070E4B0F0014000F417A", %{meta: %{frame_port: 5}},
-       %{
-         "acceleration_motion_1" => 0,
-         "acceleration_motion_1_unit" => "count",
-         "acceleration_sum_1" => -1.0793650793650793,
-         "acceleration_sum_1_unit" => "G",
-         "acceleration_x_1" => -0.07936507936507936,
-         "acceleration_x_1_unit" => "G",
-         "acceleration_y_1" => 0.0,
-         "acceleration_y_1_unit" => "G",
-         "acceleration_z_1" => -1.0,
-         "acceleration_z_1_unit" => "G",
-         "battery_1" => 3659,
-         "battery_1_unit" => "mV",
-         "humidity_1" => 39,
-         "humidity_1_unit" => "%",
-         "pressure_1" => 999_802,
-         "pressure_1_unit" => "hPa",
-         "temperature_1" => 21.3,
-         "temperature_1_unit" => "C"
-       }},
-      {:parse_hex, "0100E1022603F9FDC0070E380F0014000F3D4D", %{meta: %{frame_port: 5}},
-       %{
-         "acceleration_motion_1" => 0,
-         "acceleration_motion_1_unit" => "count",
-         "acceleration_sum_1" => -1.1746031746031744,
-         "acceleration_sum_1_unit" => "G",
-         "acceleration_x_1" => -0.1111111111111111,
-         "acceleration_x_1_unit" => "G",
-         "acceleration_y_1" => -0.047619047619047616,
-         "acceleration_y_1_unit" => "G",
-         "acceleration_z_1" => -1.0158730158730158,
-         "acceleration_z_1_unit" => "G",
-         "battery_1" => 3640,
-         "battery_1_unit" => "mV",
-         "humidity_1" => 38,
-         "humidity_1_unit" => "%",
-         "pressure_1" => 998_733,
-         "pressure_1_unit" => "hPa",
-         "temperature_1" => 22.5,
-         "temperature_1_unit" => "C"
-       }},
-      {:parse_hex, "080E38 09000001000002 0C00D5 0D00 0D01", %{meta: %{frame_port: 5}},
-       %{
-         "analog1_1" => 3640,
-         "analog1_1_unit" => "mV",
-         "digital1_1" => 0,
-         "digital1_1_unit" => "bool",
-         "digital1_2" => 1,
-         "digital1_2_unit" => "bool",
-         "external_temp1_1" => 21.3,
-         "external_temp1_1_unit" => "C",
-         "gps_lat_1" => 1,
-         "gps_lat_1_unit" => "?",
-         "gps_lon_1" => 2,
-         "gps_lon_1_unit" => "?"
-       }},
-      {:parse_hex, "0E0042 1101 151337 160001 1700000002 180023", %{meta: %{frame_port: 5}},
-       %{
-         "analog2_1" => 35,
-         "analog2_1_unit" => "mV",
-         "external_distance_1" => 66,
-         "external_distance_1_unit" => "mm",
-         "occupancy_1" => 1,
-         "occupancy_1_unit" => "count",
-         "pulse_count2_1" => 1,
-         "pulse_count2_1_unit" => "count",
-         "pulse_count2_abs_1" => 2,
-         "pulse_count2_abs_1_unit" => "count",
-         "sound_avg_1" => 55,
-         "sound_avg_1_unit" => "dB",
-         "sound_peak_1" => 19,
-         "sound_peak_1_unit" => "dB"
-       }},
-      {:parse_hex, "190042 3DCAFEBABE", %{meta: %{frame_port: 5}},
-       %{
-         "debug_1" => "CAFEBABE",
-         "external_temp2_1" => 6.6,
-         "external_temp2_1_unit" => "C"
-       }},
-      {:parse_hex, "00 AFFE", %{meta: %{frame_port: 5}}, %{"reserved_00_1" => "AFFE"}},
-      {:parse_hex, "10 001F FFAA", %{meta: %{frame_port: 5}},
-       %{
-         "external_temp_1" => -8.6,
-         "external_temp_1_unit" => "C",
-         "internal_temp_1" => 3.1,
-         "internal_temp_1_unit" => "C"
-       }},
-      {:parse_hex,
-       "13 42 00000001 00000002 00000003 00000004 00000005 00000006 00000007 00000008 00000009 00000010 00000011 00000012 00000013 00000014 00000015 00000016",
-       %{meta: %{frame_port: 5}},
-       %{
-         "grideye_pixels_1" =>
-           "00000001000000020000000300000004000000050000000600000007000000080000000900000010000000110000001200000013000000140000001500000016",
-         "grideye_ref_1" => 66
-       }},
-      {:parse_hex, "1A 01 1B 0BBBBBBB 3E CAFE", %{meta: %{frame_port: 5}},
-       %{
-         "digital2_1" => 1,
-         "digital2_1_unit" => "bool",
-         "external_analog_uv_1" => 196_852_667,
-         "external_analog_uv_1_unit" => "uV",
-         "sensor_settings_1" => "CAFE"
-       }},
-      {:parse_hex, "05001100", %{meta: %{frame_port: 5}},
-       %{"motion_1" => 0, "occupancy_1" => 0, "occupancy_1_unit" => "count"}},
-      {:parse_hex, "0100EB02240400240505070E081101", %{meta: %{frame_port: 5}},
-       %{
-         "battery_1" => 3592,
-         "battery_1_unit" => "mV",
-         "humidity_1" => 36,
-         "humidity_1_unit" => "%",
-         "lux_1" => 36,
-         "lux_1_unit" => "lux",
-         "motion_1" => 5,
-         "occupancy_1" => 1,
-         "occupancy_1_unit" => "count",
-         "temperature_1" => 23.5,
-         "temperature_1_unit" => "C"
-       }},
-      {:parse_hex,
-       "3E4A0701080509010A000B050D000C0511021300000000140000025815000000011600000001170000000118000000011D000000001E000000011F0000000120000000002100000000FB00E5",
-       %{meta: %{frame_port: 6}},
-       %{
-         "sensor_settings_1" =>
-           "4A0701080509010A000B050D000C0511021300000000140000025815000000011600000001170000000118000000011D000000001E000000011F0000000120000000002100000000FB00E5"
-       }}
+      {
+        :parse_hex,
+        "0100D5022703FB00C1070E4B0F0014000F417A",
+        %{meta: %{frame_port: 5}},
+        %{
+          "acceleration_motion_1" => 0,
+          "acceleration_sum_1" => -1.0793650793650793,
+          "acceleration_x_1" => -0.07936507936507936,
+          "acceleration_y_1" => 0.0,
+          "acceleration_z_1" => -1.0,
+          "battery_1" => 3659,
+          "humidity_1" => 39,
+          "pressure_1" => 999_802,
+          "temperature_1" => 21.3
+        }
+      },
+      {
+        :parse_hex,
+        "0100E1022603F9FDC0070E380F0014000F3D4D",
+        %{meta: %{frame_port: 5}},
+        %{
+          "acceleration_motion_1" => 0,
+          "acceleration_sum_1" => -1.1746031746031744,
+          "acceleration_x_1" => -0.1111111111111111,
+          "acceleration_y_1" => -0.047619047619047616,
+          "acceleration_z_1" => -1.0158730158730158,
+          "battery_1" => 3640,
+          "humidity_1" => 38,
+          "pressure_1" => 998_733,
+          "temperature_1" => 22.5
+        }
+      },
+      {
+        :parse_hex,
+        "080E38 09000001000002 0C00D5 0D00 0D01",
+        %{meta: %{frame_port: 5}},
+        {%{
+           "analog1_1" => 3640,
+           "digital1_1" => 0,
+           "digital1_2" => 1,
+           "external_temp1_1" => 21.3,
+           "gps_lat_1" => 0.0001,
+           "gps_lon_1" => 0.0002
+         }, [location: {0.0002, 0.0001}]}
+      },
+      {
+        :parse_hex,
+        "0E0042 1101 151337 160001 1700000002 180023",
+        %{meta: %{frame_port: 5}},
+        %{
+          "analog2_1" => 35,
+          "external_distance_1" => 66,
+          "occupancy_1" => 1,
+          "pulse_count2_1" => 1,
+          "pulse_count2_abs_1" => 2,
+          "sound_avg_1" => 55,
+          "sound_peak_1" => 19
+        }
+      },
+      {
+        :parse_hex,
+        "190042 3DCAFEBABE",
+        %{meta: %{frame_port: 5}},
+        %{
+          "debug_1" => "CAFEBABE",
+          "external_temp2_1" => 6.6
+        }
+      },
+      {
+        :parse_hex,
+        "00 AFFE",
+        %{meta: %{frame_port: 5}},
+        %{"reserved_00_1" => "AFFE"}
+      },
+      {
+        :parse_hex,
+        "10 001F FFAA",
+        %{meta: %{frame_port: 5}},
+        %{
+          "external_temp_1" => -8.6,
+          "internal_temp_1" => 3.1
+        }
+      },
+      {
+        :parse_hex,
+        "13 42 00000001 00000002 00000003 00000004 00000005 00000006 00000007 00000008 00000009 00000010 00000011 00000012 00000013 00000014 00000015 00000016",
+        %{meta: %{frame_port: 5}},
+        %{
+          "grideye_pixels_1" =>
+            "00000001000000020000000300000004000000050000000600000007000000080000000900000010000000110000001200000013000000140000001500000016",
+          "grideye_ref_1" => 66
+        }
+      },
+      {
+        :parse_hex,
+        "1A 01 1B 0BBBBBBB 3E CAFE",
+        %{meta: %{frame_port: 5}},
+        %{
+          "digital2_1" => 1,
+          "external_analog_uv_1" => 196_852_667,
+          "sensor_settings_1" => "CAFE"
+        }
+      },
+      {
+        :parse_hex,
+        "05001100",
+        %{meta: %{frame_port: 5}},
+        %{
+          "motion_1" => 0,
+          "occupancy_1" => 0
+        }
+      },
+      {
+        :parse_hex,
+        "0100EB02240400240505070E081101",
+        %{meta: %{frame_port: 5}},
+        %{
+          "battery_1" => 3592,
+          "humidity_1" => 36,
+          "lux_1" => 36,
+          "motion_1" => 5,
+          "occupancy_1" => 1,
+          "temperature_1" => 23.5
+        }
+      },
+      {
+        :parse_hex,
+        "3E4A0701080509010A000B050D000C0511021300000000140000025815000000011600000001170000000118000000011D000000001E000000011F0000000120000000002100000000FB00E5",
+        %{meta: %{frame_port: 6}},
+        %{
+          "sensor_settings_1" =>
+            "4A0701080509010A000B050D000C0511021300000000140000025815000000011600000001170000000118000000011D000000001E000000011F0000000120000000002100000000FB00E5"
+        }
+      },
+      {
+        :parse_hex,
+        "09 123456 234567",
+        %{meta: %{frame_port: 5}},
+        {%{"gps_lat_1" => 119.3046, "gps_lon_1" => 231.1527}, [location: {231.1527, 119.3046}]}
+      }
     ]
   end
 end
