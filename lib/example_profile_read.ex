@@ -7,6 +7,8 @@ defmodule Parser do
   # A profile has a "technical name" and each field has its own "technical name".
   # These are needed here, NOT the display name!
   #
+  # Changelog:
+  #   2019-09-30 [jb]: Initial implementation
 
   def preloads do
     [device: [profile_data: [:profile]]]
