@@ -137,7 +137,7 @@ defmodule TestParser do
     file
     |> Code.require_file()
     |> case do
-      [{^module, %{module: ^module} = _code}] ->
+      [{^module, _compiled}] ->
         tests = apply(module, :tests, [])
 
         tests =
@@ -157,8 +157,7 @@ defmodule TestParser do
       [] ->
         raise "No 'Parser' module in file #{file}"
 
-      compiled ->
-        IO.inspect(compiled, label: "COMPILED")
+      _ ->
         raise "Can not load 'Parser' module from file #{file}"
     end
   end
