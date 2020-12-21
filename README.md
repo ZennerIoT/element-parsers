@@ -125,13 +125,13 @@ Last Change | Parser Name
 2020-07-08 | Adeunis ARF8180
 2019-03-20 | Adeunis ARF8230
 2020-12-14 | Adeunis ARF8240
-2019-03-14 | Arad MODBUS
+2020-10-06 | Arad MODBUS
 2020-11-20 | Ascoel CO868LR / TH868LR
 2020-11-11 | BESA M-BUS-1
 2019-01-01 | Binando Binsonic
 2019-09-19 | BOSCH Traci
 2020-12-16 | Clevabit Protocol
-2020-04-27 | Clevercity Greenbox
+2020-11-19 | Clevercity Greenbox
 2019-05-15 | Comtac E1323-MS3
 2019-01-01 | Comtac E1360-MS3
 2019-11-12 | Comtac E1374
@@ -146,14 +146,14 @@ Last Change | Parser Name
 2020-12-10 | Imbuildings People Counter
 2020-11-30 | Innotas LoRa Pulse
 2020-11-25 | Innotas LoRa EHKV
-2019-08-27 | Innotas LoRa Water Meter
-2020-08-27 | Itron Cyble5
-2019-07-30 | Keller
+2020-11-25 | Innotas LoRa Water Meter
+2020-11-04 | Itron Cyble5
+2020-11-16 | Keller
 2020-12-16 | Kerlink Wanesy Wave
 2020-10-06 | Lancier Pipesense
-2018-11-19 | Lobaro Modbus Bridge (HTTP)
+2020-01-01 | Lobaro Modbus Bridge (HTTP)
 2018-01-01 | Lobaro Oscar smart waste ultrasonic sensor
-2020-06-30 | Lobaro WMBus Bridge
+2020-07-27 | Lobaro WMBus Bridge
 2019-03-07 | LPP Cayenne
 2020-12-11 | Mutelcor MTC-PB01 / MTC-CO2-01
 2020-11-23 | NKE Watteco Pulse Sens'O
@@ -161,7 +161,7 @@ Last Change | Parser Name
 2020-07-06 | Pepperl+Fuchs WILSEN.sonic.level
 2019-05-16 | Sensingslabs Multisensor
 2019-10-16 | SensoNeo Quatro Sensor
-2020-04-22 | SensoNeo Single Sensor
+2020-12-10 | SensoNeo Single Sensor
 2020-11-17 | Sentinum APOLLON-Q
 2019-03-28 | Swisslogix/YMATRON SLX-1307
 2019-06-25 | Tecyard Multiparser
@@ -172,9 +172,8 @@ Last Change | Parser Name
 2019-05-08 | Xignal Mouse/Rat Trap
 2019-07-04 | ZENNER Smoke Detector D1722
 2020-02-27 | ZENNER T&H Sensor D1801
-2018-04-26 | ZENNER Water Meter
-2019-11-27 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
-
+2019-07-05 | ZENNER Water Meter
+2020-11-23 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
  
 
