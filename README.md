@@ -76,7 +76,6 @@ Lobaro Environment | [lib/lobaro_environmental.ex](lib/lobaro_environmental.ex)
 Lobaro GPS Tracker | [lib/lobaro_gps-tracker.ex](lib/lobaro_gps-tracker.ex)
 Lobaro Pressure 26D | [lib/lobaro_pressure26d.ex](lib/lobaro_pressure26d.ex)
 Lobaro Oskar v2 | [lib/lobaro_oskar_v2.ex](lib/lobaro_oskar_v2.ex)
-Lobaro WMBUS Bridge | _On Request_
 NAS CM3010 | [lib/nas_cm3010.ex](lib/nas_cm3010.ex)
 NAS CM3020 | [lib/nas_cm3020.ex](lib/nas_cm3020.ex)
 NAS CM3030 | [lib/nas_cm3030.ex](lib/nas_cm3030.ex)
@@ -99,8 +98,6 @@ RFI Remote Power Switch | [lib/rfi_remote-power-switch.ex](lib/rfi_remote-power-
 Sagemcom Siconia | [lib/sagemcom_siconia.ex](lib/sagemcom_siconia.ex)
 Sensative Strips Comfort | [lib/sensative_strips.ex](lib/sensative_strips.ex)
 Sensing Labs SenLab LED | [lib/sensinglabs_senlabm.ex](lib/sensinglabs_senlabm.ex)
-Sensoneo Quatrosensors | _On Request_
-Sensoneo Singlesensors | _On Request_
 Strega Smartvalve| [lib/strega_smartvalve.ex](lib/strega_smartvalve.ex)
 Smilio Action| [lib/smilio_action_fw_2_0.ex](lib/smilio_action_fw_2_0.ex)
 Sontex 79 Heat| [lib/sontext_7x9_heat.ex](lib/sontext_7x9_heat.ex)
@@ -119,6 +116,67 @@ ZIS ZISDIS 8 | [lib/zis_zisdis8.ex](lib/zis_zisdis8.ex)
 
 Your device is missing? Contact us at: [https://zenner-iot.com/page/kontakt/](https://zenner-iot.com/page/kontakt/)
 
+## Internal Parsers
+
+These parsers are available on request.
+
+Last Change | Parser Name
+------------|-------------
+2020-07-08 | Adeunis ARF8180
+2019-03-20 | Adeunis ARF8230
+2020-12-14 | Adeunis ARF8240
+2019-03-14 | Arad MODBUS
+2020-11-20 | Ascoel CO868LR / TH868LR
+2020-11-11 | BESA M-BUS-1
+2019-01-01 | Binando Binsonic
+2019-09-19 | BOSCH Traci
+2020-12-16 | Clevabit Protocol
+2020-04-27 | Clevercity Greenbox
+2019-05-15 | Comtac E1323-MS3
+2019-01-01 | Comtac E1360-MS3
+2019-11-12 | Comtac E1374
+2020-01-30 | Comtac KLAX Modbus
+2020-01-29 | Comtac KLAX SML
+2020-09-10 | Diehl HRLGc G3 Water Meter
+2019-08-26 | Diehl OMS
+2020-12-02 | Dragino distance sensor
+2020-01-01 | Dragino LHT65
+2019-01-01 | Fludia FM430
+2019-01-01 | Holley Meter
+2020-12-10 | Imbuildings People Counter
+2020-11-30 | Innotas LoRa Pulse
+2020-11-25 | Innotas LoRa EHKV
+2019-08-27 | Innotas LoRa Water Meter
+2020-08-27 | Itron Cyble5
+2019-07-30 | Keller
+2020-12-16 | Kerlink Wanesy Wave
+2020-10-06 | Lancier Pipesense
+2018-11-19 | Lobaro Modbus Bridge (HTTP)
+2018-01-01 | Lobaro Oscar smart waste ultrasonic sensor
+2020-06-30 | Lobaro WMBus Bridge
+2019-03-07 | LPP Cayenne
+2020-12-11 | Mutelcor MTC-PB01 / MTC-CO2-01
+2020-11-23 | NKE Watteco Pulse Sens'O
+2020-03-26 | PaulWegener Datenlogger
+2020-07-06 | Pepperl+Fuchs WILSEN.sonic.level
+2019-05-16 | Sensingslabs Multisensor
+2019-10-16 | SensoNeo Quatro Sensor
+2020-04-22 | SensoNeo Single Sensor
+2020-11-17 | Sentinum APOLLON-Q
+2019-03-28 | Swisslogix/YMATRON SLX-1307
+2019-06-25 | Tecyard Multiparser
+2019-06-04 | Tecyard RattenSchockSender
+2020-11-09 | TEKTELIC Agriculture
+2020-10-29 | Tetraedre
+2020-12-10 | Ursalink AM100/102 and Milesight AM104/AM107
+2019-05-08 | Xignal Mouse/Rat Trap
+2019-07-04 | ZENNER Smoke Detector D1722
+2020-02-27 | ZENNER T&H Sensor D1801
+2018-04-26 | ZENNER Water Meter
+2019-11-27 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
+
+
+ 
 
 ## Deprecated Parsers
 
