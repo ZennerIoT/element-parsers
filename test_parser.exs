@@ -157,7 +157,8 @@ defmodule TestParser do
       [] ->
         raise "No 'Parser' module in file #{file}"
 
-      _ ->
+      compiled ->
+        IO.inspect(compiled, label: "COMPILED")
         raise "Can not load 'Parser' module from file #{file}"
     end
   end
