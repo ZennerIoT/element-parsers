@@ -175,16 +175,3 @@ Last Change | Parser Name
 2019-07-05 | ZENNER Water Meter
 2020-11-23 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
- 
-
-## Deprecated Parsers
-
-Parsers that have been deprecated. No further development will be done on these files.
-
-Parser | Parser File | Explanation
-------------|-------------|-------------
-Tabs - Door and Window Sensor | [lib/tabs_doornwindow.ex](lib/tabs_doornwindow.ex) | Replaced by `Tabs "All in One"`
-Tabs - Healthy Home Air Quality Sensor | [lib/tabs_healthy-home.ex](lib/tabs_healthy-home.ex) | Replaced by `Tabs "All in One"`
-Tabs - Object locator | [lib/tabs_object-locator.ex](lib/tabs_object-locator.ex) | Replaced by `Tabs "All in One"`
-Tabs - Pushbutton | [lib/tabs_pushbutton.ex](lib/tabs_pushbutton.ex) | Replaced by `Tabs "All in One"`
-Tabs - Motion | [lib/tabs_motion.ex](lib/tabs_motion.ex) | Replaced by `Tabs "All in One"`

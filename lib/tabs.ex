@@ -11,6 +11,7 @@ defmodule Parser do
   #   * Motion Sensor
   #   * Object Locator
   #   * Push Button
+  #   * Ambient Light Sensor
   #
   #  This parser replaces all the other Tabs parsers.
   #
@@ -21,16 +22,26 @@ defmodule Parser do
   #   2019-04-04 [gw]: Initial version, combining 5 TrackNet Tabs devices.
   #   2020-09-23 [gw]: Added support for new Healthy Home Sensor version (with indoor-air-quality)
   #   2020-09-28 [gw]: Update battery calculation for new Healthy Home Sensor version
+  #   2020-12-22 [jb]: Added Ambient Light Sensor from "RM_Ambient light Sensor_20200319 (BQW_02_0008).pdf" and formatted code.
 
   # Door & Window Sensor
-  def parse(<<status::binary-1, battery::binary-1, temp::binary-1, time::little-16, count::little-24>>, %{meta: %{frame_port: 100}}) do
+  def parse(
+        <<status::binary-1, battery::binary-1, temp::binary-1, time::little-16,
+          count::little-24>>,
+        %{meta: %{frame_port: 100}}
+      ) do
     read_common_values(battery, temp)
     |> Map.merge(get_contact_state(status))
     |> Map.put(:time_elapsed_since_trigger, time)
     |> Map.put(:total_count, count)
   end
+
   # Healthy Home Sensor
-  def parse(<<_status, battery::binary-1, temp::binary-1, humidity::binary-1, co2::little-16, voc::little-16>>, %{meta: %{frame_port: 103}}) do
+  def parse(
+        <<_status, battery::binary-1, temp::binary-1, humidity::binary-1, co2::little-16,
+          voc::little-16>>,
+        %{meta: %{frame_port: 103}}
+      ) do
     <<_rfu::1, rhum::7>> = humidity
 
     read_common_values(battery, temp)
@@ -38,11 +49,17 @@ defmodule Parser do
     |> add_value_or_skip(:co2, co2, [65535])
     |> add_value_or_skip(:voc, voc, [65535])
   end
+
   # Healthy Home Sensor (doc version BQW_02_0005.002)
-  def parse(<<_status, battery::binary-1, board_temp::binary-1, humidity::binary-1, co2::little-16, voc::little-16, iaq::little-16, env_temp::binary-1>>, %{meta: %{frame_port: 103}}) do
+  def parse(
+        <<_status, battery::binary-1, board_temp::binary-1, humidity::binary-1, co2::little-16,
+          voc::little-16, iaq::little-16, env_temp::binary-1>>,
+        %{meta: %{frame_port: 103}}
+      ) do
     <<_rfu::1, rhum::7>> = humidity
     <<_rfu::4, voltage::4>> = battery
-    battery_state = 100 * (voltage / 14) # according to the documentation this has only 14 instead of the previous 15 steps)
+    # according to the documentation this has only 14 instead of the previous 15 steps)
+    battery_state = 100 * (voltage / 14)
     battery_voltage = (25 + voltage) / 10
 
     %{}
@@ -55,16 +72,26 @@ defmodule Parser do
     |> Map.put(:environment_temperature, read_temperature(env_temp))
     |> Map.put(:iaq, iaq)
   end
+
   # Motion Sensor
-  def parse(<<status::binary-1, battery::binary-1, temp::binary-1, _time::little-16, count::little-24>>, %{meta: %{frame_port: 102}}) do
+  def parse(
+        <<status::binary-1, battery::binary-1, temp::binary-1, _time::little-16,
+          count::little-24>>,
+        %{meta: %{frame_port: 102}}
+      ) do
     <<_rfu::7, state::1>> = status
 
     read_common_values(battery, temp)
     |> Map.put(:sensor_status, state)
     |> Map.put(:count, count)
   end
+
   # Object Locator
-  def parse(<<status::binary-1, battery::binary-1, temp::binary-1, lat::binary-4, lon::binary-4, _::binary>>, %{meta: %{frame_port: 136}}) do
+  def parse(
+        <<status::binary-1, battery::binary-1, temp::binary-1, lat::binary-4, lon::binary-4,
+          _::binary>>,
+        %{meta: %{frame_port: 136}}
+      ) do
     result =
       read_common_values(battery, temp)
       |> Map.merge(read_location(lat, lon))
@@ -77,8 +104,13 @@ defmodule Parser do
       ]
     }
   end
+
   # Push Button
-  def parse(<<status::binary-1, battery::binary-1, temp::binary-1, time::little-16, count::little-24, rest::binary>> = payload, %{meta: %{frame_port: 147}}) do
+  def parse(
+        <<status::binary-1, battery::binary-1, temp::binary-1, time::little-16, count::little-24,
+          rest::binary>> = payload,
+        %{meta: %{frame_port: 147}}
+      ) do
     result =
       read_common_values(battery, temp)
       |> Map.merge(read_button_state(status))
@@ -89,18 +121,44 @@ defmodule Parser do
     case rest do
       <<count_1::little-24>> ->
         Map.merge(result, %{
-          total_count: (count + count_1),
+          total_count: count + count_1,
           button_0_count: count,
           button_1_count: count_1
         })
+
+      <<>> ->
+        result
+
       _ ->
-        Logger.warn("Missing values in PushButton payload: #{inspect payload}")
+        Logger.warn("Missing values in PushButton payload: #{inspect(payload)}")
         result
     end
   end
+
+  # Ambient Light Sensor
+  def parse(<<status::binary-1, battery::binary-1, temp::binary-1, lux::24-little>>, %{
+        meta: %{frame_port: 104}
+      }) do
+    <<_rfu1::2, keep_alive::1, status_change::1, _rfu2::2, lighter::1, darker::1>> = status
+
+    read_common_values(battery, temp)
+    |> Map.merge(%{
+      light_lux: lux * 100,
+      keep_alive: keep_alive,
+      light_changed: status_change,
+      light_lighter: lighter,
+      light_darker: darker
+    })
+  end
+
   # not matched
   def parse(payload, meta) do
-    Logger.info("Unhandled meta.frame_port: #{inspect get_in(meta, [:meta, :frame_port])} with payload #{inspect payload}")
+    Logger.info(
+      "Unhandled meta.frame_port: #{inspect(get_in(meta, [:meta, :frame_port]))} with payload #{
+        inspect(payload)
+      }"
+    )
+
     []
   end
 
@@ -120,6 +178,7 @@ defmodule Parser do
       contact: "closed"
     }
   end
+
   def get_contact_state(<<_rfu::7, 1::1>>) do
     %{
       state: 1,
@@ -138,23 +197,26 @@ defmodule Parser do
   def read_location(<<lat::signed-little-32>>, <<lon::signed-little-32>>) do
     <<_rfu::4, latitude::28>> = <<lat::32>>
     <<acc::3, longitude::29>> = <<lon::32>>
-    acc = case acc do
-      7 -> 256
-      _ -> 2<<<(acc+1)
-    end
+
+    acc =
+      case acc do
+        7 -> 256
+        _ -> 2 <<< (acc + 1)
+      end
 
     %{
-      latitude: latitude / 1000000,
-      longitude: longitude / 1000000,
+      latitude: latitude / 1_000_000,
+      longitude: longitude / 1_000_000,
       acc: acc
     }
   end
 
   def read_location_status(<<_rfu1::4, fix::1, _rfu2::2, btn::1>>) do
-    gnss_fix = case fix do
-      0 -> "has_fix"
-      1 -> "no_fix"
-    end
+    gnss_fix =
+      case fix do
+        0 -> "has_fix"
+        1 -> "no_fix"
+      end
 
     %{
       gnss_fix: fix,
@@ -169,14 +231,18 @@ defmodule Parser do
       button_1: state_1,
       button_1_state: get_button_state(state_1),
       button_0: state_0,
-      button_0_state: get_button_state(state_0),
+      button_0_state: get_button_state(state_0)
     }
   end
 
   def get_button_state(0), do: "not_pushed"
   def get_button_state(1), do: "pushed"
+
   def get_button_state(_) do
-    Logger.error("Unreachable state. Buttons should never have a different value than 0 or 1, as long as they only occupy one bit.")
+    Logger.error(
+      "Unreachable state. Buttons should never have a different value than 0 or 1, as long as they only occupy one bit."
+    )
+
     "undefined"
   end
 
@@ -309,18 +375,44 @@ defmodule Parser do
       %{
         "field" => "button_1_count",
         "display" => "Counter Button 1"
+      },
+      # Ambient light
+      %{
+        "field" => "light_darker",
+        "display" => "Darker"
+      },
+      %{
+        "field" => "light_lighter",
+        "display" => "Lighter"
+      },
+      %{
+        "field" => "keep_alive",
+        "display" => "KeepAlive"
+      },
+      %{
+        "field" => "light_changed",
+        "display" => "Changed"
+      },
+      %{
+        "field" => "light_lux",
+        "display" => "Lux",
+        "unit" => "lux"
       }
     ]
   end
 
   def tests() do
-    tests_doornwindow() ++ tests_healthy_home() ++ tests_motion() ++ tests_object_locator() ++ tests_pushbutton()
+    tests_doornwindow() ++
+      tests_healthy_home() ++
+      tests_motion() ++ tests_object_locator() ++ tests_pushbutton() ++ tests_ambient_light()
   end
 
   def tests_doornwindow() do
     [
       {
-        :parse_hex, "00FB050000781D00", %{meta: %{frame_port: 100}},
+        :parse_hex,
+        "00FB050000781D00",
+        %{meta: %{frame_port: 100}},
         %{
           battery_state: 100.0,
           battery_voltage: 3.6,
@@ -332,7 +424,9 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "01FB050000771D00", %{meta: %{frame_port: 100}},
+        :parse_hex,
+        "01FB050000771D00",
+        %{meta: %{frame_port: 100}},
         %{
           battery_state: 100.0,
           battery_voltage: 3.6,
@@ -349,7 +443,9 @@ defmodule Parser do
   def tests_healthy_home() do
     [
       {
-        :parse_hex, "00FB352555021E00", %{meta: %{frame_port: 103}},
+        :parse_hex,
+        "00FB352555021E00",
+        %{meta: %{frame_port: 103}},
         %{
           battery_state: 100.0,
           battery_voltage: 3.6,
@@ -360,18 +456,22 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "08FB3525FFFFFFFF", %{meta: %{frame_port: 103}},
+        :parse_hex,
+        "08FB3525FFFFFFFF",
+        %{meta: %{frame_port: 103}},
         %{
           battery_state: 100.0,
           battery_voltage: 3.6,
           relative_humidity: 37,
-          temperature: 21,
+          temperature: 21
           # voc and co2 are filtered because they are 65535
         }
       },
       # New version (doc version BQW_02_0005.002)
       {
-        :parse_hex, "00073D38F4010000190038", %{meta: %{frame_port: 103}},
+        :parse_hex,
+        "00073D38F4010000190038",
+        %{meta: %{frame_port: 103}},
         %{
           battery_state: 50.0,
           battery_voltage: 3.2,
@@ -389,7 +489,9 @@ defmodule Parser do
   def tests_motion() do
     [
       {
-        :parse_hex, "01FB060000CC0E00", %{meta: %{frame_port: 102}},
+        :parse_hex,
+        "01FB060000CC0E00",
+        %{meta: %{frame_port: 102}},
         %{
           battery_state: 100.0,
           battery_voltage: 3.6,
@@ -399,7 +501,9 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "00FB340500AB0D00", %{meta: %{frame_port: 102}},
+        :parse_hex,
+        "00FB340500AB0D00",
+        %{meta: %{frame_port: 102}},
         %{
           battery_state: 100.0,
           battery_voltage: 3.6,
@@ -414,7 +518,10 @@ defmodule Parser do
   def tests_object_locator() do
     [
       {
-        :parse_hex, "08FE3D59D1D3027E5281E0", %{meta: %{frame_port: 136}}, {
+        :parse_hex,
+        "08FE3D59D1D3027E5281E0",
+        %{meta: %{frame_port: 136}},
+        {
           %{
             acc: 256,
             battery_state: 100.0,
@@ -431,7 +538,10 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "086E3E36D2D302D1508180", %{meta: %{frame_port: 136}}, {
+        :parse_hex,
+        "086E3E36D2D302D1508180",
+        %{meta: %{frame_port: 136}},
+        {
           %{
             acc: 64,
             battery_state: 40.0,
@@ -448,7 +558,10 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "005D4076CED302434A8180", %{meta: %{frame_port: 136}}, {
+        :parse_hex,
+        "005D4076CED302434A8180",
+        %{meta: %{frame_port: 136}},
+        {
           %{
             acc: 64,
             battery_state: 33.33333333333333,
@@ -470,7 +583,9 @@ defmodule Parser do
   def tests_pushbutton() do
     [
       {
-        :parse_hex, "01FE39EA000C0000000000", %{meta: %{frame_port: 147}},
+        :parse_hex,
+        "01FE39EA000C0000000000",
+        %{meta: %{frame_port: 147}},
         %{
           total_count: 12,
           time_elapsed_since_trigger: 234,
@@ -486,7 +601,9 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "01FE39EA000C0000", %{meta: %{frame_port: 147}},
+        :parse_hex,
+        "01FE39EA000C0000",
+        %{meta: %{frame_port: 147}},
         %{
           total_count: 12,
           time_elapsed_since_trigger: 234,
@@ -502,4 +619,23 @@ defmodule Parser do
     ]
   end
 
+  def tests_ambient_light() do
+    [
+      {
+        :parse_hex,
+        "20FB35440C00",
+        %{meta: %{frame_port: 104}},
+        %{
+          battery_state: 100.0,
+          battery_voltage: 3.6,
+          keep_alive: 1,
+          light_changed: 0,
+          light_darker: 0,
+          light_lighter: 0,
+          light_lux: 314_000,
+          temperature: 21
+        }
+      }
+    ]
+  end
 end
