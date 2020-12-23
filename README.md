@@ -51,6 +51,7 @@ Comtac LPN Modbus easy SW | [lib/comtac_lpn-modbus-easy-bridge_template.ex](lib/
 Comtac KLAX | [lib/comtac_klax.ex](lib/comtac_klax.ex)
 Conbee HybridTag L300 | [lib/conbee_hybdridtag_l300.ex](lib/conbee_hybdridtag_l300.ex)
 Decentlab DL-PR26 | [lib/decentlab_dl_pr26.ex](lib/decentlab_dl_pr26.ex)
+Decentlab DL-MBX | [lib/decentlab_dl_mbx.ex](lib/decentlab_dl_mbx.ex)
 Decentlab DL-TRS12 | [lib/decentlab_dl_trs12.ex](lib/decentlab_dl_trs12.ex)
 DZG IVU LoRaMOD Bridge | [lib/dzg_loramod.ex](lib/dzg_loramod.ex)
 DZG IVU LoRaMOD Bridge v2 | [lib/dzg_loramod-v2.ex](lib/dzg_loramod-v2.ex)
