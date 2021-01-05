@@ -14,6 +14,7 @@ defmodule Parser do
   #   2019-xx-xx [jb]: Initial implementation.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2020-11-24 [jb]: Added extend_reading with start and impulse extension from profile.
+  #   2021-01-05 [jb]: Added support for App Version 2.0 with prepended timestamp.
   #
 
   def preloads do
@@ -76,7 +77,7 @@ defmodule Parser do
         }
 
       0x30 ->
-        << alarms::8, maxf_a::16, maxf_b::16, minf_a::16, minf_b::16 >> = payload
+        << alarms::8, maxf_a::16, maxf_b::16, minf_a::16, minf_b::16, _timestamp::binary >> = payload
         %{
           frame_type: "keepalive frame",
           alarms: alarms,
@@ -88,7 +89,7 @@ defmodule Parser do
         }
 
       0x46 ->
-        << counter_a:: 32, counter_b::32 >> = payload
+        << counter_a:: 32, counter_b::32, _timestamp::binary >> = payload
         %{
           frame_type: "data frame",
           counter_a: counter_a,
@@ -118,6 +119,18 @@ defmodule Parser do
       {
         :parse_hex,
         "46E00000241200000000",
+        %{
+          meta: %{
+            frame_port: 1
+          }
+        },
+        %{counter_a: 9234, counter_b: 0, error: "no error", frame_type: "data frame"}
+      },
+
+
+      {
+        :parse_hex,
+        "46E0000024120000000012345678",
         %{
           meta: %{
             frame_port: 1
