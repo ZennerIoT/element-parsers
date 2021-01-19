@@ -142,13 +142,17 @@ Last Change | Parser Name
 2019-08-26 | Diehl OMS
 2020-12-02 | Dragino distance sensor
 2020-01-01 | Dragino LHT65
+2020-12-22 | Dragino LSE01 Soil Sensor
+2020-12-22 | Dragino LSN50
+2021-01-17 | DZG Node
+2021-01-17 | DZG Node
 2019-01-01 | Fludia FM430
 2019-01-01 | Holley Meter
 2020-12-10 | Imbuildings People Counter
 2020-11-30 | Innotas LoRa Pulse
 2020-11-25 | Innotas LoRa EHKV
 2020-11-25 | Innotas LoRa Water Meter
-2020-11-04 | Itron Cyble5
+2021-01-11 | Itron Cyble5
 2020-11-16 | Keller
 2020-12-16 | Kerlink Wanesy Wave
 2020-10-06 | Lancier Pipesense
@@ -164,6 +168,7 @@ Last Change | Parser Name
 2019-10-16 | SensoNeo Quatro Sensor
 2020-12-10 | SensoNeo Single Sensor
 2020-11-17 | Sentinum APOLLON-Q
+2021-01-19 | SoilNet LoRa (Jülich Forschungszentrum)
 2019-03-28 | Swisslogix/YMATRON SLX-1307
 2019-06-25 | Tecyard Multiparser
 2019-06-04 | Tecyard RattenSchockSender
@@ -174,5 +179,5 @@ Last Change | Parser Name
 2019-07-04 | ZENNER Smoke Detector D1722
 2020-02-27 | ZENNER T&H Sensor D1801
 2019-07-05 | ZENNER Water Meter
+2021-01-10 | ZRI Simple EDC and PDC
 2020-11-23 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
-
