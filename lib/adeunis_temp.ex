@@ -2,17 +2,23 @@ defmodule Parser do
   use Platform.Parsing.Behaviour
   require Logger
 
-  # ELEMENT IoT Parser for Adeunis Temperature Sensor ARF8180BA FW v2.0
+  # ELEMENT IoT Parser for Adeunis Temperature Sensors
+  #  - ARF8180BA
+  #  - ARF8180BCA (1 Sensor)
+  #  - ARF8180BCB (2 Sensors)
+
   # According to documentation provided by Adeunis
   # Link: https://www.adeunis.com/en/produit/temp/
   # Documentation v2: https://www.adeunis.com/wp-content/uploads/2017/08/TEMP_LoRaWAN_UG_V2.0.0_FR_EN.pdf
   # Documentation v3: https://www.adeunis.com/wp-content/uploads/2020/07/Technical_Reference_Manual_TEMP3_APP_2.0_072020.pdf
+  # Documentation v4: https://www.adeunis.com/wp-content/uploads/2019/09/TEMP_V4-Technical_Reference_Manual_APP_2.1-25.11.2020.pdf
   #
   # Changelog:
   #   2019-xx-xx [jb]: Initial implementation.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2020-08-26 [jb]: Support for v3 payloads.
   #   2020-08-27 [jb]: Added alerts for v3 payloads.
+  #   2021-02-02 [jb]: Support for v4 payloads.
   #
 
   # Version 2 of sensor
@@ -54,10 +60,9 @@ defmodule Parser do
 
   #----------------------------
 
-  defp parse_status(<<frame_counter::3, channels::1, configuration_problem::1, hw::1, low_bat::1, config::1>>) do
+  defp parse_status(<<frame_counter::3, channels::1, configuration_problem::1, timestamp::1, low_bat::1, config::1>>) do
     %{
       configuration_problem: configuration_problem,
-      hardware_error: hw,
       low_battery: low_bat,
       configuration_done: config
     }
@@ -65,6 +70,7 @@ defmodule Parser do
     |> Enum.into(%{
       frame_counter: frame_counter,
       channels: channels + 1, # 0 => 1 channel, 1 => 2 channels
+      timestamp: timestamp,
     })
   end
 
@@ -100,6 +106,22 @@ defmodule Parser do
     })
   end
 
+  defp parse_body(row, 0x2F, <<downlink, request_status>>, _meta) do
+    request_status = case request_status do
+      0x00 -> :not_available
+      0x01 -> :success
+      0x02 -> :error_generic
+      0x03 -> :error_wrong_state
+      0x04 -> :error_invalid_request
+      other -> "rfu_#{other}"
+    end
+    Map.merge(row, %{
+      frame_type: :acknowledgement,
+      downlink_framcode: downlink,
+      request_status: request_status,
+    })
+  end
+
   defp parse_body(%{channels: 1} = row, 0x30, <<t1::binary-2>>, _meta) do
     row
     |> Map.merge(%{frame_type: :keepalive})
@@ -110,6 +132,48 @@ defmodule Parser do
     |> Map.merge(%{frame_type: :keepalive})
     |> add_valid_temp(t1, :temp_ch1)
     |> add_valid_temp(t2, :temp_ch2)
+  end
+
+  defp parse_body(row, 0x31, <<>>, _meta) do
+    Map.merge(row, %{
+      frame_type: :get_register_response,
+      error: :empty_response
+    })
+  end
+  defp parse_body(row, 0x31, <<value::binary>>, _meta) do
+    Map.merge(row, %{
+      frame_type: :get_register_response,
+      values: Base.encode16(value),
+    })
+  end
+
+  defp parse_body(row, 0x33, <<request_status, register_id::16>>, _meta) do
+    request_status = case request_status do
+      0x00 -> :not_available
+      0x01 -> :success
+      0x02 -> :success_no_update
+      0x03 -> :error_coherency
+      0x04 -> :error_invalid_register
+      0x05 -> :error_invalid_value
+      0x06 -> :error_truncated_value
+      0x07 -> :error_access_not_allowed
+      0x08 -> :error_other_reason
+      other -> "undefined_#{other}"
+    end
+    Map.merge(row, %{
+      frame_type: :set_register_response,
+      request_status: request_status,
+      register_id: register_id,
+    })
+  end
+
+  defp parse_body(row, 0x37, <<app1, app2, app3, rtu1, rtu2, rtu3>>, _meta) do
+    row
+    |> Map.merge(%{
+      frame_type: :software_version,
+      app_version: "#{app1}.#{app2}.#{app3}",
+      rtu_version: "#{rtu1}.#{rtu2}.#{rtu3}",
+    })
   end
 
   # Periodic data, 1 channel
@@ -138,15 +202,16 @@ defmodule Parser do
   end
 
   # Periodic data, 2 channel
-  defp parse_body(%{channels: 1} = row, 0x58, <<alarm1, temp1::binary-2>>, _meta) do
+  defp parse_body(%{channels: 1} = row, 0x58, <<alarm1, temp1::binary-2, maybe_timestamp::binary>>, _meta) do
     row
     |> Map.merge(%{
       frame_type: :alarm,
       alarm_ch1: alarm_status(alarm1),
     })
     |> add_valid_temp(temp1, :temp_ch1)
+    |> add_measured_at(maybe_timestamp)
   end
-  defp parse_body(%{channels: 2} = row, 0x58, <<alarm1, temp1::binary-2, alarm2, temp2::binary-2>>, _meta) do
+  defp parse_body(%{channels: 2} = row, 0x58, <<alarm1, temp1::binary-2, alarm2, temp2::binary-2, maybe_timestamp::binary>>, _meta) do
     row
     |> Map.merge(%{
       frame_type: :alarm,
@@ -155,6 +220,7 @@ defmodule Parser do
     })
     |> add_valid_temp(temp1, :temp_ch1)
     |> add_valid_temp(temp2, :temp_ch2)
+    |> add_measured_at(maybe_timestamp)
   end
 
   defp parse_body(row, 0x36, <<alert>>, _meta) do
@@ -191,6 +257,15 @@ defmodule Parser do
       end
       {row, [measured_at: Timex.shift(transceived_at, seconds: -1 * (sampling_period * index))]}
     end)
+  end
+
+  defp add_measured_at(row, <<timestamp::32>>) do
+    Map.merge(row, %{
+      measured_at: timestamp |> Timex.from_unix(:second) |> DateTime.to_iso8601(),
+    })
+  end
+  defp add_measured_at(row, _other_binary) do
+    row
   end
 
   # Will parse, validate and add a reading with given key.
@@ -291,6 +366,7 @@ defmodule Parser do
           frame_type: :configuration,
           history_period: 1,
           redundancy: 0,
+          timestamp: 0,
           sampling_period: 3600,
           transmission_period_data: 1,
           transmission_period_keepalive: 86400
@@ -311,6 +387,7 @@ defmodule Parser do
           class: :a,
           duty_cycle: 1,
           frame_counter: 1,
+          timestamp: 0,
           frame_type: :network_config
         }
       },
@@ -327,6 +404,7 @@ defmodule Parser do
           frame_counter: 7,
           frame_type: :keepalive,
           low_battery: 1,
+          timestamp: 0,
           temp_ch1: 43.5
         }
       },
@@ -340,6 +418,7 @@ defmodule Parser do
           frame_counter: 7,
           frame_type: :keepalive,
           low_battery: 1,
+          timestamp: 0,
           temp_ch1: 43.5,
           temp_ch2: -10.0
         }
@@ -354,8 +433,14 @@ defmodule Parser do
           transceived_at: test_datetime("2019-01-01 12:00:00Z"),
         },
         [
-          {%{version: 3, channels: 1, frame_counter: 4, frame_type: :data, temp_ch1: 43.5},
-            [measured_at: ~U[2019-01-01 12:00:00Z]]}
+          {%{
+            channels: 1,
+            frame_counter: 4,
+            frame_type: :data,
+            temp_ch1: 43.5,
+            timestamp: 0,
+            version: 3
+          }, [measured_at: ~U[2019-01-01 12:00:00Z]]}
         ]
       },
       {
@@ -371,17 +456,30 @@ defmodule Parser do
           },
         },
         [
-          {%{version: 3, channels: 1, frame_counter: 4, frame_type: :data, temp_ch1: 43.5},
-            [measured_at: ~U[2019-01-01 12:00:00Z]]},
           {%{
-            :version => 3,
+            channels: 1,
+            frame_counter: 4,
+            frame_type: :data,
+            temp_ch1: 43.5,
+            timestamp: 0,
+            version: 3
+          }, [measured_at: ~U[2019-01-01 12:00:00Z]]},
+          {%{
             :channels => 1,
             :frame_counter => 4,
             :frame_type => :data,
+            :timestamp => 0,
+            :version => 3,
             "temp_ch1_invalid" => 1
           }, [measured_at: ~U[2019-01-01 11:00:00Z]]},
-          {%{version: 3, channels: 1, frame_counter: 4, frame_type: :data, temp_ch1: 43.5},
-            [measured_at: ~U[2019-01-01 10:00:00Z]]}
+          {%{
+            channels: 1,
+            frame_counter: 4,
+            frame_type: :data,
+            temp_ch1: 43.5,
+            timestamp: 0,
+            version: 3
+          }, [measured_at: ~U[2019-01-01 10:00:00Z]]}
         ]
       },
       {
@@ -402,6 +500,7 @@ defmodule Parser do
             channels: 2,
             frame_counter: 4,
             frame_type: :data,
+            timestamp: 0,
             low_battery: 1,
             temp_ch1: 43.5,
             temp_ch2: -10.0
@@ -411,6 +510,7 @@ defmodule Parser do
             channels: 2,
             frame_counter: 4,
             frame_type: :data,
+            timestamp: 0,
             low_battery: 1,
             temp_ch1: 50.0,
             temp_ch2: -0.1
@@ -432,13 +532,20 @@ defmodule Parser do
           },
         },
         [
-          {%{version: 3, channels: 1, frame_counter: 4, frame_type: :data, temp_ch1: 43.5},
-            [measured_at: ~U[2019-01-01 12:00:00Z]]},
           {%{
-            :version => 3,
+            channels: 1,
+            frame_counter: 4,
+            frame_type: :data,
+            temp_ch1: 43.5,
+            timestamp: 0,
+            version: 3
+          }, [measured_at: ~U[2019-01-01 12:00:00Z]]},
+          {%{
             :channels => 1,
             :frame_counter => 4,
             :frame_type => :data,
+            :timestamp => 0,
+            :version => 3,
             "temp_ch1_invalid" => 1
           }, [measured_at: ~U[2019-01-01 11:00:00Z]]}
         ]
@@ -461,6 +568,7 @@ defmodule Parser do
             channels: 2,
             frame_counter: 4,
             frame_type: :data,
+            timestamp: 0,
             low_battery: 1,
             temp_ch1: 43.5,
             temp_ch2: -10.0
@@ -470,6 +578,7 @@ defmodule Parser do
             channels: 2,
             frame_counter: 4,
             frame_type: :data,
+            timestamp: 0,
             low_battery: 1,
             temp_ch1: 50.0,
             temp_ch2: -0.1
@@ -493,6 +602,7 @@ defmodule Parser do
             channels: 2,
             frame_counter: 4,
             frame_type: :data,
+            timestamp: 0,
             temp_ch1: 23.4,
             temp_ch2: 33.3,
             version: 3
@@ -517,6 +627,7 @@ defmodule Parser do
           channels: 2,
           frame_counter: 5,
           frame_type: :alarm,
+          timestamp: 0,
           temp_ch1: 23.1,
           temp_ch2: 29.1,
           version: 3
@@ -539,6 +650,216 @@ defmodule Parser do
           channels: 1,
           frame_counter: 4,
           frame_type: :alert,
+          timestamp: 0,
+          version: 3
+        }
+      },
+      {
+        :parse_hex,
+        "101021C00001000101C200",
+        %{
+          _comment: "Payload v4 from device"
+        },
+        %{
+          channels: 2,
+          frame_counter: 0,
+          frame_type: :configuration,
+          history_period: 1,
+          redundancy: 0,
+                        timestamp: 0,
+          sampling_period: 900,
+          transmission_period_data: 1,
+          transmission_period_keepalive: 86400,
+          version: 3
+        }
+      },
+      {
+        :parse_hex,
+        "20300501",
+        %{
+          _comment: "Payload v4 from device"
+        },
+        %{
+          activation: :otaa,
+          adr: 1,
+          channels: 2,
+          class: :a,
+          duty_cycle: 1,
+          frame_counter: 1,
+          frame_type: :network_config,timestamp: 0,
+          version: 3
+        }
+      },
+      {
+        :parse_hex,
+        "575400ED00EF0F35A324",
+        %{
+          transceived_at: test_datetime("2019-01-01 12:00:00Z"),
+          _comment: "Payload v4 from device"
+        },
+        [
+          {%{
+            channels: 2,
+            frame_counter: 2,
+            frame_type: :data,
+            timestamp: 1,
+            temp_ch1: 23.7,
+            temp_ch2: 23.9,
+            version: 3
+          }, [measured_at: ~U[2019-01-01 12:00:00Z]]}
+        ]
+      },
+      {
+        :parse_hex,
+        "10 10 21C0 0001 0001 0708 00",
+        %{
+          _comment: "Payload v4 from docs",
+        },
+        %{
+          channels: 2,
+          frame_counter: 0,
+          frame_type: :configuration,
+          history_period: 1,
+          redundancy: 0,
+          sampling_period: 3600,
+          timestamp: 0,
+          transmission_period_data: 1,
+          transmission_period_keepalive: 86400,
+          version: 3
+        }
+      },
+      {
+        :parse_hex,
+        "20 30 05 01",
+        %{
+          _comment: "Payload v4 from docs",
+        },
+        %{
+          activation: :otaa,
+          adr: 1,
+          channels: 2,
+          class: :a,
+          duty_cycle: 1,
+          frame_counter: 1,
+          frame_type: :network_config,
+          timestamp: 0,
+          version: 3
+        }
+      },
+      {
+        :parse_hex,
+        "37 20 020100 020001",
+        %{
+          _comment: "Payload v4 from docs",
+        },
+        %{
+          app_version: "2.1.0",
+          channels: 1,
+          frame_counter: 1,
+          frame_type: :software_version,
+          rtu_version: "2.0.1",
+          timestamp: 0,
+          version: 3
+        }
+      },
+
+      {
+        :parse_hex,
+        "58 80 01 0032",
+        %{
+          _comment: "Payload v4 from docs",
+        },
+        %{
+          alarm_ch1: :high_threshold,
+          channels: 1,
+          frame_counter: 4,
+          frame_type: :alarm,
+          temp_ch1: 5.0,
+          timestamp: 0,
+          version: 3
+        }
+      },
+
+      {
+        :parse_hex,
+        "58 90 01 0032 00 0032 14ABA3E9",
+        %{
+          _comment: "Payload v4 from docs with wrong timestamp?",
+        },
+        %{
+          alarm_ch1: :high_threshold,
+          alarm_ch2: :no_alarm,
+          channels: 2,
+          frame_counter: 4,
+          frame_type: :alarm,
+          measured_at: "1980-12-27T19:22:17Z",
+          temp_ch1: 5.0,
+          temp_ch2: 5.0,
+          timestamp: 0,
+          version: 3
+        }
+      },
+
+      {
+        :parse_hex,
+        "2F 20 49 01",
+        %{
+          _comment: "Payload v4 from docs",
+        },
+        %{
+          channels: 1,
+          downlink_framcode: 73,
+          frame_counter: 1,
+          frame_type: :acknowledgement,
+          request_status: :success,
+          timestamp: 0,
+          version: 3
+        }
+      },
+
+      {
+        :parse_hex,
+        "31 80",
+        %{
+          _comment: "Payload v4 from docs with error",
+        },
+        %{
+          channels: 1,
+          error: :empty_response,
+          frame_counter: 4,
+          frame_type: :get_register_response,
+          timestamp: 0,
+          version: 3
+        }
+      },
+      {
+        :parse_hex,
+        "31 80 1234 FF 00000000",
+        %{
+          _comment: "Payload v4 from docs",
+        },
+        %{
+          channels: 1,
+          frame_counter: 4,
+          frame_type: :get_register_response,
+          timestamp: 0,
+          values: "1234FF00000000",
+          version: 3
+        }
+      },
+      {
+        :parse_hex,
+        "33 80 04 0140",
+        %{
+          _comment: "Payload v4 from docs",
+        },
+        %{
+          channels: 1,
+          frame_counter: 4,
+          frame_type: :set_register_response,
+          register_id: 320,
+          request_status: :error_invalid_register,
+          timestamp: 0,
           version: 3
         }
       },
