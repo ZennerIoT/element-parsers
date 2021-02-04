@@ -132,7 +132,7 @@ Last Change | Parser Name
 2019-01-01 | Binando Binsonic
 2019-09-19 | BOSCH Traci
 2020-12-16 | Clevabit Protocol
-2020-11-19 | Clevercity Greenbox
+2021-01-22 | Clevercity Greenbox
 2019-05-15 | Comtac E1323-MS3
 2019-01-01 | Comtac E1360-MS3
 2019-11-12 | Comtac E1374
@@ -155,11 +155,16 @@ Last Change | Parser Name
 2021-01-11 | Itron Cyble5
 2020-11-16 | Keller
 2020-12-16 | Kerlink Wanesy Wave
-2020-10-06 | Lancier Pipesense
+2021-01-22 | Lancier Pipesense
+2019-01-26 | Libelium Smart Agriculture Pro
+2021-01-28 | Libelium Smart City Pro
+2021-01-26 | Libelium Smart Water Xtreme
 2020-01-01 | Lobaro Modbus Bridge (HTTP)
 2018-01-01 | Lobaro Oscar smart waste ultrasonic sensor
-2020-07-27 | Lobaro WMBus Bridge
+2021-01-22 | Lobaro WMBus Bridge
 2019-03-07 | LPP Cayenne
+2021-02-01 | Milesight and Ursalink EM300
+2021-01-28 | Milesight and Ursalink UC11xx
 2020-12-11 | Mutelcor MTC-PB01 / MTC-CO2-01
 2020-11-23 | NKE Watteco Pulse Sens'O
 2020-03-26 | PaulWegener Datenlogger
@@ -169,6 +174,8 @@ Last Change | Parser Name
 2020-12-10 | SensoNeo Single Sensor
 2020-11-17 | Sentinum APOLLON-Q
 2021-01-19 | SoilNet LoRa (Jülich Forschungszentrum)
+2021-01-26 | Speedfreak_v4
+2021-01-25 | Swisscom LPN Multisense
 2019-03-28 | Swisslogix/YMATRON SLX-1307
 2019-06-25 | Tecyard Multiparser
 2019-06-04 | Tecyard RattenSchockSender

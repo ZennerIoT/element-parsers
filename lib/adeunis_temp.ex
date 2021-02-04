@@ -19,7 +19,10 @@ defmodule Parser do
   #   2020-08-26 [jb]: Support for v3 payloads.
   #   2020-08-27 [jb]: Added alerts for v3 payloads.
   #   2021-02-02 [jb]: Support for v4 payloads.
+  #   2021-02-04 [jb]: Supporting payloads with timestamp.
   #
+
+  def default_sampling_period_seconds(), do: 3600
 
   # Version 2 of sensor
   def parse(<<0x43, _status::8, internal_identifier::8, internal_value::signed-16, external_identifier::8, external_value::signed-16>>, _meta) do
@@ -48,19 +51,60 @@ defmodule Parser do
   end
   # Version 3 of sensor
   def parse(<<code::8, status::binary-1, payload::binary>>, meta) do
-    status
-    |> parse_status
-    |> Map.merge(%{version: 3})
-    |> parse_body(code, payload, meta)
+    {row, new_payload} = %{version: 3}
+      |> parse_status(status)
+      |> parse_timestamp(code, payload)
+
+    row
+    |> parse_body(code, new_payload, meta)
+    |> handle_measured_at()
   end
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
     []
   end
 
+  # If there is a timestamp_at in row, use it as new measured_at
+  defp handle_measured_at(rows) when is_list(rows) do
+    Enum.map(rows, &handle_measured_at(&1))
+  end
+  defp handle_measured_at(%{timestamp_at: timestamp} = row) do
+    {row, [measured_at: timestamp]}
+  end
+  defp handle_measured_at(row) do
+    row
+  end
+
+  # There are some payloads with a suffix timestamp that needs to be removed.
+  defp parse_timestamp(%{timestamp: 1} = row, code, payload) when code in [
+    0x30, # keep alive
+    0x57, # periodic data
+    0x58, # alarm
+  ] do
+    start_len = byte_size(payload)-4
+    case payload do
+      <<prefix::binary-size(start_len), timestamp::32>> ->
+        row = Map.merge(row, %{
+          timestamp_at: timestamp_epoch2013(timestamp),
+        })
+        {row, prefix}
+      _ ->
+        {row, payload}
+    end
+  end
+  defp parse_timestamp(row, _code, payload) do
+    {row, payload}
+  end
+
+  defp timestamp_epoch2013(timestamp) do
+    timestamp
+    |> Kernel.+((2013 - 1970) * 365 * 24 * 60 * 60)
+    |> Timex.from_unix(:second)
+  end
+
   #----------------------------
 
-  defp parse_status(<<frame_counter::3, channels::1, configuration_problem::1, timestamp::1, low_bat::1, config::1>>) do
+  defp parse_status(row, <<frame_counter::3, channels::1, configuration_problem::1, timestamp::1, low_bat::1, config::1>>) do
     %{
       configuration_problem: configuration_problem,
       low_battery: low_bat,
@@ -70,8 +114,9 @@ defmodule Parser do
     |> Enum.into(%{
       frame_counter: frame_counter,
       channels: channels + 1, # 0 => 1 channel, 1 => 2 channels
-      timestamp: timestamp,
+      timestamp: timestamp, # If 1, a timestamp is appended to some payloads
     })
+    |> Map.merge(row)
   end
 
   defp parse_body(row, 0x10, <<s300::16, s301::16, s320::16, s321::16, s323::8>>, _meta) do
@@ -202,16 +247,15 @@ defmodule Parser do
   end
 
   # Periodic data, 2 channel
-  defp parse_body(%{channels: 1} = row, 0x58, <<alarm1, temp1::binary-2, maybe_timestamp::binary>>, _meta) do
+  defp parse_body(%{channels: 1} = row, 0x58, <<alarm1, temp1::binary-2>>, _meta) do
     row
     |> Map.merge(%{
       frame_type: :alarm,
       alarm_ch1: alarm_status(alarm1),
     })
     |> add_valid_temp(temp1, :temp_ch1)
-    |> add_measured_at(maybe_timestamp)
   end
-  defp parse_body(%{channels: 2} = row, 0x58, <<alarm1, temp1::binary-2, alarm2, temp2::binary-2, maybe_timestamp::binary>>, _meta) do
+  defp parse_body(%{channels: 2} = row, 0x58, <<alarm1, temp1::binary-2, alarm2, temp2::binary-2>>, _meta) do
     row
     |> Map.merge(%{
       frame_type: :alarm,
@@ -220,7 +264,6 @@ defmodule Parser do
     })
     |> add_valid_temp(temp1, :temp_ch1)
     |> add_valid_temp(temp2, :temp_ch2)
-    |> add_measured_at(maybe_timestamp)
   end
 
   defp parse_body(row, 0x36, <<alert>>, _meta) do
@@ -248,6 +291,13 @@ defmodule Parser do
   defp alarm_status(_), do: :unknown
 
   defp times_to_readings(times, reading_template, transceived_at, sampling_period) do
+
+    # Using timestamp from payload if available
+    timestamp = case reading_template do
+      %{timestamp_at: time} -> time
+      _ -> transceived_at
+    end
+
     Enum.map(times, fn ({time, index}) ->
       row = case time do
         {time1, time2} ->
@@ -255,17 +305,8 @@ defmodule Parser do
         time1 ->
           reading_template |> add_valid_temp(time1, :temp_ch1)
       end
-      {row, [measured_at: Timex.shift(transceived_at, seconds: -1 * (sampling_period * index))]}
+      {row, [measured_at: Timex.shift(timestamp, seconds: -1 * (sampling_period * index))]}
     end)
-  end
-
-  defp add_measured_at(row, <<timestamp::32>>) do
-    Map.merge(row, %{
-      measured_at: timestamp |> Timex.from_unix(:second) |> DateTime.to_iso8601(),
-    })
-  end
-  defp add_measured_at(row, _other_binary) do
-    row
   end
 
   # Will parse, validate and add a reading with given key.
@@ -286,7 +327,9 @@ defmodule Parser do
           sampling_period: sampling_period,
         }}
       _ ->
-        {:error, :no_config_available}
+        {:ok, %{
+          sampling_period: default_sampling_period_seconds(),
+        }}
     end
   end
 
@@ -338,6 +381,12 @@ defmodule Parser do
 
   # Test case and data for automatic testing
   def tests() do
+
+    #status_1ch = Base.encode16(<<0b010_00_000>>)
+    #status_2ch = Base.encode16(<<0b010_10_000>>)
+    status_1ch_timestamp = Base.encode16(<<0b010_00_100>>)
+    status_2ch_timestamp = Base.encode16(<<0b010_10_100>>)
+
     [
       # v2 example
       {
@@ -410,6 +459,22 @@ defmodule Parser do
       },
       {
         :parse_hex,
+        "30 #{status_1ch_timestamp} 01B3 14ABA3E9",
+        %{
+          _comment: "keep alive ch1 with timestamp",
+        },
+        {%{
+          channels: 1,
+          frame_counter: 2,
+          frame_type: :keepalive,
+          temp_ch1: 43.5,
+          timestamp: 1,
+          timestamp_at: ~U[2023-12-17 19:22:17Z],
+          version: 3
+        }, [measured_at: ~U[2023-12-17 19:22:17Z]]}
+      },
+      {
+        :parse_hex,
         "30 F2 01B3 FF9C",
         %{},
         %{
@@ -431,6 +496,7 @@ defmodule Parser do
         "57 80 01B3 8000",
         %{
           transceived_at: test_datetime("2019-01-01 12:00:00Z"),
+          _comment: "With missing configuration last reading, using default sampling value",
         },
         [
           {%{
@@ -440,7 +506,15 @@ defmodule Parser do
             temp_ch1: 43.5,
             timestamp: 0,
             version: 3
-          }, [measured_at: ~U[2019-01-01 12:00:00Z]]}
+          }, [measured_at: ~U[2019-01-01 12:00:00Z]]},
+          {%{
+            :channels => 1,
+            :frame_counter => 4,
+            :frame_type => :data,
+            :timestamp => 0,
+            :version => 3,
+            "temp_ch1_invalid" => 1
+          }, [measured_at: ~U[2019-01-01 11:00:00Z]]}
         ]
       },
       {
@@ -515,6 +589,43 @@ defmodule Parser do
             temp_ch1: 50.0,
             temp_ch2: -0.1
           }, [measured_at: ~U[2019-01-01 11:00:00Z]]}
+        ]
+      },
+
+      {
+        :parse_hex,
+        "57 #{status_2ch_timestamp} 01B3 FF9C 01F4 FFFF 14ABA3E9",
+        %{
+          _comment: "with timestamp",
+          transceived_at: test_datetime("2019-01-01 12:00:00Z"),
+          _last_reading: %{
+            data: %{
+              "frame_type" => "configuration",
+              "sampling_period" => 3600,
+            },
+          },
+        },
+        [
+          {%{
+            channels: 2,
+            frame_counter: 2,
+            frame_type: :data,
+            temp_ch1: 43.5,
+            temp_ch2: -10.0,
+            timestamp: 1,
+            timestamp_at: ~U[2023-12-17 19:22:17Z],
+            version: 3
+          }, [measured_at: ~U[2023-12-17 19:22:17Z]]},
+          {%{
+            channels: 2,
+            frame_counter: 2,
+            frame_type: :data,
+            temp_ch1: 50.0,
+            temp_ch2: -0.1,
+            timestamp: 1,
+            timestamp_at: ~U[2023-12-17 19:22:17Z],
+            version: 3
+          }, [measured_at: ~U[2023-12-17 18:22:17Z]]}
         ]
       },
 
@@ -702,11 +813,12 @@ defmodule Parser do
             channels: 2,
             frame_counter: 2,
             frame_type: :data,
-            timestamp: 1,
             temp_ch1: 23.7,
             temp_ch2: 23.9,
+            timestamp: 1,
+            timestamp_at: ~U[2021-01-21 09:30:12Z],
             version: 3
-          }, [measured_at: ~U[2019-01-01 12:00:00Z]]}
+          }, [measured_at: ~U[2021-01-21 09:30:12Z]]}
         ]
       },
       {
@@ -782,22 +894,22 @@ defmodule Parser do
 
       {
         :parse_hex,
-        "58 90 01 0032 00 0032 14ABA3E9",
+        "58 #{status_2ch_timestamp} 01 0032 00 0032 14ABA3E9",
         %{
-          _comment: "Payload v4 from docs with wrong timestamp?",
+          _comment: "Payload v4 from docs with timestamp epoch 2013",
         },
-        %{
+        {%{
           alarm_ch1: :high_threshold,
           alarm_ch2: :no_alarm,
           channels: 2,
-          frame_counter: 4,
+          frame_counter: 2,
           frame_type: :alarm,
-          measured_at: "1980-12-27T19:22:17Z",
           temp_ch1: 5.0,
           temp_ch2: 5.0,
-          timestamp: 0,
+          timestamp: 1,
+          timestamp_at: ~U[2023-12-17 19:22:17Z],
           version: 3
-        }
+        }, [measured_at: ~U[2023-12-17 19:22:17Z]]}
       },
 
       {
