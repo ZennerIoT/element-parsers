@@ -23,6 +23,7 @@ defmodule Parser do
   #   2020-06-16 [as]: added 3 phase current meter (BROKEN)
   #   2020-11-19 [jb]: Added support for R711/R718A/R718AB/R720A temperature/humidity sensors.
   #   2020-12-22 [jb]: Added support for R311FA/RA02C/RA0716 sensor. Formatted code.
+  #   2020-12-22 [jb]: Added support for R718CJ2/CK2/CT2/CR2/CE2/R730CJ2/CK2/CT2/CR2/CE2 two channel temperature sensors.
 
   def parse(<<version::8, device_type::8, report_type::8, rest::binary>>, %{
         meta: %{frame_port: 6}
@@ -284,6 +285,19 @@ defmodule Parser do
     |> Map.merge(parse_battery_info(battery))
   end
 
+  # R718CJ2/CK2/CT2/CR2/CE2/R730CJ2/CK2/CT2/CR2/CE2
+  defp parse_payload(
+         device_type,
+         0x01,
+         <<battery::binary-1, temperature1::binary-2, temperature2::binary-2, _rest::binary>>
+       )
+       when device_type in [0x15, 0x16, 0x17, 0x18, 0x19, 0x78, 0x79, 0x7A, 0x7B, 0x7C] do
+    %{}
+    |> Map.merge(parse_temperature(temperature1, :temperature_1))
+    |> Map.merge(parse_temperature(temperature2, :temperature_2))
+    |> Map.merge(parse_battery_info(battery))
+  end
+
   # Catchall
   defp parse_payload(_device_type, _report_type, payload) do
     %{
@@ -300,9 +314,9 @@ defmodule Parser do
     }
   end
 
-  defp parse_temperature(<<temperature::signed-16>>) do
+  defp parse_temperature(<<temperature::signed-16>>, field \\ :temperature) do
     %{
-      temperature: temperature / 100
+      field => temperature / 100
     }
   end
 
@@ -381,11 +395,11 @@ defmodule Parser do
   def device_type_name(0x12), do: "R718WB Water Leak Detector with Rope Sensor"
   def device_type_name(0x13), do: "R718AB Temperature and Humidity Sensor"
   def device_type_name(0x14), do: "R718B2 2-Gang Temperature Sensor"
-  def device_type_name(0x15), do: "R718CJ Thermocouple Interface for J Type Thermocouple"
-  def device_type_name(0x16), do: "R718CK Thermocouple Interface for K Type Thermocouple"
-  def device_type_name(0x17), do: "R718CT Thermocouple Interface for T Type Thermocouple"
-  def device_type_name(0x18), do: "R718CR Thermocouple Interface for R Type Thermocouple"
-  def device_type_name(0x19), do: "R718CE Thermocouple Interface for E Type Thermocouple"
+  def device_type_name(0x15), do: "R718CJ2"
+  def device_type_name(0x16), do: "R718CK2"
+  def device_type_name(0x17), do: "R718CT2"
+  def device_type_name(0x18), do: "R718CR2"
+  def device_type_name(0x19), do: "R718CE2"
   def device_type_name(0x1A), do: "R718DA Vibration Sensor, Rolling Ball Type"
   def device_type_name(0x1B), do: "R718DB Vibration Sensor, Spring Type"
   def device_type_name(0x1C), do: "R718E Three-Axis Digital Accelerometer & NTC Thermistor"
@@ -603,6 +617,16 @@ defmodule Parser do
         display: "Temperature",
         unit: "°C"
       },
+      %{
+        field: "temperature_1",
+        display: "Temperature1",
+        unit: "°C"
+      },
+      %{
+        field: "temperature_2",
+        display: "Temperature2",
+        unit: "°C"
+      },
 
       # Water Leak Sensors: R311W, R718WB, R718WA, R718WA2, R718WB2
       %{
@@ -719,6 +743,23 @@ defmodule Parser do
           low_battery: 0,
           report_type: 1,
           temperature: 21.67,
+          version: 1
+        }
+      },
+
+      # R718CK2
+      {
+        :parse_hex,
+        "0116012400110010000000",
+        %{meta: %{frame_port: 6}},
+        %{
+          battery: 3.6,
+          device_type: 22,
+          device_type_name: "R718CK2",
+          low_battery: 0,
+          report_type: 1,
+          temperature_1: 0.17,
+          temperature_2: 0.16,
           version: 1
         }
       }
