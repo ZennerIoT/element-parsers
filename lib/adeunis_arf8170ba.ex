@@ -18,6 +18,7 @@ defmodule Parser do
   #   2019-xx-xx [jb]: Initial implementation.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2020-12-07 [jb]: Parser REWRITE, renamed fields. Supporting ARF8170BA-B02.
+  #   2021-02-24 [jb]: Fixed values of channel*_state*.
 
   # 4.1.2 Product configuration data frames
   def parse(
@@ -81,14 +82,14 @@ defmodule Parser do
         _meta
       ) do
     <<
-      ch1_state::1,
-      ch1_prev::1,
-      ch2_state::1,
-      ch2_prev::1,
-      ch3_state::1,
-      ch3_prev::1,
+      ch4_prev::1,
       ch4_state::1,
-      ch4_prev::1
+      ch3_prev::1,
+      ch3_state::1,
+      ch2_prev::1,
+      ch2_state::1,
+      ch1_prev::1,
+      ch1_state::1
     >> = details
 
     %{
@@ -288,17 +289,17 @@ defmodule Parser do
        %{
          battery_low: 1,
          channel1: 241,
-         channel1_state: 1,
+         channel1_state: 0,
          channel1_state_prev: 0,
          channel2: 2,
-         channel2_state: 0,
+         channel2_state: 1,
          channel2_state_prev: 1,
          channel3: 1,
          channel3_state: 1,
-         channel3_state_prev: 1,
+         channel3_state_prev: 0,
          channel4: 0,
          channel4_state: 0,
-         channel4_state_prev: 0,
+         channel4_state_prev: 1,
          command_done: 1,
          config_set: 1,
          frame_counter: 5,
