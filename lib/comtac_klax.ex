@@ -34,7 +34,7 @@ defmodule Parser do
 
   # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
   # Default: true
-  def interpolate?(), do: true
+  def interpolate?(), do: false
   # Minutes between interpolated values
   # Default: 15
   def interpolate_minutes(), do: 15
