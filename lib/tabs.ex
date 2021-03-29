@@ -12,6 +12,7 @@ defmodule Parser do
   #   * Object Locator
   #   * Push Button
   #   * Ambient Light Sensor
+  #   * Water Leak Sensor
   #
   #  This parser replaces all the other Tabs parsers.
   #
@@ -23,6 +24,7 @@ defmodule Parser do
   #   2020-09-23 [gw]: Added support for new Healthy Home Sensor version (with indoor-air-quality)
   #   2020-09-28 [gw]: Update battery calculation for new Healthy Home Sensor version
   #   2020-12-22 [jb]: Added Ambient Light Sensor from "RM_Ambient light Sensor_20200319 (BQW_02_0008).pdf" and formatted code.
+  #   2021-03-29 [tr]: Added Water Leak Sensor from "Tabs Water Leak Datenblatt EN"
 
   # Door & Window Sensor
   def parse(
@@ -149,6 +151,32 @@ defmodule Parser do
       light_lighter: lighter,
       light_darker: darker
     })
+  end
+
+  # Water Leak Sensor
+  def parse(
+        <<status::binary-1, battery::binary-1, temp_pcb::binary-1, humidity::binary-1,
+          temp_env::binary-1>>,
+        %{
+          meta: %{frame_port: 106}
+        }
+      ) do
+    <<_rfu1::1, rh_status_change::1, temperature_status_change::1, water_leakage_interrupt::1,
+      _rfu2::3, water_leakage_detect::1>> = status
+
+    <<_rfu::1, rhum::7>> = humidity
+    {_, battery_voltage} = read_battery(battery)
+
+    %{
+      battery_voltage: battery_voltage,
+      temperature: read_temperature(temp_pcb),
+      environment_temperature: read_temperature(temp_env),
+      relative_humidity: if(humidity == 127, do: :error, else: rhum),
+      rh_status_change: rh_status_change == 1,
+      temperature_status_change: temperature_status_change == 1,
+      water_leakage_interrupt: water_leakage_interrupt == 1,
+      water_leakage_detect: water_leakage_detect == 1
+    }
   end
 
   # not matched
@@ -397,6 +425,22 @@ defmodule Parser do
         "field" => "light_lux",
         "display" => "Lux",
         "unit" => "lux"
+      },
+      %{
+        "field" => "rh_status_change",
+        "display" => "Relative humidity changed"
+      },
+      %{
+        "field" => "temperature_status_change",
+        "display" => "Tempeature changed"
+      },
+      %{
+        "field" => "water_leakage_interrupt",
+        "display" => "Water leakage interrupt"
+      },
+      %{
+        "field" => "water_leakage_detect",
+        "display" => "Water leakage detection"
       }
     ]
   end
@@ -404,7 +448,8 @@ defmodule Parser do
   def tests() do
     tests_doornwindow() ++
       tests_healthy_home() ++
-      tests_motion() ++ tests_object_locator() ++ tests_pushbutton() ++ tests_ambient_light()
+      tests_motion() ++
+      tests_object_locator() ++ tests_pushbutton() ++ tests_ambient_light() ++ tests_water_leak()
   end
 
   def tests_doornwindow() do
@@ -634,6 +679,26 @@ defmodule Parser do
           light_lighter: 0,
           light_lux: 314_000,
           temperature: 21
+        }
+      }
+    ]
+  end
+
+  def tests_water_leak() do
+    [
+      {
+        :parse_hex,
+        "000C352935",
+        %{meta: %{frame_port: 106}},
+        %{
+          battery_voltage: 3.7,
+          relative_humidity: 41,
+          rh_status_change: false,
+          environment_temperature: 21,
+          temperature: 21,
+          temperature_status_change: false,
+          water_leakage_detect: false,
+          water_leakage_interrupt: false
         }
       }
     ]
