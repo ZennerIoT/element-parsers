@@ -202,7 +202,7 @@ defmodule TestParser do
       payload_hex
       |> to_string
       |> String.trim()
-      |> String.replace(" ", "")
+      |> String.replace([" ", "\n"], "")
       |> Base.decode16!(case: :mixed)
 
     parse_result = execute_function(state, :parse, [payload, meta])
