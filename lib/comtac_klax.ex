@@ -15,37 +15,42 @@ defmodule Parser do
   #   2019-07-23 [jb]: Skipping negative values by default.
   #   2019-10-30 [jb]: Field server_id is now integer. Added hex string value server_id_hex.
   #   2019-12-11 [jb]: Added field obis_value in all readings for MSCONS rule compatability.
+  #   2021-04-15 [jb]: Using new config() function.
 
 
   #----- Configuration
+  def config() do
+    %{
+      # Needs to be 4 distinct values!
+      # Needs to be as configured on devices!
+      # Default configuration: ["1_8_0", "2_8_0", "1_29_0", "2_29_0"]
+      registers: ["1_8_0", "2_8_0", "1_29_0", "2_29_0"],
+      registers_full_obis: ["1-0:1.8.0", "1-0:2.8.0", "1-0:1.29.0", "1-0:2.29.0"],
 
-  # Needs to be 4 distinct values!
-  # Needs to be as configured on devices!
-  # Previous configuration: ["1_8_0", "2_8_0", "1_29_0", "2_29_0"]
-  def registers(), do: ["1_8_0", "2_8_0", "1_29_0", "2_29_0"]
-  # When full obis for registers is needed
-  def registers(:full_obis), do: ["1-0:1.8.0", "1-0:2.8.0", "1-0:1.29.0", "1-0:2.29.0"]
+      # Default configuration: 15 Minutes
+      # Needs to be as configured on devices!
+      # Minimum 1 Minute
+      # Maximum 50000 minutes
+      interval_minutes: 15,
 
-  # Default configuration: 15 Minutes
-  # Needs to be as configured on devices!
-  # Minimum 1 Minute
-  # Maximum 50000 minutes
-  def interval_minutes(), do: 15
+      # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
+      # Default: false
+      interpolate: false,
 
-  # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
-  # Default: true
-  def interpolate?(), do: false
-  # Minutes between interpolated values
-  # Default: 15
-  def interpolate_minutes(), do: 15
+      # Minutes between interpolated values
+      # Default: 15
+      interpolate_minutes: 15,
 
-  # Name of timezone.
-  # Default: "Europe/Berlin"
-  def timezone(), do: "Europe/Berlin"
+      # Name of timezone.
+      # Default: "Europe/Berlin"
+      timezone: "Europe/Berlin",
 
-  # Skip negative values
-  # Default: true
-  def skip_negative_values?(), do: true
+      # Skip negative values
+      # Default: true
+      skip_negative_values: true,
+    }
+  end
+  defp config(key, meta), do: get(meta, [:_config, key], Map.get(config(), key))
 
 
   #----- Implementation
@@ -154,8 +159,8 @@ defmodule Parser do
 
     list_pos1 = if pos_1_active == 1 && pos_1_valid == 1 do # TODO: Warn if not valid
        {unit, scaler} = _map_unit(unit_1)
-       obis = Enum.at(registers(), pos_1_selector)
-       obis_full = Enum.at(registers(:full_obis), pos_1_selector)
+       obis = Enum.at(config(:registers, meta), pos_1_selector)
+       obis_full = Enum.at(config(:registers_full_obis, meta), pos_1_selector)
        value = round_as_float(pos_1_now * scaler)
        [
          # Always adding the first value, because the _valid flag is set for it.
@@ -174,21 +179,21 @@ defmodule Parser do
             [obis_full, obis],
             pos_1_minus_1 * scaler,
             unit,
-            Timex.shift(meta[:transceived_at], minutes: -1 * interval_minutes())
+            Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta))
           )
        |> _add_valid_reading(
             [obis_full, obis],
             pos_1_minus_2 * scaler,
             unit,
-            Timex.shift(meta[:transceived_at], minutes: -1 * interval_minutes() * 2)
+            Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta) * 2)
           )
        |> _add_valid_reading(
             [obis_full, obis],
             pos_1_minus_3 * scaler,
             unit,
-            Timex.shift(meta[:transceived_at], minutes: -1 * interval_minutes() * 3)
+            Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta) * 3)
           )
-       |> skip_negative_values()
+       |> skip_negative_values(meta)
        |> build_missing(meta)
     else
       []
@@ -196,8 +201,8 @@ defmodule Parser do
 
     list_pos2 = if pos_2_active == 1 && pos_2_valid == 1 do # TODO: Warn if not valid
       {unit, scaler} = _map_unit(unit_2)
-      obis = Enum.at(registers(), pos_2_selector)
-      obis_full = Enum.at(registers(:full_obis), pos_2_selector)
+      obis = Enum.at(config(:registers, meta), pos_2_selector)
+      obis_full = Enum.at(config(:registers_full_obis, meta), pos_2_selector)
       value = round_as_float(pos_2_now * scaler)
       [
        # Always adding the first value, because the _valid flag is set for it.
@@ -216,21 +221,21 @@ defmodule Parser do
           [obis_full, obis],
           pos_2_minus_1 * scaler,
           unit,
-          Timex.shift(meta[:transceived_at], minutes: -1 * interval_minutes())
+          Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta))
         )
       |> _add_valid_reading(
           [obis_full, obis],
           pos_2_minus_2 * scaler,
           unit,
-          Timex.shift(meta[:transceived_at], minutes: -1 * interval_minutes() * 2)
+          Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta) * 2)
         )
       |> _add_valid_reading(
           [obis_full, obis],
           pos_2_minus_3 * scaler,
           unit,
-          Timex.shift(meta[:transceived_at], minutes: -1 * interval_minutes() * 3)
+          Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta) * 3)
         )
-      |> skip_negative_values()
+      |> skip_negative_values(meta)
       |> build_missing(meta)
     else
       []
@@ -271,8 +276,8 @@ defmodule Parser do
     []
   end
 
-  defp skip_negative_values(list) do
-    if skip_negative_values?() do
+  defp skip_negative_values(list, meta) do
+    if config(:skip_negative_values, meta) do
       Enum.filter(list, fn({%{"obis" => obis} = data, _meta}) ->
         Map.fetch!(data, obis) >= 0
       end)
@@ -282,7 +287,7 @@ defmodule Parser do
   end
 
   defp build_missing([{%{"obis" => obis, "unit" => unit}, _current_meta} | _] = current_readings, meta) do
-    if interpolate?() do
+    if config(:interpolate, meta) do
       case get_last_reading(meta, [obis: obis, unit: unit]) do
         %{data: %{"obis" => ^obis} = last_data, measured_at: last_measured_at} ->
           last_value = Map.fetch!(last_data, obis)
@@ -299,10 +304,10 @@ defmodule Parser do
             fn datetime_a, datetime_b ->
               # Calculate all tuples with x=nil between a and b where a value should be interpolated
               interval = Timex.Interval.new(
-                from: datetime_a |> Timex.to_datetime(timezone()) |> datetime_add_to_multiple_of_minutes(interpolate_minutes()),
+                from: datetime_a |> Timex.to_datetime(config(:timezone, meta)) |> datetime_add_to_multiple_of_minutes(config(:interpolate_minutes, meta)),
                 until: datetime_b,
                 left_open: false,
-                step: [minutes: interpolate_minutes()]
+                step: [minutes: config(:interpolate_minutes, meta)]
               )
               Enum.map(interval, &({nil, [measured_at: &1]}))
             end,
@@ -439,7 +444,7 @@ defmodule Parser do
         "field" => "app_version",
         "display" => "App Version",
       },
-    ] ++ Enum.map(registers(), fn(register) ->
+    ] ++ Enum.map(config(:registers, %{}), fn(register) ->
       %{
         "field" => "#{register}",
         "display" => "OBIS #{register}",
@@ -590,6 +595,9 @@ defmodule Parser do
         %{
           meta: %{frame_port: 3},
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _config: %{
+interpolate: true,
+                   },
           _last_reading_map: %{
             [obis: "1-0:1.8.0", unit: "kWh"] =>
               %{measured_at: test_datetime("2019-01-01T11:34:56Z"), data: %{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 65.0, "unit" => "kWh"}},
