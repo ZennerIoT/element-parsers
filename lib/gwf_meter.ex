@@ -12,20 +12,25 @@ defmodule Parser do
   #   2018-08-08 [jb]: Parsing battery and additional function.
   #   2019-05-16 [jb]: Removed/changed fields (meter_id, manufacturer_id, state). Added interpolation feature. Added obis codes.
   #   2019-07-04 [ab]: Added support for message type 0x02.
-  #
+  #   2021-04-15 [jb]: Using new config() function.
 
+  #----- Configuration
+  def config() do
+    %{
+      # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
+      # Default: false
+      interpolate: false,
 
-  # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
-  # Default: true
-  def interpolate?(), do: false
-  # Minutes between interpolated values
-  # Default: 15
-  def interpolate_minutes(), do: 15
+      # Minutes between interpolated values
+      # Default: 15
+      interpolate_minutes: 15,
 
-  # Name of timezone.
-  # Default: "Europe/Berlin"
-  def timezone(), do: "Europe/Berlin"
-
+      # Name of timezone.
+      # Default: "Europe/Berlin"
+      timezone: "Europe/Berlin"
+    }
+  end
+  defp config(key, meta), do: get(meta, [:_config, key], Map.get(config(), key))
 
 
   # Parsing message wit protocol type 0x01
@@ -247,7 +252,7 @@ defmodule Parser do
 
   defp build_missing(%{meter_id: meter_id, medium: medium, volume: current_value}, current_measured_at, meta) do
 
-    if interpolate?() do
+    if config(:interpolate, meta) do
 
       last_reading_query = [meter_id: meter_id, medium: medium, volume: :_]
 
@@ -262,10 +267,10 @@ defmodule Parser do
                 fn datetime_a, datetime_b ->
                   # Calculate all tuples with x=nil between a and b where a value should be interpolated
                   interval = Timex.Interval.new(
-                    from: datetime_a |> Timex.to_datetime(timezone()) |> datetime_add_to_multiple_of_minutes(interpolate_minutes()),
+                    from: datetime_a |> Timex.to_datetime(config(:timezone, meta)) |> datetime_add_to_multiple_of_minutes(config(:interpolate_minutes, meta)),
                     until: datetime_b,
                     left_open: false,
-                    step: [minutes: interpolate_minutes()]
+                    step: [minutes: config(:interpolate_minutes, meta)]
                   )
                   Enum.map(interval, &({nil, [measured_at: &1]}))
                 end,
@@ -517,6 +522,9 @@ defmodule Parser do
         String.replace("01 E61E 13071620 07 00 C801 13 F8030000 00 E8 7473", " ", ""),
         %{
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _config: %{
+            interpolate: true,
+          },
           _last_reading_map: %{
             [meter_id: 20160713, medium: :water, volume: :_] => %{measured_at: test_datetime("2019-01-01T04:11:11Z"), data: %{volume: 0.45}},
           },
@@ -603,6 +611,9 @@ defmodule Parser do
         "01E61E1831062103000000141900000000D0982D",
         %{
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _config: %{
+            interpolate: true,
+          },
           _last_reading_map: %{
             [meter_id: 21063118, medium: :gas, volume: :_] => %{measured_at: test_datetime("2019-01-01T12:11:11Z"), data: %{volume: 0.12}},
           },
