@@ -24,6 +24,7 @@ defmodule Parser do
   #   2020-11-19 [jb]: Added support for R711/R718A/R718AB/R720A temperature/humidity sensors.
   #   2020-12-22 [jb]: Added support for R311FA/RA02C/RA0716 sensor. Formatted code.
   #   2020-12-22 [jb]: Added support for R718CJ2/CK2/CT2/CR2/CE2/R730CJ2/CK2/CT2/CR2/CE2 two channel temperature sensors.
+  #   2021-04-15 [jb]: Fixed temperature scale.
 
   def parse(<<version::8, device_type::8, report_type::8, rest::binary>>, %{
         meta: %{frame_port: 6}
@@ -293,8 +294,8 @@ defmodule Parser do
        )
        when device_type in [0x15, 0x16, 0x17, 0x18, 0x19, 0x78, 0x79, 0x7A, 0x7B, 0x7C] do
     %{}
-    |> Map.merge(parse_temperature(temperature1, :temperature_1))
-    |> Map.merge(parse_temperature(temperature2, :temperature_2))
+    |> Map.merge(parse_temperature(temperature1, :temperature_1, 0.1))
+    |> Map.merge(parse_temperature(temperature2, :temperature_2, 0.1))
     |> Map.merge(parse_battery_info(battery))
   end
 
@@ -314,9 +315,9 @@ defmodule Parser do
     }
   end
 
-  defp parse_temperature(<<temperature::signed-16>>, field \\ :temperature) do
+  defp parse_temperature(<<temperature::signed-16>>, field \\ :temperature, factor \\ 0.01) do
     %{
-      field => temperature / 100
+      field => temperature * factor
     }
   end
 
@@ -758,8 +759,8 @@ defmodule Parser do
           device_type_name: "R718CK2",
           low_battery: 0,
           report_type: 1,
-          temperature_1: 0.17,
-          temperature_2: 0.16,
+          temperature_1: 1.7000000000000002,
+          temperature_2: 1.6,
           version: 1
         }
       }
