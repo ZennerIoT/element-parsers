@@ -31,12 +31,9 @@ defmodule Parser do
       add_power_from_last_reading: false,
 
       # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
-      # Default: true
+      # Default: false
       interpolate: false,
 
-      # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
-      # Default: true
-      #def config(:interpolate, meta), do: false
       # Minutes between interpolated values
       # Default: 15
       interpolate_minutes: 15,
