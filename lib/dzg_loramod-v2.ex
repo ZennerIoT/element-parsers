@@ -21,25 +21,33 @@ defmodule Parser do
   #   2019-10-10 [jb]: Added key interpolated=1 and :obis_value to interpolated readings.
   #   2019-12-12 [jb]: Ignoring frame_port for messages without frame header, fame_port=8 was required before.
   #   2020-10-26 [jb]: Handling errors when timestamp close to DST borders.
+  #   2021-04-15 [jb]: Using new config() function.
 
-  # Configuration
+  #----- Configuration
+  def config() do
+    %{
+      # Will use the register_value from previous reading and add the field `power`.
+      # Default: false
+      add_power_from_last_reading: false,
 
-  # Will use the register_value from previous reading and add the field `power`.
-  # Default: true
-  def add_power_from_last_reading?(), do: true
+      # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
+      # Default: true
+      interpolate: false,
 
+      # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
+      # Default: true
+      #def config(:interpolate, meta), do: false
+      # Minutes between interpolated values
+      # Default: 15
+      interpolate_minutes: 15,
 
-  # Flag if interpolated values for 0:00, 0:15, 0:30, 0:45, ... should be calculated
-  # Default: true
-  def interpolate?(), do: false
-  # Minutes between interpolated values
-  # Default: 15
-  def interpolate_minutes(), do: 15
-
-  # Name of timezone.
-  # Default: "Europe/Berlin"
-  def timezone(), do: "Europe/Berlin"
-
+      # Name of timezone.
+      # Default: "Europe/Berlin"
+      timezone: "Europe/Berlin"
+    }
+  end
+  defp config(key, meta), do: get(meta, [:_config, key], Map.get(config(), key))
+  
 
   # Structure of payload deciffered from PDF:
   #
@@ -177,7 +185,7 @@ defmodule Parser do
 
   defp build_missing(%{} = current_data, register_field, meta, %{medium: medium, qualifier: qualifier, register_index: register_index}) do
 
-    if interpolate?() do
+    if config(:interpolate, meta) do
 
       current_value = Map.fetch!(current_data, register_field)
       current_measured_at = Map.fetch!(meta, :transceived_at)
@@ -194,10 +202,10 @@ defmodule Parser do
                 fn datetime_a, datetime_b ->
                   # Calculate all tuples with x=nil between a and b where a value should be interpolated
                   interval = Timex.Interval.new(
-                    from: datetime_a |> Timex.to_datetime(timezone()) |> datetime_add_to_multiple_of_minutes(interpolate_minutes()),
+                    from: datetime_a |> Timex.to_datetime(config(:timezone, meta)) |> datetime_add_to_multiple_of_minutes(config(:interpolate_minutes, meta)),
                     until: datetime_b,
                     left_open: false,
-                    step: [minutes: interpolate_minutes()]
+                    step: [minutes: config(:interpolate_minutes, meta)]
                   )
                   Enum.map(interval, &({nil, [measured_at: &1]}))
                 end,
@@ -340,7 +348,7 @@ defmodule Parser do
 
   def add_power_from_last_reading(data, %{transceived_at: transceived_at} = meta, register_field, power_field) do
     field_value = Map.get(data, register_field)
-    case {add_power_from_last_reading?(), is_nil(field_value)} do
+    case {config(:add_power_from_last_reading, meta), is_nil(field_value)} do
       {true, false} ->
         case get_last_reading(meta, [{register_field, :_}]) do
           %{measured_at: measured_at, data: last_data} ->
@@ -523,6 +531,10 @@ defmodule Parser do
         %{
           meta: %{frame_port: 8},
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _config: %{
+            add_power_from_last_reading: true,
+            interpolate: true,
+          },
           _last_reading_map: %{
             [register_value: :_] => %{measured_at: test_datetime("2019-01-01T12:11:11Z"), data: %{"register_value" => 1.23}},
           },
@@ -717,6 +729,10 @@ defmodule Parser do
         %{
           meta: %{frame_port: 8},
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
+          _config: %{
+            add_power_from_last_reading: true,
+            interpolate: true,
+          },
           _last_reading_map: %{
             [register_value: :_] => %{measured_at: test_datetime("2019-01-01T12:11:11Z"), data: %{"register_value" => 1.23}},
           },
@@ -793,6 +809,10 @@ defmodule Parser do
         :parse_hex, "0051294BBC000D000000",
         %{
           meta: %{frame_port: 8},
+          _config: %{
+            add_power_from_last_reading: true,
+            interpolate: true,
+          },
           _last_reading_map: %{
             [register_value: :_] => last_reading_register_value,
           },
@@ -858,6 +878,10 @@ defmodule Parser do
         :parse_hex,  "513097F701B8030000",
         %{
           meta: %{frame_port: 8},
+          _config: %{
+            add_power_from_last_reading: true,
+            interpolate: true,
+          },
           _last_reading_map: %{
             [register_value: :_] => last_reading_register_value,
           },
@@ -923,6 +947,10 @@ defmodule Parser do
         :parse_hex,  "0004A20FE4650327AA4F4B8301000000000000",
         %{
           meta: %{frame_port: 8},
+          _config: %{
+            add_power_from_last_reading: true,
+            interpolate: true,
+          },
           _last_reading_map: %{
             [register_value: :_] => last_reading_register_value,
             [register2_value: :_] => last_reading_register2_value,
