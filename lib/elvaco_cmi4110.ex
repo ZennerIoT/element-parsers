@@ -17,6 +17,7 @@ defmodule Parser do
   #   2020-06-29 [jb]: Added filter_unknown_data() filtering :unknown Mbus data.
   #   2020-07-08 [jb]: Added all error flags in build_error_string()
   #   2020-11-24 [jb]: Added do_extend_reading and OBIS "6-0:1.0.0" to data.
+  #   2021-04-15 [jb]: Removing value not parseable by LibWmbus
 
   defp do_extend_reading(%{energy: energy, energy_unit: "kWh"} = reading) do
     Map.merge(reading, %{
@@ -28,6 +29,16 @@ defmodule Parser do
 
   # When using payload style 0, the payload is made up of DIBs on M-Bus format, excluding M-Bus header.
   def parse(<<type::8, dibs_binary::binary,>>, _meta) do
+
+    # Remove part that can CURRENTLY not be parsed by LibWmbus.Dib
+    dibs_size_before = byte_size(dibs_binary)-4
+    dibs_binary = case dibs_binary do
+      <<before::binary-size(dibs_size_before), 0x01, 0xFD, 0x17, _error_code>> ->
+        before
+      _ ->
+        dibs_binary
+    end
+
     dibs =
       dibs_binary
       |> LibWmbus.Dib.parse_dib()
@@ -271,6 +282,26 @@ defmodule Parser do
           function_field: :current_value,
           payload_style: 1
         }
+      },
+      # From real device with error
+      {
+        :parse_hex, "1E04068E6002000413D6082200022B0000023B0000025A4300025E3B00077961576851A511400401FD1784", %{}, %{
+        :"6-0:1.0.0" => 155790.0,
+        :energy => 155790.0,
+        :energy_unit => "kWh",
+        :flow => 0.0,
+        :function_field => :current_value,
+        :payload_style => 30,
+        :power => 0,
+        :return_temperature => 5.9,
+        :supply_temperature => 6.7,
+        :volume => 2230.486,
+        "flow_unit" => "m³/h",
+        "power_unit" => "W",
+        "return_temperature_unit" => "°C",
+        "supply_temperature_unit" => "°C",
+        "volume_unit" => "m³"
+      }
       },
     ]
   end
