@@ -9,16 +9,52 @@ defmodule Parser do
   #
   # Changelog:
   #   2019-12-10 [jb]: Initial implementation according to "PNI PlacePod Sensor - Communications Protocol.pdf"
+  #   2021-04-20 [jb]: Added do_extend_reading/2 and add_bosch_parking_format/1 for Bosch park sensor compatibility.
   #
 
-  def parse(payload, _meta) when is_binary(payload) do
-    _parse(payload, %{})
+  def do_extend_reading(fields, _meta) do
+    fields
+    #|> add_bosch_parking_format
+  end
+
+  def add_bosch_parking_format(fields) do
+    fields
+    |> Map.merge(%{
+      p_state: :unknown,
+      message_type: :unknown,
+    })
+    |> case do
+         %{parking_status: 1} = fields -> Map.merge(fields, %{message_type: :parking_status, p_state: :occupied})
+         %{parking_status: 0} = fields -> Map.merge(fields, %{message_type: :parking_status, p_state: :free})
+         _ -> fields
+       end
+    |> case do
+         %{keep_alive: 1} = fields -> Map.merge(fields, %{message_type: :heartbeat})
+         _ -> fields
+       end
+    |> case do
+         %{reboot_response: 1} = fields -> Map.merge(fields, %{message_type: :startup})
+         _ -> fields
+       end
+  end
+
+  def parse(payload, meta) when is_binary(payload) do
+    payload
+    |> _parse(%{})
+    |> extend_reading(meta)
   end
 
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
     []
   end
+
+  # This function will take whatever parse() returns and provides the possibility
+  # to add some more fields to readings using do_extend_reading()
+  def extend_reading(readings, meta) when is_list(readings), do: Enum.map(readings, &extend_reading(&1, meta))
+  def extend_reading({fields, opts}, meta), do: {extend_reading(fields, meta), opts}
+  def extend_reading(%{} = fields, meta), do: do_extend_reading(fields, meta)
+  def extend_reading(other, _meta), do: other
 
   #--- Internals ---
 
