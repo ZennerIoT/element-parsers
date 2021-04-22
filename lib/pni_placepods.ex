@@ -14,7 +14,7 @@ defmodule Parser do
 
   def do_extend_reading(fields, _meta) do
     fields
-    #|> add_bosch_parking_format
+    #|> add_bosch_parking_format # Uncomment to add bosch format.
   end
 
   def add_bosch_parking_format(fields) do
@@ -26,15 +26,15 @@ defmodule Parser do
     |> case do
          %{parking_status: 1} = fields -> Map.merge(fields, %{message_type: :parking_status, p_state: :occupied})
          %{parking_status: 0} = fields -> Map.merge(fields, %{message_type: :parking_status, p_state: :free})
-         _ -> fields
+         fields -> fields
        end
     |> case do
          %{keep_alive: 1} = fields -> Map.merge(fields, %{message_type: :heartbeat})
-         _ -> fields
+         fields -> fields
        end
     |> case do
          %{reboot_response: 1} = fields -> Map.merge(fields, %{message_type: :startup})
-         _ -> fields
+         fields -> fields
        end
   end
 
