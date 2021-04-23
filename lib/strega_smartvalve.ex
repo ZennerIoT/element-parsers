@@ -10,6 +10,7 @@ defmodule Parser do
   #   2018-09-13 [as]: Initial version.
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #   2020-06-12 [jb]: Supporting v4 Payloads, RENAMED READING FIELDS!
+  #   2021-04-23 [jb]: Added hint for custom payloads from FULL devices.
   #
 
   # v3 payload
@@ -18,12 +19,16 @@ defmodule Parser do
     |> parse_flags(flags, :v3)
     |> parse_bat_mv(bat_mv, :v3)
   end
-  # v4 payload
+  # v4 lite payload
   def parse(<<bat_mv::binary-4, flags::binary-1, temp_humidty::binary-5>>, _meta) do
     %{payload_version: :v4}
     |> parse_flags(flags, :v4)
     |> parse_bat_mv(bat_mv, :v4)
     |> parse_temp_and_humidity(temp_humidty)
+  end
+  # v4 full format, not supported
+  def parse(payload, _meta) when byte_size(payload) > 10 do
+    %{payload_version: :v4, error: :custom_format_not_implemented}
   end
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
@@ -226,6 +231,38 @@ defmodule Parser do
           temperature: 20.850296020507813,
           valve: :close
         }
+      },
+
+
+      {
+        :parse_hex,
+        "33 31 38 38 32 23 63 3D 77 DB",
+        %{
+          _comment: "Lite version from docs.",
+        },
+        %{
+          battery: 3.188,
+          cable: :disconnected,
+          di_0: :off,
+          di_1: :off,
+          fraud: :no,
+          humidity: 46.81854248046875,
+          leakage: :no,
+          lorawan_class: :class_a,
+          payload_version: :v4,
+          power_supply: :battery,
+          tamper: :open,
+          temperature: 23.962173461914063,
+          valve: :close
+        }
+      },
+      {
+        :parse_hex,
+        "F0 30 32 31 76 2364 B7 6C 11 43 30 37 34 32 32 31 56 30 37 31 43 23 43 56 ",
+        %{
+          _comment: "Full version from docs.",
+        },
+        %{error: :custom_format_not_implemented, payload_version: :v4}
       },
     ]
   end
