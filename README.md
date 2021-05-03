@@ -128,27 +128,28 @@ Last Change | Parser Name
 2020-12-14 | Adeunis ARF8240
 2020-10-06 | Arad MODBUS
 2020-11-20 | Ascoel CO868LR / TH868LR
+2021-05-03 | Axioma Qualcosonic W1 (Honeywell Elster)
 2020-11-11 | BESA M-BUS-1
 2019-01-01 | Binando Binsonic
 2019-09-19 | BOSCH Traci
 2020-12-16 | Clevabit Protocol (DEOS SAM CO2 Ampel)
-2021-02-10 | Clevercity Greenbox
+2021-03-03 | Clevercity Greenbox
 2019-05-15 | Comtac E1323-MS3
 2019-01-01 | Comtac E1360-MS3
 2019-11-12 | Comtac E1374
 2020-01-30 | Comtac KLAX Modbus
 2020-01-29 | Comtac KLAX SML
-2021-03-02 | de-build.net POWER Gmbh - LoRa Protocol
+2021-03-18 | de-build.net POWER Gmbh - LoRa Protocol
 2020-09-10 | Diehl HRLGc G3 Water Meter
 2019-08-26 | Diehl OMS
+2021-04-06 | DigitalMatter Oyster GPS
 2020-12-02 | Dragino distance sensor
 2020-01-01 | Dragino LHT65
 2020-12-22 | Dragino LSE01 Soil Sensor
-2020-12-22 | Dragino LSN50
+2021-03-17 | Dragino LSN50
 2021-01-17 | DZG Node
 2021-01-17 | DZG Node
 2019-01-01 | Fludia FM430
-2019-01-01 | Holley Meter
 2020-12-10 | Imbuildings People Counter
 2020-11-30 | Innotas LoRa Pulse
 2020-11-25 | Innotas LoRa EHKV
@@ -161,7 +162,7 @@ Last Change | Parser Name
 2019-01-26 | Libelium Smart Agriculture Pro
 2021-01-28 | Libelium Smart City Pro
 2021-01-26 | Libelium Smart Water Xtreme
-2020-01-01 | Lobaro Modbus Bridge (HTTP)
+2021-03-23 | Lobaro Modbus Bridge v1.0
 2018-01-01 | Lobaro Oscar smart waste ultrasonic sensor
 2021-01-22 | Lobaro WMBus Bridge
 2019-03-07 | LPP Cayenne
@@ -174,24 +175,27 @@ Last Change | Parser Name
 2020-03-26 | PaulWegener Datenlogger
 2021-02-08 | PaulWegener Datenlogger
 2020-07-06 | Pepperl+Fuchs WILSEN.sonic.level
-2021-03-01 | Sensingslabs Multisensor
+2021-04-19 | SenseCAP
+2021-04-06 | Sensingslabs Multisensor
 2019-10-16 | SensoNeo Quatro Sensor
 2020-12-10 | SensoNeo Single Sensor
 2020-11-17 | Sentinum APOLLON-Q
+2021-04-30 | Sentinum FEBRIS
 2021-01-19 | SoilNet LoRa (Jülich Forschungszentrum)
 2021-01-26 | Speedfreak_v4
 2021-02-25 | Swisscom LPN Multisense
 2019-03-28 | Swisslogix/YMATRON SLX-1307
 2019-06-25 | Tecyard Multiparser
 2019-06-04 | Tecyard RattenSchockSender
-2020-11-09 | TEKTELIC Agriculture
+2021-03-17 | TEKTELIC Agriculture
+2021-03-11 | TENEO CO2 Ampel
 2020-10-29 | Tetraedre
 2020-12-10 | Ursalink AM100/102 and Milesight AM104/AM107
 2021-03-01 | VEGAPULS Air 41
 2019-05-08 | Xignal Mouse/Rat Trap
-2019-07-04 | ZENNER Smoke Detector D1722
+2021-04-22 | Yokogawa Sushi Sensor
+2021-04-28 | ZENNER Smoke Detector D1722
 2020-02-27 | ZENNER T&H Sensor D1801
 2019-07-05 | ZENNER Water Meter
-2021-01-10 | ZRI Simple EDC and PDC
+2021-03-28 | ZRI Simple EDC and PDC
 2020-11-23 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
-
