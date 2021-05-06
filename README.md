@@ -128,7 +128,8 @@ Last Change | Parser Name
 2020-12-14 | Adeunis ARF8240
 2020-10-06 | Arad MODBUS
 2020-11-20 | Ascoel CO868LR / TH868LR
-2021-05-03 | Axioma Qualcosonic W1 (Honeywell Elster)
+2021-05-04 | Axioma Qalcosonic F1 - 24h mode (orHoneywell Elster)
+2021-05-05 | Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
 2020-11-11 | BESA M-BUS-1
 2019-01-01 | Binando Binsonic
 2019-09-19 | BOSCH Traci
@@ -199,3 +200,4 @@ Last Change | Parser Name
 2019-07-05 | ZENNER Water Meter
 2021-03-28 | ZRI Simple EDC and PDC
 2020-11-23 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
+
