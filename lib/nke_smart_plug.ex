@@ -9,63 +9,95 @@ defmodule Parser do
   # Changelog
   #   2019-00-00 [zh]: Initial Version.
   #   2020-08-20 [jb]: Added tests, refactoring.
+  #   2021-05-12 [jb]: Added heartbeat. Formatted Code.
+
+  def parse(<<>>, _meta) do
+    # Ignoring empty payloads (?)
+    []
+  end
+
+  def parse(<<0x10, _rest::binary>>, %{meta: %{frame_port: 125}}) do
+    #  Not documented (?)
+    %{
+      type: :heartbeat
+    }
+  end
 
   def parse(<<0x11, 0x0A, _header::40, status::8>>, %{meta: %{frame_port: 125}}) do
     %{
       type: :relaystatus,
-      relay_status: status,
+      relay_status: status
     }
   end
+
   def parse(<<0x11, 0x0A, _header::48, body::binary>>, %{meta: %{frame_port: 125}}) do
     %{}
     |> parse_body(body)
   end
+
   def parse(<<0x11, 0x01, _header::56, body::binary>>, %{meta: %{frame_port: 125}}) do
     %{}
     |> parse_body(body)
   end
 
-
-  def parse(payload, meta) do
-    Logger.info("Unhandled meta.frame_port: #{inspect get_in(meta, [:meta, :frame_port])} with payload #{inspect payload}")
-    []
+  def parse(<<0x10, 0x01, _header::56, body::binary>>, %{meta: %{frame_port: 125}}) do
+    %{}
+    |> parse_body(body)
   end
 
-  defp parse_body(acc, <<active_energy::24, reactive_energy::24, samples::16, active_power::16, reactive_power::16>>) do
+  def parse(payload, meta) do
+    Logger.info(
+      "Unhandled meta.frame_port: #{inspect(get_in(meta, [:meta, :frame_port]))} with payload #{
+        inspect(payload)
+      }"
+    )
+
+    []
+    # %{type: :unknown, unparseable_binary: inspect(payload)}
+  end
+
+  defp parse_body(
+         acc,
+         <<active_energy::24, reactive_energy::24, samples::16, active_power::16,
+           reactive_power::16>>
+       ) do
     Map.merge(acc, %{
       type: :report,
       active_energy: active_energy,
       reactive_energy: reactive_energy,
       samples: samples,
       active_power: active_power,
-      reactive_power: reactive_power,
+      reactive_power: reactive_power
     })
   end
 
-  defp parse_body(acc, <<freq::16, freq_min::16, freq_max::16, vrms::16, vrms_min::16, vrms_max::16, vpeak::16, vpeak_min::16, vpeak_max::16, overvoltage_nr::16, sag_nr::16, brownout_nr::16>>) do
+  defp parse_body(
+         acc,
+         <<freq::16, freq_min::16, freq_max::16, vrms::16, vrms_min::16, vrms_max::16, vpeak::16,
+           vpeak_min::16, vpeak_max::16, overvoltage_nr::16, sag_nr::16, brownout_nr::16>>
+       ) do
     Map.merge(acc, %{
       type: :powerquality,
-      freq: (freq+22232)/1000,
-      freq_min: (freq_min+22232)/1000,
-      freq_max: (freq_max+22232)/1000,
-      vrms: vrms/10,
-      vrms_min: vrms_min/10,
-      vrms_max: vrms_max/10,
-      vpeak: vpeak/10,
-      vpeak_min: vpeak_min/10,
-      vpeak_max: vpeak_max/10,
+      freq: (freq + 22232) / 1000,
+      freq_min: (freq_min + 22232) / 1000,
+      freq_max: (freq_max + 22232) / 1000,
+      vrms: vrms / 10,
+      vrms_min: vrms_min / 10,
+      vrms_max: vrms_max / 10,
+      vpeak: vpeak / 10,
+      vpeak_min: vpeak_min / 10,
+      vpeak_max: vpeak_max / 10,
       overvoltage_nr: overvoltage_nr,
       sag_nr: sag_nr,
-      brownout_nr: brownout_nr,
+      brownout_nr: brownout_nr
     })
   end
 
   defp parse_body(acc, unknown) do
     Map.merge(acc, %{
-      unparseable_binary: "#{inspect unknown}",
+      unparseable_binary: "#{inspect(unknown)}"
     })
   end
-
 
   def fields do
     [
@@ -148,8 +180,8 @@ defmodule Parser do
       },
       %{
         field: "brownout",
-        display: "brownout",
-      },
+        display: "brownout"
+      }
     ]
   end
 
@@ -168,7 +200,6 @@ defmodule Parser do
           type: :report
         }
       },
-
       {
         :parse_hex,
         "11010052000000410C000250FFFE5D044F00000000",
@@ -176,13 +207,12 @@ defmodule Parser do
         %{
           active_energy: 592,
           active_power: 0,
-          reactive_energy: 16776797,
+          reactive_energy: 16_776_797,
           reactive_power: 0,
           samples: 1103,
           type: :report
         }
       },
-
       {
         :parse_hex,
         "110A8052000041186C956BD86D6908EB08CF09280C7B0C620E76000000000003",
@@ -203,7 +233,6 @@ defmodule Parser do
           vrms_min: 225.5
         }
       },
-
       {
         :parse_hex,
         "1101805200000041186C896BD86D6908FB08CF09280C930C620E76000000000003",
@@ -224,15 +253,21 @@ defmodule Parser do
           vrms_min: 225.5
         }
       },
-
       {
         :parse_hex,
         "110A000600001001",
         %{meta: %{frame_port: 125}},
         %{relay_status: 1, type: :relaystatus}
       },
+      {
+        :parse_hex,
+        "10 07 00C8 4B1500002010A41AAAA11AAA9101",
+        %{
+          meta: %{frame_port: 125},
+          _comment: "From device 70B3D5E75E00BF80"
+        },
+        %{type: :heartbeat}
+      }
     ]
   end
-
 end
-
