@@ -93,6 +93,7 @@ NKE Watteco Remote Temperature | [lib/nke_remote_temperature.ex](lib/nke_remote_
 NKE Watteco Smart Plug | [lib/nke_smart_plug.ex](lib/nke_smart_plug.ex)
 Parametric PCR2 Radar People Flow sensor | [lib/parametric_pcr2.ex](lib/parametric_pcr2.ex)
 Parametric TCR Radar Traffic Counter | [lib/parametric_tcr.ex](lib/parametric_tcr.ex)
+Pepperl+Fuchs WILSEN.sonic.level | [lib/pepperl_fuchs_wilsen_sonic_level.ex](lib/pepperl_fuchs_wilsen_sonic_level.ex)
 PNI PlacePods | [lib/pni_placepods.ex](lib/pni_placepods.ex)
 RAK Button | [lib/rak_button.ex](lib/rak_button.ex)
 RFI Remote Power Switch | [lib/rfi_remote-power-switch.ex](lib/rfi_remote-power-switch.ex)
