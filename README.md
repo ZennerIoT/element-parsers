@@ -175,7 +175,6 @@ Last Change | Parser Name
 2020-11-23 | NKE Watteco Pulse Sens'O
 2020-03-26 | PaulWegener Datenlogger
 2021-02-08 | PaulWegener Datenlogger
-2020-07-06 | Pepperl+Fuchs WILSEN.sonic.level
 2021-04-19 | SenseCAP
 2021-04-06 | Sensingslabs Multisensor
 2019-10-16 | SensoNeo Quatro Sensor
@@ -190,6 +189,7 @@ Last Change | Parser Name
 2019-06-04 | Tecyard RattenSchockSender
 2021-03-17 | TEKTELIC Agriculture
 2021-03-11 | TENEO CO2 Ampel
+2021-05-10 | Terabee Level Monitoring XL
 2020-10-29 | Tetraedre
 2020-12-10 | Ursalink AM100/102 and Milesight AM104/AM107
 2021-03-01 | VEGAPULS Air 41
@@ -200,4 +200,3 @@ Last Change | Parser Name
 2019-07-05 | ZENNER Water Meter
 2021-03-28 | ZRI Simple EDC and PDC
 2020-11-23 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
-
