@@ -10,12 +10,21 @@ defmodule Parser do
   #   2018-11-29: [jb] Initial version of parser
   #   2019-05-22: [gw] Read tank height and form from device profile. Calculate fill level depending on form.
   #   2020-01-27: [jb] Fixed handling of tank.form profile field.
-
-  # Profile "tank":
-  #   Fields:
-  #     "height" as Number, default 165cm
-  #     "form" as String with possible values: "ball_tank", "lying_cylinder", or default "normal"
-
+  #   2021-05-18: [jb] Added tank.sensor_distance profile field. Formatted code.
+  #
+  # For configuration the profile "tank" is needed:
+  # Fields:
+  #   "height" as Number, default 165cm.
+  #     Max distance from the sensor to be counted as 0% ullage.
+  #   "sensor_distance" as Number, default 0cm
+  #     Distance from the sensor to the filling surface.
+  #   "form" as String with possible values: "ball_tank", "lying_cylinder", or default "normal"
+  #     Will use a different formula for fill_level %.
+  #
+  # Tank:
+  #   [ Sensor=>                       100%..........0% ]
+  #            | <- sensor_distance -> | <- height -> |
+  #
   # The TEK 766 Ultrasonic sensor unit can send 6 types of message.
   # The payload message type is defined by the first byte of the Datagram as referenced in the table below.
   #
@@ -24,10 +33,14 @@ defmodule Parser do
   # the current ullage/temperatures plus (if available) the last 3 ullage/temperatures. Just the current will result in a reading.
   # There are ALARM messages, that contain current and previous ullage/temperature, which will result in a reading.
 
+  # Profile name
   def profile_name(), do: :tank
 
   # default height of a tank in cm (Integer). This can be set in the profile of a device with 'height'.
   def default_tank_height(), do: 165
+
+  # default distance from sensor in cm (Integer). This can be set in the profile of a device with 'sensor_distance'.
+  def default_tank_sensor_distance(), do: 0
 
   # Form of the tank, as the percentage is calculated differently with e.g. a ball shaped tank
   # can have the following values: :ball_tank, :lying_cylinder, :normal
@@ -45,19 +58,23 @@ defmodule Parser do
           # Message type
           0x00,
           # Prod ID TEK766
-          alarms :: binary - 1,
-          _reserved :: 8,
-          readings_binary :: binary
+          alarms::binary-1,
+          _reserved::8,
+          readings_binary::binary
         >>,
         meta
       ) do
     alarms = parse_alarms_binary(alarms)
 
-    [reading | _] = parse_measurement_readings(readings_binary, [], meta)
+    case parse_measurement_readings(readings_binary, [], meta) do
+      [reading | _] ->
+        reading
+        |> Map.merge(alarms)
+        |> Map.merge(%{message_type: "measurement"})
 
-    reading
-    |> Map.merge(alarms)
-    |> Map.merge(%{message_type: "measurement"})
+      _ ->
+        []
+    end
   end
 
   # Status frame
@@ -68,27 +85,27 @@ defmodule Parser do
           # Message type
           0x00,
           # Prod ID TEK766
-          _reserved :: 8,
-          payload :: binary
+          _reserved::8,
+          payload::binary
         >>,
         meta
       ) do
     <<
-      hardware_id :: 8,
-      software_id :: 16,
-      _reserved1 :: 8,
-      _reserved2 :: 8,
-      unit_rssi :: signed - 8,
-      _reserved3 :: 8,
-      battery_remaining :: 8,
-      measurement_steps :: 16,
-      schedule_tx_period :: 8,
+      hardware_id::8,
+      software_id::16,
+      _reserved1::8,
+      _reserved2::8,
+      unit_rssi::signed-8,
+      _reserved3::8,
+      battery_remaining::8,
+      measurement_steps::16,
+      schedule_tx_period::8,
       # hours
-      ullage :: 16,
-      temp :: signed - 8,
-      src :: 4,
-      srssi :: 4,
-      _rest :: bits
+      ullage::16,
+      temp::signed-8,
+      src::4,
+      srssi::4,
+      _rest::bits
     >> = payload
 
     %{
@@ -103,7 +120,7 @@ defmodule Parser do
       fill_level: get_fill_level(ullage, meta),
       temp: temp,
       src: src,
-      srssi: srssi,
+      srssi: srssi
     }
   end
 
@@ -117,22 +134,30 @@ defmodule Parser do
           # Message type
           0x00,
           # Prod ID TEK766
-          alarms :: binary - 1,
-          _reserved :: 8,
-          readings_binary :: binary
+          alarms::binary-1,
+          _reserved::8,
+          readings_binary::binary
         >>,
         meta
       ) do
-
     alarms = parse_alarms_binary(alarms)
 
     # Expecting up to 2 readings.
-    {current, prev} = case parse_measurement_readings(readings_binary, [], meta) do
-      [current, %{src: prev_src, srssi: prev_srssi, temp: prev_temp, ullage: prev_ullage}] ->
-        {current, %{prev_src: prev_src, prev_srssi: prev_srssi, prev_temp: prev_temp, prev_ullage: prev_ullage}}
-      [current] ->
-        {current, %{}} # No prev reading available
-    end
+    {current, prev} =
+      case parse_measurement_readings(readings_binary, [], meta) do
+        [current, %{src: prev_src, srssi: prev_srssi, temp: prev_temp, ullage: prev_ullage}] ->
+          {current,
+           %{
+             prev_src: prev_src,
+             prev_srssi: prev_srssi,
+             prev_temp: prev_temp,
+             prev_ullage: prev_ullage
+           }}
+
+        [current] ->
+          # No prev reading available
+          {current, %{}}
+      end
 
     current
     |> Map.merge(alarms)
@@ -142,28 +167,56 @@ defmodule Parser do
 
   # Catchall for reparsing
   def parse(payload, meta) do
-    Logger.info("Unknown payload #{inspect payload} on frame-port: #{inspect get(meta, [:meta, :frame_port])}")
+    Logger.info(
+      "Unknown payload #{inspect(payload)} on frame-port: #{
+        inspect(get(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
-  #--- Internals ---
+  # --- Internals ---
 
+  def parse_measurement_readings(<<0::16, 0::8, 0::8, rest::binary>>, acc, meta) do
+    # Not adding unavailable measurements.
+    parse_measurement_readings(rest, acc, meta)
+  end
 
-  def parse_measurement_readings(<<0 :: 16, 0 :: 8, 0::8, rest :: binary>>, acc, meta) do
-    parse_measurement_readings(rest, acc, meta) # Not adding unavailable measurements.
+  def parse_measurement_readings(
+        <<ullage::16, temp::signed-8, src::4, srssi::4, rest::binary>>,
+        acc,
+        meta
+      ) do
+    parse_measurement_readings(
+      rest,
+      [
+        %{
+          ullage: ullage,
+          fill_level: get_fill_level(ullage, meta),
+          temp: temp,
+          src: src,
+          srssi: srssi
+        }
+        | acc
+      ],
+      meta
+    )
   end
-  def parse_measurement_readings(<<ullage :: 16, temp :: signed - 8, src :: 4, srssi :: 4, rest :: binary>>, acc, meta) do
-    parse_measurement_readings(rest, [%{ullage: ullage, fill_level: get_fill_level(ullage, meta), temp: temp, src: src, srssi: srssi, } | acc], meta)
-  end
+
   def parse_measurement_readings(rest, acc, _) do
     if <<>> != rest do
-      Logger.warn("Parser.parse_measurement_readings: Unknown readings binary rest #{inspect rest}")
+      Logger.warn(
+        "Parser.parse_measurement_readings: Unknown readings binary rest #{inspect(rest)}"
+      )
     end
+
     Enum.reverse(acc)
   end
 
-
-  def parse_alarms_binary(<<lim8 :: 1, lim7 :: 1, lim6 :: 1, lim5 :: 1, lim4 :: 1, lim3 :: 1, lim2 :: 1, lim1 :: 1>>) do
+  def parse_alarms_binary(
+        <<lim8::1, lim7::1, lim6::1, lim5::1, lim4::1, lim3::1, lim2::1, lim1::1>>
+      ) do
     # Return Map of alarms that are != 0
     [
       alarm1: lim1,
@@ -173,92 +226,111 @@ defmodule Parser do
       alarm5: lim5,
       alarm6: lim6,
       alarm7: lim7,
-      alarm8: lim8,
+      alarm8: lim8
     ]
-    |> Enum.filter(fn ({_key, value}) -> value == 1 end)
+    |> Enum.filter(fn {_key, value} -> value == 1 end)
     |> Enum.into(%{})
   end
 
   def get_fill_level(ullage, meta) do
     tank_height = get(meta, [:device, :fields, profile_name(), :height], default_tank_height())
+
+    sensor_distance =
+      get(
+        meta,
+        [:device, :fields, profile_name(), :sensor_distance],
+        default_tank_sensor_distance()
+      )
+
     tank_form = get(meta, [:device, :fields, profile_name(), :form], default_tank_form())
+
+    ullage = ullage - sensor_distance
 
     calculate_fill_level(to_string(tank_form), tank_height, ullage)
   end
 
   defp calculate_fill_level(_form, tank_height, _ullage) when tank_height <= 0 do
-    0 # Cap to 0%
+    # Cap to 0%
+    0.0
   end
-  defp calculate_fill_level(_form, tank_height, ullage) when tank_height < ullage do
-    100 # Cap to 100%
+
+  defp calculate_fill_level(_form, tank_height, ullage)
+       when tank_height < ullage or ullage <= 0 do
+    # Cap to 100%
+    100.0
   end
+
   defp calculate_fill_level("ball_tank", tank_height, ullage) do
     tank_radius = tank_height / 2
-    volume_tank = (4/3) * :math.pi() * :math.pow(tank_radius, 3)
+    volume_tank = 4 / 3 * :math.pi() * :math.pow(tank_radius, 3)
     # https://de.wikipedia.org/wiki/Kugelsegment
-    fill_volume = (:math.pi() / 3) * :math.pow(ullage, 2) * (3 * tank_radius - ullage)
+    fill_volume = :math.pi() / 3 * :math.pow(ullage, 2) * (3 * tank_radius - ullage)
 
-    Float.round(((volume_tank - fill_volume) / volume_tank) * 100, 2)
+    Float.round((volume_tank - fill_volume) / volume_tank * 100, 2)
   end
+
   defp calculate_fill_level("lying_cylinder", tank_height, ullage) do
     tank_radius = tank_height / 2
+
     # We only calculate the circle area of the cylinder and the area of the fill level. The width of the cylinder doesn't matter for the fill level.
     cylinder_area = :math.pi() * :math.pow(tank_radius, 2)
     # https://de.wikipedia.org/wiki/Kreissegment with h = ullage and r = tank_radius
-    fill_area = :math.pow(tank_radius, 2) * :math.acos(1 - (ullage / tank_radius)) - (tank_radius - ullage) * :math.sqrt(2 * tank_radius * ullage - :math.pow(ullage, 2))
+    fill_area =
+      :math.pow(tank_radius, 2) * :math.acos(1 - ullage / tank_radius) -
+        (tank_radius - ullage) * :math.sqrt(2 * tank_radius * ullage - :math.pow(ullage, 2))
 
-    Float.round(((cylinder_area - fill_area) / cylinder_area) * 100, 2)
+    Float.round((cylinder_area - fill_area) / cylinder_area * 100, 2)
   end
+
   defp calculate_fill_level("normal", tank_height, ullage) do
-    Float.round(((tank_height - ullage) / tank_height) * 100, 2)
-  end
-  defp calculate_fill_level(form, _tank_height, _ullage) do
-    raise "Can not calculate fill level for unknown tank form: #{inspect form}"
+    Float.round((tank_height - ullage) / tank_height * 100, 2)
   end
 
+  defp calculate_fill_level(form, _tank_height, _ullage) do
+    raise "Can not calculate fill level for unknown tank form: #{inspect(form)}"
+  end
 
   def fields do
     [
       %{
         "field" => "message_type",
-        "display" => "Nachrichtentyp",
+        "display" => "Nachrichtentyp"
       },
       %{
         "field" => "ullage",
         "unit" => "cm",
-        "display" => "Freiraum",
+        "display" => "Freiraum"
       },
       %{
         "field" => "fill_level",
         "unit" => "%",
-        "display" => "Füllstand",
+        "display" => "Füllstand"
       },
       %{
         "field" => "temp",
         "unit" => "°C",
-        "display" => "Temperatur",
+        "display" => "Temperatur"
       },
       %{
         "field" => "src",
-        "display" => "SRC",
+        "display" => "SRC"
       },
       %{
         "field" => "srssi",
-        "display" => "SRSSI",
+        "display" => "SRSSI"
       },
       %{
         "field" => "battery_remaining",
         "unit" => "%",
-        "display" => "Batterie",
+        "display" => "Batterie"
       },
       %{
         "field" => "scheduled_tx_period",
         "unit" => "hours",
-        "display" => "Sendeinterval",
-      },
+        "display" => "Sendeinterval"
+      }
     ]
   end
-
 
   def tests() do
     [
@@ -268,13 +340,13 @@ defmodule Parser do
         "10000100018DF8AA018CF8AA018CF8AA018CF8AA",
         %{
           meta: %{
-            frame_port: 16,
+            frame_port: 16
           },
           device: %{
             fields: %{
               tank: %{
                 height: 400,
-                form: :normal,
+                form: :normal
               }
             }
           }
@@ -296,13 +368,13 @@ defmodule Parser do
         "3000000200023400590062005A0600161B9A",
         %{
           meta: %{
-            frame_port: 48,
+            frame_port: 48
           },
           device: %{
             fields: %{
               tank: %{
                 height: 100,
-                form: :normal,
+                form: :normal
               }
             }
           }
@@ -322,6 +394,40 @@ defmodule Parser do
           unit_rssi: -89
         }
       },
+      {
+        :parse_hex,
+        "3000000200023400590062005A0600321B9A",
+        %{
+          meta: %{
+            frame_port: 48
+          },
+          device: %{
+            fields: %{
+              tank: %{
+                height: 100,
+                form: :normal,
+                sensor_distance: 10
+              }
+            }
+          },
+          _comment: "Status with sensor_distance"
+        },
+        %{
+          battery_remaining: 98,
+          # (100 - (50 - 10)) / 100
+          fill_level: 60.0,
+          hardware_id: 2,
+          measurement_steps: 90,
+          message_type: "status",
+          scheduled_tx_period: 6,
+          software_id: 2,
+          src: 9,
+          srssi: 10,
+          temp: 27,
+          ullage: 50,
+          unit_rssi: -89
+        }
+      },
 
       # Alarm
       {
@@ -335,12 +441,20 @@ defmodule Parser do
             fields: %{
               tank: %{
                 height: 100,
-                form: :normal,
+                form: :normal
               }
             }
           }
         },
-        %{alarm1: 1, message_type: "alarm", src: 10, srssi: 10, temp: 24, ullage: 75, fill_level: 25.0}
+        %{
+          alarm1: 1,
+          message_type: "alarm",
+          src: 10,
+          srssi: 10,
+          temp: 24,
+          ullage: 75,
+          fill_level: 25.0
+        }
       },
 
       # Real Payload from device
@@ -355,12 +469,19 @@ defmodule Parser do
             fields: %{
               tank: %{
                 height: 100,
-                form: :normal,
+                form: :normal
               }
             }
           }
         },
-        %{message_type: "measurement", src: 10, srssi: 10, temp: 23, ullage: 26, fill_level: 74.0}
+        %{
+          message_type: "measurement",
+          src: 10,
+          srssi: 10,
+          temp: 23,
+          ullage: 26,
+          fill_level: 74.0
+        }
       },
       {
         :parse_hex,
@@ -373,7 +494,7 @@ defmodule Parser do
             fields: %{
               tank: %{
                 height: 100,
-                form: :normal,
+                form: :normal
               }
             }
           }
@@ -404,7 +525,7 @@ defmodule Parser do
             fields: %{
               tank: %{
                 height: 100,
-                form: :normal,
+                form: :normal
               }
             }
           }
@@ -435,14 +556,22 @@ defmodule Parser do
             fields: %{
               tank: %{
                 height: 52,
-                form: :normal,
+                form: :normal
               }
             }
           }
         },
-        %{message_type: "measurement", src: 10, srssi: 10, temp: 22, ullage: 26, fill_level: 50.0}
+        %{
+          message_type: "measurement",
+          src: 10,
+          srssi: 10,
+          temp: 22,
+          ullage: 26,
+          fill_level: 50.0
+        }
       },
-      { # test ball_tank formula
+      # test ball_tank formula
+      {
         :parse_hex,
         "10000000001A16AA001A17AA001A18AA001A19AA",
         %{
@@ -453,14 +582,22 @@ defmodule Parser do
             fields: %{
               tank: %{
                 height: 52,
-                form: :ball_tank,
+                form: :ball_tank
               }
             }
           }
         },
-        %{message_type: "measurement", src: 10, srssi: 10, temp: 22, ullage: 26, fill_level: 50.0}
+        %{
+          message_type: "measurement",
+          src: 10,
+          srssi: 10,
+          temp: 22,
+          ullage: 26,
+          fill_level: 50.0
+        }
       },
-      { # test ball_tank formula
+      # test ball_tank formula
+      {
         :parse_hex,
         "10000000001A16AA001A17AA001A18AA001A19AA",
         %{
@@ -471,14 +608,22 @@ defmodule Parser do
             fields: %{
               tank: %{
                 height: 30,
-                form: :ball_tank,
+                form: :ball_tank
               }
             }
           }
         },
-        %{message_type: "measurement", src: 10, srssi: 10, temp: 22, ullage: 26, fill_level: 4.86}
+        %{
+          message_type: "measurement",
+          src: 10,
+          srssi: 10,
+          temp: 22,
+          ullage: 26,
+          fill_level: 4.86
+        }
       },
-      { # test ball_tank formula
+      # test ball_tank formula
+      {
         :parse_hex,
         "10000000001A16AA001A17AA001A18AA001A19AA",
         %{
@@ -489,14 +634,22 @@ defmodule Parser do
             fields: %{
               tank: %{
                 height: 400,
-                form: :ball_tank,
+                form: :ball_tank
               }
             }
           }
         },
-        %{message_type: "measurement", src: 10, srssi: 10, temp: 22, ullage: 26, fill_level: 98.79}
+        %{
+          message_type: "measurement",
+          src: 10,
+          srssi: 10,
+          temp: 22,
+          ullage: 26,
+          fill_level: 98.79
+        }
       },
-      { # test lying_cylinder formula
+      # test lying_cylinder formula
+      {
         :parse_hex,
         "10000000001A16AA001A17AA001A18AA001A19AA",
         %{
@@ -507,14 +660,20 @@ defmodule Parser do
             fields: %{
               tank: %{
                 height: 100,
-                form: :ball_tank,
+                form: :ball_tank
               }
             }
           }
         },
-        %{message_type: "measurement", src: 10, srssi: 10, temp: 22, ullage: 26, fill_level: 83.24}
-      },
+        %{
+          message_type: "measurement",
+          src: 10,
+          srssi: 10,
+          temp: 22,
+          ullage: 26,
+          fill_level: 83.24
+        }
+      }
     ]
   end
-
 end
