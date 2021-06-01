@@ -21,7 +21,13 @@ defmodule Parser do
   #
   # Changelog
   #   2020-11-04 [jb]: Initial version.
-  #
+  #   2021-06-01 [jb]: Added extend_reading/2 callback
+
+
+  # Add your own mapping of fields here.
+  def do_extend_reading(fields, _meta) do
+    fields
+  end
 
   # Return a string that will be used as key for that value, or `nil` if value should be dropped.
   defp key_naming_format(memory_address, sub_device, tariff, function_field, description, unit) do
@@ -32,13 +38,22 @@ defmodule Parser do
     end
   end
 
-  def parse(%{"c_function_code" => "SND-NR", "message_content" => [%{"data" => data} | _]}, _meta) when is_list(data) do
-    Enum.reduce(data, %{}, &Map.merge(&2, extract_value(&1)))
+  def parse(%{"c_function_code" => "SND-NR", "message_content" => [%{"data" => data} | _]}, meta) when is_list(data) do
+    data
+    |> Enum.reduce(%{}, &Map.merge(&2, extract_value(&1)))
+    |> extend_reading(meta)
   end
   def parse(payload, meta) do
     Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
     []
   end
+
+  # This function will take whatever parse() returns and provides the possibility
+  # to add some more fields to readings using do_extend_reading()
+  def extend_reading(readings, meta) when is_list(readings), do: Enum.map(readings, &extend_reading(&1, meta))
+  def extend_reading({fields, opts}, meta), do: {extend_reading(fields, meta), opts}
+  def extend_reading(%{} = fields, meta), do: do_extend_reading(fields, meta)
+  def extend_reading(other, _meta), do: other
 
   # Needs to return a map with key => value pairs.
   defp extract_value(%{"data" => %{"desc" => "message number", "unit" => _, "value" => _}}) do
