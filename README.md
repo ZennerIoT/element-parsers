@@ -149,6 +149,7 @@ Last Change | Parser Name
 2020-01-01 | Dragino LHT65
 2020-12-22 | Dragino LSE01 Soil Sensor
 2021-03-17 | Dragino LSN50
+2021-05-18 | Dragino LT22222-L I/O Controller
 2021-01-17 | DZG Node
 2021-01-17 | DZG Node
 2019-01-01 | Fludia FM430
@@ -157,7 +158,7 @@ Last Change | Parser Name
 2020-11-25 | Innotas LoRa EHKV
 2020-11-25 | Innotas LoRa Water Meter
 2021-01-11 | Itron Cyble5
-2020-11-16 | Keller
+2021-06-09 | Keller
 2020-12-16 | Kerlink Wanesy Wave
 2021-01-22 | Lancier Pipesense
 2021-02-09 | Libelium Smart Devices All in One
