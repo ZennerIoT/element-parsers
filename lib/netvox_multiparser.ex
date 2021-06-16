@@ -25,6 +25,7 @@ defmodule Parser do
   #   2020-12-22 [jb]: Added support for R311FA/RA02C/RA0716 sensor. Formatted code.
   #   2020-12-22 [jb]: Added support for R718CJ2/CK2/CT2/CR2/CE2/R730CJ2/CK2/CT2/CR2/CE2 two channel temperature sensors.
   #   2021-04-15 [jb]: Fixed temperature scale.
+  #   2021-06-16 [ks]: Added support for R311A/R718F/R311CC/R730F
 
   def parse(<<version::8, device_type::8, report_type::8, rest::binary>>, %{
         meta: %{frame_port: 6}
@@ -44,9 +45,7 @@ defmodule Parser do
 
   def parse(payload, meta) do
     Logger.info(
-      "Unhandled meta.frame_port: #{inspect(get_in(meta, [:meta, :frame_port]))} with payload #{
-        inspect(payload)
-      }"
+      "Unhandled meta.frame_port: #{inspect(get_in(meta, [:meta, :frame_port]))} with payload #{inspect(payload)}"
     )
 
     []
@@ -117,6 +116,25 @@ defmodule Parser do
       status1: status1,
       # Status Flag 0=off, 1=on
       status2: status2
+    }
+    |> Map.merge(parse_battery_info(battery))
+  end
+
+  # R311A / R718F / R311CC / R730F
+  defp parse_payload(
+         device_type,
+         0x01,
+         <<battery::binary-1, contact::8, _rfu::binary-6>>
+       )
+       when device_type in [
+              0x02,
+              0x1D,
+              0x6C,
+              0x7D
+            ] do
+    %{
+      # Contact Flag 0=off, 1=on
+      contact: contact
     }
     |> Map.merge(parse_battery_info(battery))
   end
@@ -674,6 +692,11 @@ defmodule Parser do
         field: "pm2_5",
         display: "PM2.5",
         unit: "ug/m3"
+      },
+      # R311A / R718F / R311CC / R730F
+      %{
+        field: "contact",
+        display: "Kontakt"
       }
     ]
   end
@@ -761,6 +784,22 @@ defmodule Parser do
           report_type: 1,
           temperature_1: 1.7000000000000002,
           temperature_2: 1.6,
+          version: 1
+        }
+      },
+
+      # R311A / R718F / R311CC / R730F
+      {
+        :parse_hex,
+        "011D012400000000000000",
+        %{meta: %{frame_port: 6}},
+        %{
+          battery: 3.6,
+          device_type: 29,
+          device_type_name: "R718F Reed Switch Open/Close Detection Sensor",
+          low_battery: 0,
+          report_type: 1,
+          contact: 0,
           version: 1
         }
       }
