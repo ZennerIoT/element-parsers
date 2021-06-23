@@ -22,7 +22,7 @@ defmodule Parser do
   # Changelog
   #   2020-11-04 [jb]: Initial version.
   #   2021-06-01 [jb]: Added extend_reading/2 callback
-
+  #   2021-06-23 [jb]: Processing all valid data from message_content.
 
   # Add your own mapping of fields here.
   def do_extend_reading(fields, _meta) do
@@ -32,85 +32,109 @@ defmodule Parser do
   # Return a string that will be used as key for that value, or `nil` if value should be dropped.
   defp key_naming_format(memory_address, sub_device, tariff, function_field, description, unit) do
     description = String.replace(description, " ", "_")
+
     case to_string(unit) do
-      "" ->"#{memory_address}_#{sub_device}_#{tariff}_#{description}_#{function_field}"
+      "" -> "#{memory_address}_#{sub_device}_#{tariff}_#{description}_#{function_field}"
       _ -> "#{memory_address}_#{sub_device}_#{tariff}_#{description}_#{function_field}_#{unit}"
     end
   end
 
-  def parse(%{"c_function_code" => "SND-NR", "message_content" => [%{"data" => data} | _]}, meta) when is_list(data) do
-    data
+  def parse(%{"c_function_code" => "SND-NR", "message_content" => message_content}, meta)
+      when is_list(message_content) do
+    message_content
+    |> Enum.flat_map(fn
+      %{"data" => data} when is_list(data) ->
+        data
+
+      # Ignore other payloads that mostly contain errors
+      _ ->
+        []
+    end)
     |> Enum.reduce(%{}, &Map.merge(&2, extract_value(&1)))
     |> extend_reading(meta)
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
   # This function will take whatever parse() returns and provides the possibility
   # to add some more fields to readings using do_extend_reading()
-  def extend_reading(readings, meta) when is_list(readings), do: Enum.map(readings, &extend_reading(&1, meta))
+  def extend_reading(readings, meta) when is_list(readings),
+    do: Enum.map(readings, &extend_reading(&1, meta))
+
   def extend_reading({fields, opts}, meta), do: {extend_reading(fields, meta), opts}
   def extend_reading(%{} = fields, meta), do: do_extend_reading(fields, meta)
   def extend_reading(other, _meta), do: other
 
   # Needs to return a map with key => value pairs.
   defp extract_value(%{"data" => %{"desc" => "message number", "unit" => _, "value" => _}}) do
-    %{} # ignore message numbers
+    # ignore message numbers
+    %{}
   end
+
   defp extract_value(%{
-    "memory_address" => ma, "sub_device" => sd,
-    "tariff" => t, "function_field" => ff,
-    "data" => %{"desc" => desc, "unit" => unit, "value" => value}
-  }) do
+         "memory_address" => ma,
+         "sub_device" => sd,
+         "tariff" => t,
+         "function_field" => ff,
+         "data" => %{"desc" => desc, "unit" => unit, "value" => value}
+       }) do
     case key_naming_format(ma, sd, t, ff, desc, unit) do
       nil -> %{}
       key -> %{key => value}
     end
   end
+
   defp extract_value(_) do
-    %{} # Ignoring invalid format
+    # Ignoring invalid format
+    %{}
   end
 
   def tests() do
     payload_json = """
-      {
-        "version": 66,
-        "message_content": [
-          {
-            "version": 66,
-            "status": "00",
-            "modus": 7,
-            "messsage_type_text": "Mbus, long header (72h)",
-            "message_type": "72",
-            "manufacturer": "ITU",
-            "device_type": "Water",
-            "data": [
-              {
-                "tariff": 0,
-                "sub_device": 0,
-                "memory_address": 0,
-                "function_field": "current_value",
-                "din_address": "8ITU4200018454",
-                "data": {
-                  "value": 4.787,
-                  "unit": "m³",
-                  "desc": "volume"
-                }
+    {
+      "version": 66,
+      "message_content": [
+        {
+          "version": 66,
+          "status": "00",
+          "modus": 7,
+          "messsage_type_text": "Mbus, long header (72h)",
+          "message_type": "72",
+          "manufacturer": "ITU",
+          "device_type": "Water",
+          "data": [
+            {
+              "tariff": 0,
+              "sub_device": 0,
+              "memory_address": 0,
+              "function_field": "current_value",
+              "din_address": "8ITU4200018454",
+              "data": {
+                "value": 4.787,
+                "unit": "m³",
+                "desc": "volume"
               }
-            ],
-            "address": "00018454",
-            "acc": 242
-          }
-        ],
-        "manufacturer": "ITU",
-        "length": 59,
-        "device_type": "RF_Adapter",
-        "c_function_code": "SND-NR",
-        "address": "00018454"
-      }
-      """
+            }
+          ],
+          "address": "00018454",
+          "acc": 242
+        }
+      ],
+      "manufacturer": "ITU",
+      "length": 59,
+      "device_type": "RF_Adapter",
+      "c_function_code": "SND-NR",
+      "address": "00018454"
+    }
+    """
 
     [
       {
@@ -119,7 +143,6 @@ defmodule Parser do
         %{},
         %{"0_0_0_volume_current_value_m³" => 4.787}
       },
-
       {
         :parse,
         %{
@@ -289,7 +312,48 @@ defmodule Parser do
           "3_0_0_volume_current_value_m³" => 297.876
         }
       },
+      {
+        :parse,
+        %{
+          "version" => 36,
+          "message_content" => [
+            %{
+              # Error in first payload part
+              "data" => "0E79782636180000",
+              "encryption_mode" => 6,
+              "message_type" => "E",
+              "messsage_type_text" => "Unknown"
+            },
+            %{
+              "status" => "00",
+              "modus" => 5,
+              "messsage_type_text" => "Mbus, short header (7Ah)",
+              "message_type" => "7A",
+              "data" => [
+                %{
+                  "tariff" => 0,
+                  "sub_device" => 0,
+                  "memory_address" => 0,
+                  "function_field" => "current_value",
+                  "data" => %{
+                    "value" => -105,
+                    "unit" => "",
+                    "desc" => "message_number"
+                  }
+                }
+              ],
+              "acc" => 233
+            }
+          ],
+          "manufacturer" => "HYD",
+          "length" => 94,
+          "device_type" => "Water",
+          "c_function_code" => "SND-NR",
+          "address" => "64227825"
+        },
+        %{},
+        %{"0_0_0_message_number_current_value" => -105}
+      }
     ]
   end
-
 end
