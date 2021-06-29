@@ -40,7 +40,6 @@ ASCOEL LoRaWan Magnetic Contact Sensor CM868LR (Temperature/Humidity) | [lib/asc
 ASCOEL LoRaWan Magnetic Contact Sensor CM868LR | [lib/ascoel_cm868lr.ex](lib/ascoel_cm868lr.ex)
 ASCOEL LoRaWAN Pyroelectric Motion Sensor | [lib/ascoel_ir868lr.ex](lib/ascoel_ir868lr.ex)
 ATIM Metering Dry Contacts| [lib/atim_metering_dry_contacts.ex](lib/atim_metering_dry_contacts.ex)
-Axioma Qalcosonic water meter | [lib/axioma_qalcosonic.ex](lib/axioma_qalcosonic.ex)
 BOSCH Park Sensor | [lib/bosch_parksensor.ex](lib/bosch_parksensor.ex)
 Cayenne LPP | [lib/cayenne_lpp.ex](lib/cayenne_lpp.ex)
 Comtac DALI Bridge | [lib/comtac_dali-bridge.ex](lib/comtac_dali-bridge.ex)
@@ -55,7 +54,6 @@ Decentlab DL-MBX | [lib/decentlab_dl_mbx.ex](lib/decentlab_dl_mbx.ex)
 Decentlab DL-TRS12 | [lib/decentlab_dl_trs12.ex](lib/decentlab_dl_trs12.ex)
 DZG IVU LoRaMOD Bridge | [lib/dzg_loramod.ex](lib/dzg_loramod.ex)
 DZG IVU LoRaMOD Bridge v2 | [lib/dzg_loramod-v2.ex](lib/dzg_loramod-v2.ex)
-EasyMeter ESYS-LR10 | [lib/easymeter_esys_lr10.ex](lib/easymeter_esys_lr10.ex)
 ELEMENT WMBus Bridge Driver | [lib/element_wmbus_bridge_driver.ex](lib/element_wmbus_bridge_driver.ex)
 ELSYS Multiparser | [lib/elsys.ex](lib/elsys.ex)
 elvaco CMa11L | [lib/elvaco_cma11l.ex](lib/elvaco_cma11l.ex)
@@ -141,6 +139,8 @@ Last Change | Parser Name
 2019-11-12 | Comtac E1374
 2020-01-30 | Comtac KLAX Modbus
 2020-01-29 | Comtac KLAX SML
+2020-06-15 | Comtac Modbus Bridge Template
+2021-05-14 | Comtac TSM (Trafo Station Monitor)
 2021-03-18 | de-build.net POWER Gmbh - LoRa Protocol
 2020-09-10 | Diehl HRLGc G3 Water Meter
 2019-08-26 | Diehl OMS
@@ -152,6 +152,7 @@ Last Change | Parser Name
 2021-05-18 | Dragino LT22222-L I/O Controller
 2021-01-17 | DZG Node
 2021-01-17 | DZG Node
+2021-06-14 | EasyMeter ESYS LR10 LoRaWAN adapter
 2019-01-01 | Fludia FM430
 2020-12-10 | Imbuildings People Counter
 2020-11-30 | Innotas LoRa Pulse
@@ -173,6 +174,7 @@ Last Change | Parser Name
 2021-02-01 | Milesight and Ursalink EM300
 2021-01-28 | Milesight and Ursalink UC11xx
 2020-12-11 | Mutelcor MTC-PB01 / MTC-CO2-01
+2021-06-16 | NKE Watteco - Eolane Bob Assistant
 2021-02-11 | NKE Watteco Intens'O
 2020-11-23 | NKE Watteco Pulse Sens'O
 2020-03-26 | PaulWegener Datenlogger
@@ -201,4 +203,4 @@ Last Change | Parser Name
 2020-02-27 | ZENNER T&H Sensor D1801
 2019-07-05 | ZENNER Water Meter
 2021-03-28 | ZRI Simple EDC and PDC
-2020-11-23 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
+2021-06-23 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
