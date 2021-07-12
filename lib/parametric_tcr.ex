@@ -3,7 +3,10 @@ defmodule Parser do
   require Logger
 
   #
-  # ELEMENT IoT Parser for device Parametric TCR Radar Traffic Counter (Solar)
+  # ELEMENT IoT Parser for device Parametric TCR Radar Traffic Counter.
+  #
+  # Supported Models:
+  #   https://www.parametric.ch/de/products/tcr-ls/
   #
   # Changelog:
   #   2020-07-07 [jb]: Initial implementation according to https://parametric.ch/docs/tcr/tcr_payload_v1
@@ -382,6 +385,40 @@ defmodule Parser do
           uplink_intervall: 3,
           uplink_type: :unconfirmed,
           vendor_id: 190
+        }
+      },
+
+      {
+        :parse_hex,
+        "be02021cc0000000a0000108000000000000000000000000000000000000000000 ",
+        %{
+          meta: %{frame_port: 15},
+          _comment: "slow counter",
+        },
+        %{
+          :solar_battery_volt => 7.36,
+          :solar_panel_power => 0,
+          :temperature => 16.0,
+          "left_avg" => 8.0,
+          "left_avg_class0" => 8,
+          "left_avg_class1" => 0,
+          "left_avg_class2" => 0,
+          "left_avg_class3" => 0,
+          "left_count" => 1,
+          "left_count_class0" => 1,
+          "left_count_class1" => 0,
+          "left_count_class2" => 0,
+          "left_count_class3" => 0,
+          "right_avg" => 0,
+          "right_avg_class0" => 0,
+          "right_avg_class1" => 0,
+          "right_avg_class2" => 0,
+          "right_avg_class3" => 0,
+          "right_count" => 0,
+          "right_count_class0" => 0,
+          "right_count_class1" => 0,
+          "right_count_class2" => 0,
+          "right_count_class3" => 0
         }
       },
     ]
