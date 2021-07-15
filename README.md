@@ -128,7 +128,7 @@ Last Change | Parser Name
 2020-10-06 | Arad MODBUS
 2020-11-20 | Ascoel CO868LR / TH868LR
 2021-05-04 | Axioma Qalcosonic F1 - 24h mode (orHoneywell Elster)
-2021-05-05 | Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
+2021-06-29 | Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
 2020-11-11 | BESA M-BUS-1
 2019-01-01 | Binando Binsonic
 2019-09-19 | BOSCH Traci
@@ -139,7 +139,7 @@ Last Change | Parser Name
 2019-11-12 | Comtac E1374
 2020-01-30 | Comtac KLAX Modbus
 2020-01-29 | Comtac KLAX SML
-2020-06-15 | Comtac Modbus Bridge Template
+2021-07-12 | Comtac Modbus Bridge Template
 2021-05-14 | Comtac TSM (Trafo Station Monitor)
 2021-03-18 | de-build.net POWER Gmbh - LoRa Protocol
 2020-09-10 | Diehl HRLGc G3 Water Meter
@@ -149,7 +149,7 @@ Last Change | Parser Name
 2020-01-01 | Dragino LHT65
 2020-12-22 | Dragino LSE01 Soil Sensor
 2021-03-17 | Dragino LSN50
-2021-05-18 | Dragino LT22222-L I/O Controller
+2021-07-14 | Dragino LT22222-L I/O Controller
 2021-01-17 | DZG Node
 2021-01-17 | DZG Node
 2021-06-14 | EasyMeter ESYS LR10 LoRaWAN adapter
@@ -158,6 +158,7 @@ Last Change | Parser Name
 2020-11-30 | Innotas LoRa Pulse
 2020-11-25 | Innotas LoRa EHKV
 2020-11-25 | Innotas LoRa Water Meter
+2021-07-14 | Integra Topas Sonic Water Meter
 2021-01-11 | Itron Cyble5
 2021-06-09 | Keller
 2020-12-16 | Kerlink Wanesy Wave
@@ -166,14 +167,14 @@ Last Change | Parser Name
 2019-01-26 | Libelium Smart Agriculture Pro
 2021-01-28 | Libelium Smart City Pro
 2021-01-26 | Libelium Smart Water Xtreme
-2021-03-23 | Lobaro Modbus Bridge v1.0
+2021-07-14 | Lobaro Modbus Bridge v1.0
 2018-01-01 | Lobaro Oscar smart waste ultrasonic sensor
 2021-01-22 | Lobaro WMBus Bridge
 2019-03-07 | LPP Cayenne
 2021-02-18 | MCF88 Multiparser
 2021-02-01 | Milesight and Ursalink EM300
 2021-01-28 | Milesight and Ursalink UC11xx
-2020-12-11 | Mutelcor MTC-PB01 / MTC-CO2-01
+2021-07-01 | Mutelcor MTC-PB01 / MTC-CO2-01 / MTC-XX-MH01 / MTC-XX-CF01
 2021-06-16 | NKE Watteco - Eolane Bob Assistant
 2021-02-11 | NKE Watteco Intens'O
 2020-11-23 | NKE Watteco Pulse Sens'O
@@ -187,7 +188,7 @@ Last Change | Parser Name
 2021-04-30 | Sentinum FEBRIS
 2021-01-19 | SoilNet LoRa (Jülich Forschungszentrum)
 2021-01-26 | Speedfreak_v4
-2021-02-25 | Swisscom LPN Multisense
+2021-07-07 | Swisscom LPN Multisense
 2019-03-28 | Swisslogix/YMATRON SLX-1307
 2019-06-25 | Tecyard Multiparser
 2019-06-04 | Tecyard RattenSchockSender
@@ -202,5 +203,5 @@ Last Change | Parser Name
 2021-04-28 | ZENNER Smoke Detector D1722
 2020-02-27 | ZENNER T&H Sensor D1801
 2019-07-05 | ZENNER Water Meter
-2021-03-28 | ZRI Simple EDC and PDC
-2021-06-23 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
+2021-07-14 | ZRI Simple EDC and PDC
+2021-07-13 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
