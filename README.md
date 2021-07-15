@@ -186,6 +186,7 @@ Last Change | Parser Name
 2020-12-10 | SensoNeo Single Sensor
 2020-11-17 | Sentinum APOLLON-Q
 2021-04-30 | Sentinum FEBRIS
+2021-07-15 | SLOC Multiparser
 2021-01-19 | SoilNet LoRa (Jülich Forschungszentrum)
 2021-01-26 | Speedfreak_v4
 2021-07-07 | Swisscom LPN Multisense
@@ -203,5 +204,5 @@ Last Change | Parser Name
 2021-04-28 | ZENNER Smoke Detector D1722
 2020-02-27 | ZENNER T&H Sensor D1801
 2019-07-05 | ZENNER Water Meter
-2021-07-14 | ZRI Simple EDC and PDC
+2021-07-15 | ZRI Simple EDC and PDC
 2021-07-13 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
