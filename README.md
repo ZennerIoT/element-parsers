@@ -23,6 +23,7 @@ Reading device location | [lib/example_device_location.ex](lib/example_device_lo
 Dummy data | [lib/dummy.ex](lib/dummy.ex)
 
 
+
 ## Public Parsers for LoRaWAN Devices
 
 A list of parser for devices we already integrated in ELEMENT IoT Platform.
