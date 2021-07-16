@@ -714,91 +714,91 @@ defmodule Parser do
       },
       {
         :parse_hex, "211000000000000406A71140000259C525025D5B1802616A0D0414181E2201043C68010000042D84050000143CBF010000142DFC08000082086C9F2C", %{meta: %{frame_port: 25}}, [
-          %{
-            :digital1_reporting => 0,
-            :mbus => true,
-            :mbus_parameter => :ok,
-            :mbus_status => 4,
-            :ssi => false,
-            :user_triggered => false,
-            "digital1_reporting_medium_type" => :pulses,
-            "digital1_reporting_trigger_alert" => :ok,
-            "digital1_reporting_trigger_mode2" => :disabled,
-            "digital1_reporting_value_during_reporting" => :low
-          },
-          %{
-            function_field: :current_value,
-            memory_address: 0,
-            operation_time: 41529532088384,
-            sub_device: 0,
-            tariff: 0,
-            unit: "days with unknown vife"
-          },
-          %{
-            function_field: :current_value,
-            memory_address: 0,
-            return_temperature: 62.35,
-            sub_device: 0,
-            tariff: 0,
-            unit: "°C"
-          },
-          %{
-            function_field: :current_value,
-            memory_address: 0,
-            sub_device: 0,
-            tariff: 0,
-            temperature_difference: 34.34,
-            unit: "K"
-          },
-          %{
-            function_field: :current_value,
-            memory_address: 0,
-            sub_device: 0,
-            tariff: 0,
-            unit: "m³",
-            volume: 190131.44
-          },
-          %{
-            flow: 3.6,
-            function_field: :current_value,
-            memory_address: 0,
-            sub_device: 0,
-            tariff: 0,
-            unit: "m³/h"
-          },
-          %{
-            function_field: :current_value,
-            memory_address: 0,
-            power: 141200,
-            sub_device: 0,
-            tariff: 0,
-            unit: "W"
-          },
-          %{
-            flow: 4.47,
-            function_field: :max_value,
-            memory_address: 0,
-            sub_device: 0,
-            tariff: 0,
-            unit: "m³/h"
-          },
-          %{
-            function_field: :max_value,
-            memory_address: 0,
-            power: 230000,
-            sub_device: 0,
-            tariff: 0,
-            unit: "W"
-          },
-          %{
-            date: Date.from_erl!({2020, 12, 31}),
-            function_field: :current_value,
-            memory_address: 16,
-            sub_device: 0,
-            tariff: 0,
-            unit: ""
-          }
-        ]
+        %{
+          :digital1_reporting => 0,
+          :mbus => true,
+          :mbus_parameter => :ok,
+          :mbus_status => 4,
+          :ssi => false,
+          :user_triggered => false,
+          "digital1_reporting_medium_type" => :pulses,
+          "digital1_reporting_trigger_alert" => :ok,
+          "digital1_reporting_trigger_mode2" => :disabled,
+          "digital1_reporting_value_during_reporting" => :low
+        },
+        %{
+          function_field: :current_value,
+          memory_address: 0,
+          operation_time: 41529532088384,
+          sub_device: 0,
+          tariff: 0,
+          unit: "days with unknown vife (<<17::size(7)>>)"
+        },
+        %{
+          function_field: :current_value,
+          memory_address: 0,
+          return_temperature: 62.35,
+          sub_device: 0,
+          tariff: 0,
+          unit: "°C"
+        },
+        %{
+          function_field: :current_value,
+          memory_address: 0,
+          sub_device: 0,
+          tariff: 0,
+          temperature_difference: 34.34,
+          unit: "K"
+        },
+        %{
+          function_field: :current_value,
+          memory_address: 0,
+          sub_device: 0,
+          tariff: 0,
+          unit: "m³",
+          volume: 190131.44
+        },
+        %{
+          flow: 3.6,
+          function_field: :current_value,
+          memory_address: 0,
+          sub_device: 0,
+          tariff: 0,
+          unit: "m³/h"
+        },
+        %{
+          function_field: :current_value,
+          memory_address: 0,
+          power: 141200,
+          sub_device: 0,
+          tariff: 0,
+          unit: "W"
+        },
+        %{
+          flow: 4.47,
+          function_field: :max_value,
+          memory_address: 0,
+          sub_device: 0,
+          tariff: 0,
+          unit: "m³/h"
+        },
+        %{
+          function_field: :max_value,
+          memory_address: 0,
+          power: 230000,
+          sub_device: 0,
+          tariff: 0,
+          unit: "W"
+        },
+        %{
+          date: ~D[2020-12-31],
+          function_field: :current_value,
+          memory_address: 16,
+          sub_device: 0,
+          tariff: 0,
+          unit: ""
+        }
+      ]
       },
       {
         :parse_hex, "200004063E0000000413E410000002591409025DA408042D00000000043B00000000", %{meta: %{frame_port: 25}}, [

@@ -270,13 +270,13 @@ defmodule Parser do
   def tests() do
     [
       # From official docs
-      {:parse_hex, "03 67 01 10 05 67 00 FF", nil, [
+      {:parse_hex, "03 67 01 10 05 67 00 FF", %{}, [
         {%{channel: 5, temperature: 25.5}, []}, {%{channel: 3, temperature: 27.2}, []}
       ]},
-      {:parse_hex, "01 67 FF D7", nil, [
+      {:parse_hex, "01 67 FF D7", %{}, [
         {%{channel: 1, temperature: -4.1}, []}
       ]},
-      {:parse_hex, "06 71 04 D2 FB 2E 00 00", nil, [
+      {:parse_hex, "06 71 04 D2 FB 2E 00 00", %{}, [
         {%{
           accelerometer_x: 1.234,
           accelerometer_y: -1.234,
@@ -284,43 +284,43 @@ defmodule Parser do
           channel: 6
         }, []}
       ]},
-      {:parse_hex, "01 88 06 76 5f f2 96 0a 00 03 e8", nil, [
+      {:parse_hex, "01 88 06 76 5f f2 96 0a 00 03 e8", %{}, [
         {%{channel: 1, gps_alt: 10.0, gps_lat: 42.3519, gps_lon: -87.9094},
           [location: {-87.9094, 42.3519}]}
       ]},
-      {:parse_hex, "01 00 64", nil, [
+      {:parse_hex, "01 00 64", %{}, [
         {%{channel: 1, digital_input: 100}, []}
       ]},
 
       # From: https://github.com/aabadie/cayenne-lpp/blob/master/tests/check_cayenne_lpp.c
-      {:parse_hex, "00 00 0A", nil, [
+      {:parse_hex, "00 00 0A", %{}, [
         {%{channel: 0, digital_input: 10}, []}
       ]},
-      {:parse_hex, "01 01 19", nil, [
+      {:parse_hex, "01 01 19", %{}, [
         {%{channel: 1, digital_output: 25}, []}
       ]},
-      {:parse_hex, "00 02 02 08", nil, [
+      {:parse_hex, "00 02 02 08", %{}, [
         {%{analog_input: 5.2, channel: 0}, []}
       ]},
-      {:parse_hex, "01 03 09 CE", nil, [
+      {:parse_hex, "01 03 09 CE", %{}, [
         {%{analog_output: 25.1, channel: 1}, []}
       ]},
-      {:parse_hex, "0A 65 00 7B", nil, [
+      {:parse_hex, "0A 65 00 7B", %{}, [
         {%{channel: 10, illuminance: 123}, []}
       ]},
-      {:parse_hex, "05 66 01", nil, [
+      {:parse_hex, "05 66 01", %{}, [
         {%{channel: 5, presence: 1}, []}
       ]},
-      {:parse_hex, "01 67 FF D7", nil, [
+      {:parse_hex, "01 67 FF D7", %{}, [
         {%{channel: 1, temperature: -4.1}, []}
       ]},
-      {:parse_hex, "03 68 61", nil, [
+      {:parse_hex, "03 68 61", %{}, [
         {%{channel: 3, humidity: 48.5}, []}
       ]},
-      {:parse_hex, "0A 73 26 EA", nil, [
+      {:parse_hex, "0A 73 26 EA", %{}, [
         {%{barometer: 996.2, channel: 10}, []}
       ]},
-      {:parse_hex, "06 71 04 D2 FB 2E 00 00", nil, [
+      {:parse_hex, "06 71 04 D2 FB 2E 00 00", %{}, [
         {%{
           accelerometer_x: 1.234,
           accelerometer_y: -1.234,
@@ -328,16 +328,16 @@ defmodule Parser do
           channel: 6
         }, []}
       ]},
-      {:parse_hex, "02 86 02 12 01 A3 FF 1A", nil, [
+      {:parse_hex, "02 86 02 12 01 A3 FF 1A", %{}, [
         {%{channel: 2, gyrometer_x: 5.3, gyrometer_y: 4.19, gyrometer_z: -2.3}, []}
       ]},
-      {:parse_hex, "01 88 06 76 5E F2 96 0A 00 03 E8", nil, [
+      {:parse_hex, "01 88 06 76 5E F2 96 0A 00 03 E8", %{}, [
         {%{channel: 1, gps_alt: 10.0, gps_lat: 42.351800000000004, gps_lon: -87.9094},
           [location: {-87.9094, 42.351800000000004}]}
       ]},
 
       # Customer Payloads
-      {:parse_hex, "066700E607684A038807D3060118C10051A40403021C050303C0", nil, [
+      {:parse_hex, "066700E607684A038807D3060118C10051A40403021C050303C0", %{}, [
         {%{analog_output: 9.6, channel: 5}, [location: {7.1873000000000005, 51.2774}]},
         {%{analog_output: 5.4, channel: 4}, [location: {7.1873000000000005, 51.2774}]},
         {%{channel: 3, gps_alt: 209.0, gps_lat: 51.2774, gps_lon: 7.1873000000000005},
@@ -345,7 +345,7 @@ defmodule Parser do
         {%{channel: 7, humidity: 37.0}, [location: {7.1873000000000005, 51.2774}]},
         {%{channel: 6, temperature: 23.0}, [location: {7.1873000000000005, 51.2774}]}
       ]},
-      {:parse_hex, "066700E607684A038807D3070118C10055D2040302580503058C", nil, [
+      {:parse_hex, "066700E607684A038807D3070118C10055D2040302580503058C", %{}, [
         {%{analog_output: 14.2, channel: 5},
           [location: {7.1873000000000005, 51.2775}]},
         {%{analog_output: 6.0, channel: 4}, [location: {7.1873000000000005, 51.2775}]},
@@ -358,7 +358,7 @@ defmodule Parser do
         {%{channel: 7, humidity: 37.0}, [location: {7.1873000000000005, 51.2775}]},
         {%{channel: 6, temperature: 23.0}, [location: {7.1873000000000005, 51.2775}]}
       ]},
-      {:parse_hex, "066700E6076848038807D3070118C1005208040301FE050303C0", nil, [
+      {:parse_hex, "066700E6076848038807D3070118C1005208040301FE050303C0", %{}, [
         {%{analog_output: 9.6, channel: 5}, [location: {7.1873000000000005, 51.2775}]},
         {%{analog_output: 5.1, channel: 4}, [location: {7.1873000000000005, 51.2775}]},
         {%{channel: 3, gps_alt: 210.0, gps_lat: 51.2775, gps_lon: 7.1873000000000005},
@@ -366,7 +366,7 @@ defmodule Parser do
         {%{channel: 7, humidity: 36.0}, [location: {7.1873000000000005, 51.2775}]},
         {%{channel: 6, temperature: 23.0}, [location: {7.1873000000000005, 51.2775}]}
       ]},
-      {:parse_hex, "066700E6076848038807D3070118C1004D4E040301FE05030456", nil, [
+      {:parse_hex, "066700E6076848038807D3070118C1004D4E040301FE05030456", %{}, [
         {%{analog_output: 11.1, channel: 5},
           [location: {7.1873000000000005, 51.2775}]},
         {%{analog_output: 5.1, channel: 4}, [location: {7.1873000000000005, 51.2775}]},
@@ -375,7 +375,7 @@ defmodule Parser do
         {%{channel: 7, humidity: 36.0}, [location: {7.1873000000000005, 51.2775}]},
         {%{channel: 6, temperature: 23.0}, [location: {7.1873000000000005, 51.2775}]}
       ]},
-      {:parse_hex, "066700E607684A038807D3080118C10053A204030276050304CE", nil, [
+      {:parse_hex, "066700E607684A038807D3080118C10053A204030276050304CE", %{}, [
         {%{analog_output: 12.3, channel: 5},
           [location: {7.1873000000000005, 51.2776}]},
         {%{analog_output: 6.3, channel: 4}, [location: {7.1873000000000005, 51.2776}]},
