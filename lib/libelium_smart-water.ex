@@ -13,20 +13,34 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
-  def parse(<<temp::big-16, opr::big-16, ph::big-16, disox::big-16, conduct::big-16, power::big-16>>, _meta) do
-
+  def parse(
+        <<temp::big-16, opr::big-16, ph::big-16, disox::big-16, conduct::big-16, power::big-16>>,
+        _meta
+      ) do
     # return value map
     %{
-      temp: temp/10,    # Temperature in °C
-      opr: opr/100,     # Oxidation-reduction potential in V
-      ph: ph/100,       # pH
-      disox: disox/10,  # Dissolved Oxygen in %
-      conduct: conduct, # Conductivity in µS/cm
-      power: power      # Battery level in %
+      # Temperature in °C
+      temp: temp / 10,
+      # Oxidation-reduction potential in V
+      opr: opr / 100,
+      # pH
+      ph: ph / 100,
+      # Dissolved Oxygen in %
+      disox: disox / 10,
+      # Conductivity in µS/cm
+      conduct: conduct,
+      # Battery level in %
+      power: power
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
@@ -68,7 +82,10 @@ defmodule Parser do
   def tests() do
     [
       {
-        :parse_hex, "0055BDB6045201EE00150060", %{}, %{
+        :parse_hex,
+        "0055BDB6045201EE00150060",
+        %{},
+        %{
           temp: 8.5,
           power: 96,
           ph: 11.06,

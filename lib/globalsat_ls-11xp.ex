@@ -12,68 +12,84 @@ defmodule Parser do
   #
 
   def parse(<<type::big-8, temp::signed-big-16, humid::big-16, sens::big-16>>, _meta) do
-    sensor = case type do
-      1 -> "CO2"
-      2 -> "CO"
-      3 -> "PM 2.5"
-      _ -> "unknown"
-    end
+    sensor =
+      case type do
+        1 -> "CO2"
+        2 -> "CO"
+        3 -> "PM 2.5"
+        _ -> "unknown"
+      end
 
-    temperature = temp/100
-    humidity = humid/100
+    temperature = temp / 100
+    humidity = humid / 100
 
     %{
       temperature: temperature,
       humidity: humidity,
       sens: sens,
-      type: sensor,
+      type: sensor
     }
     |> Map.merge(taupunkt(temperature, humidity))
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
   # Given temperature in celsius and relative humidity in percent
   # it will return dampfdruck, dampfdichte, taupunkttemperatur
   defp taupunkt(temp, rel) when rel >= 0 and rel <= 100 do
-    mw = 18.016 # Molekulargewicht des Wasserdampfes (kg/kmol)
-    gk = 8214.3 # universelle Gaskonstante (J/(kmol*K))
-    t0 = 273.15 # Absolute Temperatur von 0 °C (Kelvin)
-    tk = temp + t0 # Temperatur in Kelvin
+    # Molekulargewicht des Wasserdampfes (kg/kmol)
+    mw = 18.016
+    # universelle Gaskonstante (J/(kmol*K))
+    gk = 8214.3
+    # Absolute Temperatur von 0 °C (Kelvin)
+    t0 = 273.15
+    # Temperatur in Kelvin
+    tk = temp + t0
 
-    {a, b} = if temp >= 0 do
-      {7.5, 237.3}
-    else
-      {7.6, 240.7}
-    end
+    {a, b} =
+      if temp >= 0 do
+        {7.5, 237.3}
+      else
+        {7.6, 240.7}
+      end
 
     # Sättigungsdampfdruck (hPa)
-    sdd = 6.1078 * :math.pow(10, (a*temp)/(b+temp))
+    sdd = 6.1078 * :math.pow(10, a * temp / (b + temp))
 
     # Dampfdruck (hPa)
-    dd = sdd * (rel/100)
+    dd = sdd * (rel / 100)
 
     # Wasserdampfdichte bzw. absolute Feuchte (g/m3)
-    af = :math.pow(10,5) * mw/gk * dd/tk
+    af = :math.pow(10, 5) * mw / gk * dd / tk
 
     # v-Parameter
-    v = :math.log10(dd/6.1078)
+    v = :math.log10(dd / 6.1078)
 
     # Taupunkttemperatur (°C)
-    td = (b*v) / (a-v)
+    td = b * v / (a - v)
 
     %{
-      dew_temperature: td, # Taupunkttemperatur
-      water_steam_density: af, # Wasserdampfdichte
-      vapor_pressure: dd, # Dampfdruck
+      # Taupunkttemperatur
+      dew_temperature: td,
+      # Wasserdampfdichte
+      water_steam_density: af,
+      # Dampfdruck
+      vapor_pressure: dd
     }
   end
+
   defp taupunkt(_temp, _rel) do
     %{}
   end
-   
+
   def fields do
     [
       %{
@@ -107,22 +123,22 @@ defmodule Parser do
         field: "vapor_pressure",
         display: "Dampfdruck",
         unit: "hPa"
-      },
+      }
     ]
   end
 
   def tests() do
     [
-      {:parse_hex, "03001B2710004C", %{meta: %{frame_port: 2}}, %{
-        dew_temperature: 0.2699999999999999,
-        humidity: 100.0,
-        sens: 76,
-        temperature: 0.27,
-        type: "PM 2.5",
-        vapor_pressure: 6.228860593456033,
-        water_steam_density: 4.996502918065849
-      }},
+      {:parse_hex, "03001B2710004C", %{meta: %{frame_port: 2}},
+       %{
+         dew_temperature: 0.2699999999999999,
+         humidity: 100.0,
+         sens: 76,
+         temperature: 0.27,
+         type: "PM 2.5",
+         vapor_pressure: 6.228860593456033,
+         water_steam_density: 4.996502918065849
+       }}
     ]
   end
-
 end

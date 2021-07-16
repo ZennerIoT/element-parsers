@@ -13,16 +13,16 @@ defmodule Parser do
   # Add a reading location if this function returns true.
   defp add_location?(), do: true
 
-
   def parse(%{"payload" => value}, _meta) do
     %{
       type: :dummy,
-      value: value,
+      value: value
     }
     |> add_location(value)
   end
+
   def parse(payload, _meta) do
-    Logger.warn("Could not parse payload #{inspect payload}, expected dummy data.")
+    Logger.warn("Could not parse payload #{inspect(payload)}, expected dummy data.")
     []
   end
 
@@ -30,12 +30,12 @@ defmodule Parser do
     [
       %{
         field: "type",
-        display: "Typ",
+        display: "Typ"
       },
       %{
         field: "value",
-        display: "Value",
-      },
+        display: "Value"
+      }
     ]
   end
 
@@ -48,10 +48,11 @@ defmodule Parser do
         lon_min = 53.324266
         lon_max = 53.779132
 
-        lat = lat_min + (((lat_max - lat_min) / 100) * value)
-        lon = lon_min + (((lon_max - lon_min) / 100) * value)
+        lat = lat_min + (lat_max - lat_min) / 100 * value
+        lon = lon_min + (lon_max - lon_min) / 100 * value
 
         {reading, [location: {lat, lon}]}
+
       _ ->
         {reading, []}
     end
@@ -59,7 +60,8 @@ defmodule Parser do
 
   def tests() do
     [
-      {:parse, %{"payload" => 42}, %{}, {%{type: :dummy, value: 42}, [location: {10.00731464, 53.51530972}]}},
+      {:parse, %{"payload" => 42}, %{},
+       {%{type: :dummy, value: 42}, [location: {10.00731464, 53.51530972}]}}
     ]
   end
 end

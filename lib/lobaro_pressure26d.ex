@@ -13,19 +13,28 @@ defmodule Parser do
     %{
       type: :measurement,
       pressure: pressure,
-      temperature: temp/100
+      temperature: temp / 100
     }
   end
-  def parse(<<pressure::little-float-32, temp::little-16, battery::little-16>>, %{meta: %{frame_port: 1}}) do
+
+  def parse(<<pressure::little-float-32, temp::little-16, battery::little-16>>, %{
+        meta: %{frame_port: 1}
+      }) do
     %{
       type: :measurement,
       pressure: pressure,
-      temperature: temp/100,
+      temperature: temp / 100,
       battery: battery
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
@@ -51,7 +60,8 @@ defmodule Parser do
 
   def tests() do
     [
-      {:parse_hex, "60911f406F08", %{meta: %{frame_port: 1}}, %{type: :measurement, pressure: 2.4932479858398438, temperature: 21.59}}
+      {:parse_hex, "60911f406F08", %{meta: %{frame_port: 1}},
+       %{type: :measurement, pressure: 2.4932479858398438, temperature: 21.59}}
     ]
   end
 end

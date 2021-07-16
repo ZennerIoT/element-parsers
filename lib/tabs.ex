@@ -41,7 +41,8 @@ defmodule Parser do
 
   # Healthy Home Sensor
   def parse(
-        <<status::binary-1, battery::binary-1, temp::binary-1, humidity::binary-1, co2::little-16, voc::little-16>>,
+        <<status::binary-1, battery::binary-1, temp::binary-1, humidity::binary-1, co2::little-16,
+          voc::little-16>>,
         %{meta: %{frame_port: 103}}
       ) do
     <<_rfu::1, rhum::7>> = humidity
@@ -52,7 +53,7 @@ defmodule Parser do
       relative_humidity: rhum,
       relative_humidity_changed: rh_changed,
       temperature_changed: temp_changed,
-      packet_type: Map.get(%{0 => :keep_alive, 1 => :event}, event),
+      packet_type: Map.get(%{0 => :keep_alive, 1 => :event}, event)
     })
     |> add_value_or_skip(:co2, co2, [65535])
     |> add_value_or_skip(:voc, voc, [65535])
@@ -69,39 +70,39 @@ defmodule Parser do
     |> Map.merge(%{
       environment_temperature: read_temperature(env_temp),
       iaq: iaq,
-      iaq_changed: iaq_changed,
+      iaq_changed: iaq_changed
     })
   end
 
-#  # Healthy Home Sensor (doc version BQW_02_0005.002)
-#  def parse(
-#        <<status::binary-1, battery::binary-1, board_temp::binary-1, humidity::binary-1, co2::little-16,
-#          voc::little-16, iaq::little-16, env_temp::binary-1>>,
-#        %{meta: %{frame_port: 103}}
-#      ) do
-#    <<_rfu::1, rhum::7>> = humidity
-#    <<_rfu::4, voltage::4>> = battery
-#    # according to the documentation this has only 14 instead of the previous 15 steps)
-#    battery_state = 100 * (voltage / 14)
-#    battery_voltage = (25 + voltage) / 10
-#
-#    <<_rfu1::1, iaq_changed::1, rh_changed::1, temp_changed::1, _sensor_type::1, _rfu2::2, event::1>> = status
-#
-#    %{
-#      iaq_changed: iaq_changed,
-#      relative_humidity_changed: rh_changed,
-#      temperature_changed: temp_changed,
-#      packet_type: Map.get(%{0 => :keep_alive, 1 => :event}, event),
-#    }
-#    |> Map.put(:battery_state, battery_state)
-#    |> Map.put(:battery_voltage, battery_voltage)
-#    |> Map.put(:temperature, read_temperature(board_temp))
-#    |> Map.put(:relative_humidity, rhum)
-#    |> add_value_or_skip(:co2, co2, [65535])
-#    |> add_value_or_skip(:voc, voc, [65535])
-#    |> Map.put(:environment_temperature, read_temperature(env_temp))
-#    |> Map.put(:iaq, iaq)
-#  end
+  #  # Healthy Home Sensor (doc version BQW_02_0005.002)
+  #  def parse(
+  #        <<status::binary-1, battery::binary-1, board_temp::binary-1, humidity::binary-1, co2::little-16,
+  #          voc::little-16, iaq::little-16, env_temp::binary-1>>,
+  #        %{meta: %{frame_port: 103}}
+  #      ) do
+  #    <<_rfu::1, rhum::7>> = humidity
+  #    <<_rfu::4, voltage::4>> = battery
+  #    # according to the documentation this has only 14 instead of the previous 15 steps)
+  #    battery_state = 100 * (voltage / 14)
+  #    battery_voltage = (25 + voltage) / 10
+  #
+  #    <<_rfu1::1, iaq_changed::1, rh_changed::1, temp_changed::1, _sensor_type::1, _rfu2::2, event::1>> = status
+  #
+  #    %{
+  #      iaq_changed: iaq_changed,
+  #      relative_humidity_changed: rh_changed,
+  #      temperature_changed: temp_changed,
+  #      packet_type: Map.get(%{0 => :keep_alive, 1 => :event}, event),
+  #    }
+  #    |> Map.put(:battery_state, battery_state)
+  #    |> Map.put(:battery_voltage, battery_voltage)
+  #    |> Map.put(:temperature, read_temperature(board_temp))
+  #    |> Map.put(:relative_humidity, rhum)
+  #    |> add_value_or_skip(:co2, co2, [65535])
+  #    |> add_value_or_skip(:voc, voc, [65535])
+  #    |> Map.put(:environment_temperature, read_temperature(env_temp))
+  #    |> Map.put(:iaq, iaq)
+  #  end
 
   # Motion Sensor
   def parse(
@@ -487,7 +488,7 @@ defmodule Parser do
         "00FB050000781D00",
         %{
           meta: %{frame_port: 100},
-          _comment: "Door Window 1",
+          _comment: "Door Window 1"
         },
         %{
           battery_state: 100.0,
@@ -504,7 +505,7 @@ defmodule Parser do
         "01FB050000771D00",
         %{
           meta: %{frame_port: 100},
-          _comment: "Door Window 2",
+          _comment: "Door Window 2"
         },
         %{
           battery_state: 100.0,
@@ -526,7 +527,7 @@ defmodule Parser do
         "00FB352555021E00",
         %{
           meta: %{frame_port: 103},
-          _comment: "Healthy Home 1",
+          _comment: "Healthy Home 1"
         },
         %{
           battery_state: 100.0,
@@ -545,7 +546,7 @@ defmodule Parser do
         "08FB3525FFFFFFFF",
         %{
           meta: %{frame_port: 103},
-          _comment: "Healthy Home 2 filtered voc co2",
+          _comment: "Healthy Home 2 filtered voc co2"
         },
         %{
           battery_state: 100.0,
@@ -564,7 +565,7 @@ defmodule Parser do
         "00073D38F4010000190038",
         %{
           meta: %{frame_port: 103},
-          _comment: "Healthy Home 3 new version BQW_02_0005.002",
+          _comment: "Healthy Home 3 new version BQW_02_0005.002"
         },
         %{
           battery_state: 0.0,
@@ -591,7 +592,7 @@ defmodule Parser do
         "01FB060000CC0E00",
         %{
           meta: %{frame_port: 102},
-          _comment: "Motion 1",
+          _comment: "Motion 1"
         },
         %{
           battery_state: 100.0,
@@ -606,7 +607,7 @@ defmodule Parser do
         "00FB340500AB0D00",
         %{
           meta: %{frame_port: 102},
-          _comment: "Motion 2",
+          _comment: "Motion 2"
         },
         %{
           battery_state: 100.0,
@@ -626,7 +627,7 @@ defmodule Parser do
         "08FE3D59D1D3027E5281E0",
         %{
           meta: %{frame_port: 136},
-          _comment: "Object locator 1",
+          _comment: "Object locator 1"
         },
         {
           %{
@@ -649,7 +650,7 @@ defmodule Parser do
         "086E3E36D2D302D1508180",
         %{
           meta: %{frame_port: 136},
-          _comment: "Object locator 2",
+          _comment: "Object locator 2"
         },
         {
           %{
@@ -672,7 +673,7 @@ defmodule Parser do
         "005D4076CED302434A8180",
         %{
           meta: %{frame_port: 136},
-          _comment: "Object locator 3",
+          _comment: "Object locator 3"
         },
         {
           %{
@@ -700,7 +701,7 @@ defmodule Parser do
         "01FE39EA000C0000000000",
         %{
           meta: %{frame_port: 147},
-          _comment: "Pushbutton 1",
+          _comment: "Pushbutton 1"
         },
         %{
           total_count: 12,
@@ -721,7 +722,7 @@ defmodule Parser do
         "01FE39EA000C0000",
         %{
           meta: %{frame_port: 147},
-          _comment: "Pushbutton 2",
+          _comment: "Pushbutton 2"
         },
         %{
           total_count: 12,
@@ -745,7 +746,7 @@ defmodule Parser do
         "20FB35440C00",
         %{
           meta: %{frame_port: 104},
-          _comment: "Ambient Light",
+          _comment: "Ambient Light"
         },
         %{
           battery_state: 100.0,
@@ -768,7 +769,7 @@ defmodule Parser do
         "000C352935",
         %{
           meta: %{frame_port: 106},
-          _comment: "Water leak",
+          _comment: "Water leak"
         },
         %{
           battery_voltage: 3.7,

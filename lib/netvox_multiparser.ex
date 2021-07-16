@@ -45,7 +45,9 @@ defmodule Parser do
 
   def parse(payload, meta) do
     Logger.info(
-      "Unhandled meta.frame_port: #{inspect(get_in(meta, [:meta, :frame_port]))} with payload #{inspect(payload)}"
+      "Unhandled meta.frame_port: #{inspect(get_in(meta, [:meta, :frame_port]))} with payload #{
+        inspect(payload)
+      }"
     )
 
     []

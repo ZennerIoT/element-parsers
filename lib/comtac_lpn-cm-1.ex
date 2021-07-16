@@ -13,18 +13,20 @@ defmodule Parser do
   #   2020-01-08 [jb]: Added Taupunkttemperatur calculation.
   #
 
-  def parse(<<
-              status::binary-1,
-              _mintemp::signed-8,
-              _maxtemp::signed-8,
-              _minhum::signed-8,
-              _maxhum::signed-8,
-              sendinterval::16,
-              battery::16,
-              temperature::signed-16,
-              humidity::signed-16
-            >>, _meta) do
-
+  def parse(
+        <<
+          status::binary-1,
+          _mintemp::signed-8,
+          _maxtemp::signed-8,
+          _minhum::signed-8,
+          _maxhum::signed-8,
+          sendinterval::16,
+          battery::16,
+          temperature::signed-16,
+          humidity::signed-16
+        >>,
+        _meta
+      ) do
     <<
       _max_temp_on::1,
       _min_temp_on::1,
@@ -36,57 +38,72 @@ defmodule Parser do
       _booster_on::1
     >> = status
 
-    temperature = temperature/100
-    humidity = humidity/100
+    temperature = temperature / 100
+    humidity = humidity / 100
 
     %{
       send_interval: sendinterval,
       temperature_c: temperature,
       humidity_percent: humidity,
-      battery_volt: battery/ 1000,
+      battery_volt: battery / 1000
     }
     |> Map.merge(taupunkt(temperature, humidity))
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
   # Given temperature in celsius and relative humidity in percent
   # it will return dampfdruck, dampfdichte, taupunkttemperatur
   defp taupunkt(temp, rel) when rel >= 0 and rel <= 100 do
-    mw = 18.016 # Molekulargewicht des Wasserdampfes (kg/kmol)
-    gk = 8214.3 # universelle Gaskonstante (J/(kmol*K))
-    t0 = 273.15 # Absolute Temperatur von 0 °C (Kelvin)
-    tk = temp + t0 # Temperatur in Kelvin
+    # Molekulargewicht des Wasserdampfes (kg/kmol)
+    mw = 18.016
+    # universelle Gaskonstante (J/(kmol*K))
+    gk = 8214.3
+    # Absolute Temperatur von 0 °C (Kelvin)
+    t0 = 273.15
+    # Temperatur in Kelvin
+    tk = temp + t0
 
-    {a, b} = if temp >= 0 do
-      {7.5, 237.3}
-    else
-      {7.6, 240.7}
-    end
+    {a, b} =
+      if temp >= 0 do
+        {7.5, 237.3}
+      else
+        {7.6, 240.7}
+      end
 
     # Sättigungsdampfdruck (hPa)
-    sdd = 6.1078 * :math.pow(10, (a*temp)/(b+temp))
+    sdd = 6.1078 * :math.pow(10, a * temp / (b + temp))
 
     # Dampfdruck (hPa)
-    dd = sdd * (rel/100)
+    dd = sdd * (rel / 100)
 
     # Wasserdampfdichte bzw. absolute Feuchte (g/m3)
-    af = :math.pow(10,5) * mw/gk * dd/tk
+    af = :math.pow(10, 5) * mw / gk * dd / tk
 
     # v-Parameter
-    v = :math.log10(dd/6.1078)
+    v = :math.log10(dd / 6.1078)
 
     # Taupunkttemperatur (°C)
-    td = (b*v) / (a-v)
+    td = b * v / (a - v)
 
     %{
-      dew_temperature: td, # Taupunkttemperatur
-      water_steam_density: af, # Wasserdampfdichte
-      vapor_pressure: dd, # Dampfdruck
+      # Taupunkttemperatur
+      dew_temperature: td,
+      # Wasserdampfdichte
+      water_steam_density: af,
+      # Dampfdruck
+      vapor_pressure: dd
     }
   end
+
   defp taupunkt(_temp, _rel) do
     %{}
   end
@@ -129,22 +146,22 @@ defmodule Parser do
         field: "vapor_pressure",
         display: "Dampfdruck",
         unit: "hPa"
-      },
+      }
     ]
   end
 
   def tests() do
     [
-      {:parse_hex, "00F1F10000000F0AA708610E7D", %{meta: %{frame_port: 3}}, %{
-        battery_volt: 2.727,
-        dew_temperature: 6.201028481630173,
-        humidity_percent: 37.09,
-        send_interval: 15,
-        temperature_c: 21.45,
-        vapor_pressure: 9.481581259298867,
-        water_steam_density: 7.05888070029484
-      }},
+      {:parse_hex, "00F1F10000000F0AA708610E7D", %{meta: %{frame_port: 3}},
+       %{
+         battery_volt: 2.727,
+         dew_temperature: 6.201028481630173,
+         humidity_percent: 37.09,
+         send_interval: 15,
+         temperature_c: 21.45,
+         vapor_pressure: 9.481581259298867,
+         water_steam_density: 7.05888070029484
+       }}
     ]
   end
-
 end

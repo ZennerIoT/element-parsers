@@ -10,12 +10,17 @@ defmodule Parser do
 
   def parse(<<0::1, 0::1, _register::5, _status::1, meter_value::24>>, _meta) do
     %{
-      Wert: meter_value,
+      Wert: meter_value
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
-
 end

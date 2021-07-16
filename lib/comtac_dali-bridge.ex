@@ -26,25 +26,31 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
-  def parse(<<
-      _::4, #unused
-      glowing::1,
-      _::1, #unused
-      communication_error::1,
-      _::1, # unused
-      last_received_level::8,
-      last_level::8,
-      power_failure::1,
-      missing_short_address::1,
-      reset_state::1,
-      fade_ready::1,
-      limit_error::1,
-      lamp_arc_power_on::1,
-      lamp_failure::1,
-      ballast_error::1,
-      dali_version::8,
-      dali_device_type::8
-    >>, _meta) do
+  def parse(
+        <<
+          # unused
+          _::4,
+          glowing::1,
+          # unused
+          _::1,
+          communication_error::1,
+          # unused
+          _::1,
+          last_received_level::8,
+          last_level::8,
+          power_failure::1,
+          missing_short_address::1,
+          reset_state::1,
+          fade_ready::1,
+          limit_error::1,
+          lamp_arc_power_on::1,
+          lamp_failure::1,
+          ballast_error::1,
+          dali_version::8,
+          dali_device_type::8
+        >>,
+        _meta
+      ) do
     %{
       communication_error: communication_error,
       glowing: glowing,
@@ -59,12 +65,17 @@ defmodule Parser do
       missing_short_address: missing_short_address,
       power_failure: power_failure,
       dali_version: dali_version,
-      dali_device_type: dali_device_type,
+      dali_device_type: dali_device_type
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
-
 end

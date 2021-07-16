@@ -13,20 +13,35 @@ defmodule Parser do
 
   def fields do
     [
-      %{"field" => "dielectric_permittivity", "display" => "Dielectric permittivity", "unit" => "None"},
-      %{"field" => "volumetric_water_content", "display" => "Volumetric water content", "unit" => "m³⋅m⁻³"},
+      %{
+        "field" => "dielectric_permittivity",
+        "display" => "Dielectric permittivity",
+        "unit" => "None"
+      },
+      %{
+        "field" => "volumetric_water_content",
+        "display" => "Volumetric water content",
+        "unit" => "m³⋅m⁻³"
+      },
       %{"field" => "soil_temperature", "display" => "Soil temperature", "unit" => "°C"},
-      %{"field" => "electrical_conductivity", "display" => "Electrical conductivity", "unit" => "µS⋅cm⁻¹"},
+      %{
+        "field" => "electrical_conductivity",
+        "display" => "Electrical conductivity",
+        "unit" => "µS⋅cm⁻¹"
+      },
       %{"field" => "battery_voltage", "display" => "Battery voltage", "unit" => "V"}
     ]
   end
 
-  def parse(<<
-      2,
-      device_id::16,
-      flags::bytes-2,
-      words::bytes
-    >>, _meta) do
+  def parse(
+        <<
+          2,
+          device_id::16,
+          flags::bytes-2,
+          words::bytes
+        >>,
+        _meta
+      ) do
     {_remaining, result} =
       {words, %{:device_id => device_id, :protocol_version => 2}}
       |> parse_sensor_data(flags)
@@ -34,56 +49,75 @@ defmodule Parser do
 
     result
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
-  defp parse_sensor_data({<<
-      vwc_raw::16,
-      soil_temp::16,
-      e_conduct::16,
-      remaining::bytes
-    >>, result},
-    <<
-      _::15,
-      1::1,
-#      _::0
-    >>) do
-    vwc_raw_conv = vwc_raw/10
-    {remaining, Map.merge(result,
-        %{
-          :dielectric_permittivity =>
-            :math.pow(
-              0.000000002887 * :math.pow(vwc_raw_conv, 3) -
-              0.0000208 * :math.pow(vwc_raw_conv, 2) +
-              0.05276 * (vwc_raw_conv) - 43.39,
-              2)
-            |> round_as_float(),
-          :volumetric_water_content => (vwc_raw_conv * 0.0003879 - 0.6956)
-                                       |> round_as_float(),
-          :soil_temperature => (soil_temp - 32768) / 10,
-          :electrical_conductivity => e_conduct
-        })}
+  defp parse_sensor_data(
+         {<<
+            vwc_raw::16,
+            soil_temp::16,
+            e_conduct::16,
+            remaining::bytes
+          >>, result},
+         <<
+           _::15,
+           1::1
+           #      _::0
+         >>
+       ) do
+    vwc_raw_conv = vwc_raw / 10
+
+    {remaining,
+     Map.merge(
+       result,
+       %{
+         :dielectric_permittivity =>
+           :math.pow(
+             0.000000002887 * :math.pow(vwc_raw_conv, 3) -
+               0.0000208 * :math.pow(vwc_raw_conv, 2) +
+               0.05276 * vwc_raw_conv - 43.39,
+             2
+           )
+           |> round_as_float(),
+         :volumetric_water_content =>
+           (vwc_raw_conv * 0.0003879 - 0.6956)
+           |> round_as_float(),
+         :soil_temperature => (soil_temp - 32768) / 10,
+         :electrical_conductivity => e_conduct
+       }
+     )}
   end
+
   defp parse_sensor_data(result, _flags), do: result
 
   defp parse_battery_voltage(
          {<<
-           battery_voltage::16,
-           remaining::bytes
-         >>, result},
+            battery_voltage::16,
+            remaining::bytes
+          >>, result},
          <<
            _::14,
            1::1,
            _::1
-         >>) do
+         >>
+       ) do
     {remaining,
-      Map.merge(result,
-        %{
-          :battery_voltage => battery_voltage / 1000
-        })}
+     Map.merge(
+       result,
+       %{
+         :battery_voltage => battery_voltage / 1000
+       }
+     )}
   end
+
   defp parse_battery_voltage(result, _flags), do: result
 
   defp round_as_float(value) do
@@ -117,7 +151,5 @@ defmodule Parser do
         }
       }
     ]
-
   end
-
 end

@@ -11,34 +11,46 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
-  def parse(<< _stat_foo::6, stat_heartbeat::1, stat_change::1, in1::integer-8, in2::integer-8,in3::integer-8,in4::integer-8,in5::integer-8,in6::integer-8,in7::integer-8,in8::integer-8>>, _meta) do
+  def parse(
+        <<_stat_foo::6, stat_heartbeat::1, stat_change::1, in1::integer-8, in2::integer-8,
+          in3::integer-8, in4::integer-8, in5::integer-8, in6::integer-8, in7::integer-8,
+          in8::integer-8>>,
+        _meta
+      ) do
+    trigger_txt = []
 
-    trigger_txt=[]
+    trigger_txt =
+      cond do
+        stat_heartbeat == 1 -> ["heartbeat" | trigger_txt]
+        true -> trigger_txt
+      end
 
-    trigger_txt = cond do
-      stat_heartbeat==1 -> ["heartbeat"|trigger_txt]
-      true -> trigger_txt
-    end
-
-    trigger_txt = cond do
-      stat_change==1 -> ["change"|trigger_txt]
-      true -> trigger_txt
-    end
+    trigger_txt =
+      cond do
+        stat_change == 1 -> ["change" | trigger_txt]
+        true -> trigger_txt
+      end
 
     %{
-        trigger: Enum.join(trigger_txt, " , "),
-        input1: in1,
-        input2: in2,
-        input3: in3,
-        input4: in4,
-        input5: in5,
-        input6: in6,
-        input7: in7,
-        input8: in8
+      trigger: Enum.join(trigger_txt, " , "),
+      input1: in1,
+      input2: in2,
+      input3: in3,
+      input4: in4,
+      input5: in5,
+      input6: in6,
+      input7: in7,
+      input8: in8
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
@@ -46,7 +58,10 @@ defmodule Parser do
     [
       # Heartbeat frame
       {
-        :parse_hex, "020101010101010101", %{}, %{
+        :parse_hex,
+        "020101010101010101",
+        %{},
+        %{
           trigger: "heartbeat",
           input1: 1,
           input2: 1,
@@ -59,9 +74,12 @@ defmodule Parser do
         }
       },
 
-      #Trigger frame
+      # Trigger frame
       {
-        :parse_hex, "010000010101010101", %{}, %{
+        :parse_hex,
+        "010000010101010101",
+        %{},
+        %{
           trigger: "change",
           input1: 0,
           input2: 0,

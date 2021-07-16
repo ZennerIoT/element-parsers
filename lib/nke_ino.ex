@@ -15,70 +15,86 @@ defmodule Parser do
   #   2018-11-19 [jb]: Renamed fields according to NKE docs, see tests. Added parsing of cmdid, clusterid, attrid, attrtype.
   #
 
-
   def parse(<<fctrl::8, cmdid::8, clusterid::16, rest::binary>> = payload, meta) do
     frame_port = get_in(meta, [:meta, :frame_port])
+
     with {:ok, endpoint} <- fctrl_to_endppoint(fctrl),
          {:ok, cmd} <- parse_cmd(cmdid, clusterid, rest) do
-       Map.merge(%{endpoint: endpoint}, cmd)
+      Map.merge(%{endpoint: endpoint}, cmd)
     else
       error ->
-        Logger.warn("NKE Parser with payload #{inspect payload} and frame_port #{inspect frame_port} failed with: #{inspect error}")
+        Logger.warn(
+          "NKE Parser with payload #{inspect(payload)} and frame_port #{inspect(frame_port)} failed with: #{
+            inspect(error)
+          }"
+        )
+
         []
     end
   end
+
   def parse(payload, meta) do
     frame_port = get_in(meta, [:meta, :frame_port])
-    Logger.info("NKE Parser with UNKNOWN payload #{inspect payload} and frame_port #{inspect frame_port}")
+
+    Logger.info(
+      "NKE Parser with UNKNOWN payload #{inspect(payload)} and frame_port #{inspect(frame_port)}"
+    )
+
     []
   end
 
   # See: http://support.nke-watteco.com/cluster-binary-input/#PresentValue
   def parse_cmd(0x0A, 0x000F, <<0x0055::16, attr::binary>>) do
     with {:ok, {attr_type, attr_value}} <- parse_attribute(attr) do
-      {:ok, %{
-        report: "Standard",
-        commandid: "ReportAttributes",
-        clusterid: "BinaryInput",
-        attributeid: "PresentValue",
-        attributetype: attr_type,
-        data: attr_value,
-      }}
+      {:ok,
+       %{
+         report: "Standard",
+         commandid: "ReportAttributes",
+         clusterid: "BinaryInput",
+         attributeid: "PresentValue",
+         attributetype: attr_type,
+         data: attr_value
+       }}
     end
   end
+
   def parse_cmd(0x07, 0x000F, <<status::8, _threeMoreIgnoredBytes::binary>>) do
-    {:ok, %{
-      report: "Standard",
-      commandid: "ConfigureReportingResponse",
-      clusterid: "BinaryInput",
-      attributeid: "PresentValue",
-      status: status,
-    }}
+    {:ok,
+     %{
+       report: "Standard",
+       commandid: "ConfigureReportingResponse",
+       clusterid: "BinaryInput",
+       attributeid: "PresentValue",
+       status: status
+     }}
   end
 
   # See: http://support.nke-watteco.com/cluster-binary-input/#Count
   def parse_cmd(0x0A, 0x000F, <<0x0402::16, attr::binary>>) do
     with {:ok, {attr_type, attr_value}} <- parse_attribute(attr) do
-      {:ok, %{
-        report: "Standard",
-        commandid: "ReportAttributes",
-        clusterid: "BinaryInput",
-        attributeid: "Count",
-        attributetype: attr_type,
-        data: attr_value,
-      }}
+      {:ok,
+       %{
+         report: "Standard",
+         commandid: "ReportAttributes",
+         clusterid: "BinaryInput",
+         attributeid: "Count",
+         attributetype: attr_type,
+         data: attr_value
+       }}
     end
   end
+
   def parse_cmd(0x0A, 0x0006, <<0x0000::16, attr::binary>>) do
     with {:ok, {attr_type, attr_value}} <- parse_attribute(attr) do
-      {:ok, %{
-        report: "Standard",
-        commandid: "ReportAttributes",
-        clusterid: "OnOff",
-        attributeid: "State",
-        attributetype: attr_type,
-        data: attr_value,
-      }}
+      {:ok,
+       %{
+         report: "Standard",
+         commandid: "ReportAttributes",
+         clusterid: "OnOff",
+         attributeid: "State",
+         attributetype: attr_type,
+         data: attr_value
+       }}
     end
   end
 
@@ -87,8 +103,9 @@ defmodule Parser do
     result = %{
       report: "Standard",
       commandid: "ClusterSpecificCommand",
-      clusterid: "OnOff",
+      clusterid: "OnOff"
     }
+
     case data do
       <<0>> -> {:ok, Map.merge(result, %{data: 0, commandname: "off"})}
       <<1>> -> {:ok, Map.merge(result, %{data: 1, commandname: "on"})}
@@ -100,7 +117,6 @@ defmodule Parser do
   end
 
   def parse_cmd(_cmdid, _clusterid, _rest), do: {:error, :unknown_cmd}
-
 
   # See: http://support.nke-watteco.com/ino/#ApplicativeLayer
   def fctrl_to_endppoint(fctrl) do
@@ -119,7 +135,6 @@ defmodule Parser do
     end
   end
 
-
   # See: http://support.nke-watteco.com/attribute-data-types/
   # BOOLEAN_TYPE
   def parse_attribute(<<0x10, val::8>>), do: {:ok, {"Boolean", 1 == val}}
@@ -136,7 +151,7 @@ defmodule Parser do
   # INT16_TYPE
   def parse_attribute(<<0x29, val::unsigned-16>>), do: {:ok, {"Int8", val}}
   # INT32_TYPE
-  def parse_attribute(<<0x2b, val::unsigned-32>>), do: {:ok, {"Int8", val}}
+  def parse_attribute(<<0x2B, val::unsigned-32>>), do: {:ok, {"Int8", val}}
   # TODO: GENERAL8_TYPE
   # TODO: GENERAL16_TYPE
   # TODO: GENERAL24_TYPE
@@ -151,11 +166,12 @@ defmodule Parser do
   # Error
   def parse_attribute(_), do: {:error, :unknown_attribute}
 
-
   def tests() do
     [
       {
-        :parse_hex, "1150000601", %{},
+        :parse_hex,
+        "1150000601",
+        %{},
         %{
           clusterid: "OnOff",
           commandid: "ClusterSpecificCommand",
@@ -163,10 +179,14 @@ defmodule Parser do
           commandname: "on",
           endpoint: 0,
           report: "Standard"
-        } # Endpoint 0 was switched on (data=1)
+        }
+
+        # Endpoint 0 was switched on (data=1)
       },
       {
-        :parse_hex, "110A000F04022300000003", %{},
+        :parse_hex,
+        "110A000F04022300000003",
+        %{},
         %{
           attributeid: "Count",
           attributetype: "UInt32",
@@ -175,10 +195,14 @@ defmodule Parser do
           data: 3,
           endpoint: 0,
           report: "Standard"
-        } # Endpoint 0 has a input counter of 3 (data=3)
+        }
+
+        # Endpoint 0 has a input counter of 3 (data=3)
       },
       {
-        :parse_hex, "310A000F00551000", %{},
+        :parse_hex,
+        "310A000F00551000",
+        %{},
         %{
           attributeid: "PresentValue",
           attributetype: "Boolean",
@@ -187,21 +211,29 @@ defmodule Parser do
           data: false,
           endpoint: 1,
           report: "Standard"
-        } # Endpoint 1 input state currently off (data=false)
+        }
+
+        # Endpoint 1 input state currently off (data=false)
       },
       {
-        :parse_hex, "5107000F00000055", %{},
+        :parse_hex,
+        "5107000F00000055",
+        %{},
         %{
           attributeid: "PresentValue",
           clusterid: "BinaryInput",
           commandid: "ConfigureReportingResponse",
           endpoint: 2,
           report: "Standard",
-          status: 0,
-        } # Endpoint 2 accepted configuration (because of status=0)
+          status: 0
+        }
+
+        # Endpoint 2 accepted configuration (because of status=0)
       },
       {
-        :parse_hex, "110A000600001000", %{},
+        :parse_hex,
+        "110A000600001000",
+        %{},
         %{
           attributeid: "State",
           attributetype: "Boolean",
@@ -210,10 +242,14 @@ defmodule Parser do
           data: false,
           endpoint: 0,
           report: "Standard"
-        } # Endpoint 0 relay state off (date=false)
+        }
+
+        # Endpoint 0 relay state off (date=false)
       },
       {
-        :parse_hex, "110A000600001001", %{},
+        :parse_hex,
+        "110A000600001001",
+        %{},
         %{
           attributeid: "State",
           attributetype: "Boolean",
@@ -222,10 +258,14 @@ defmodule Parser do
           data: true,
           endpoint: 0,
           report: "Standard"
-        } # Endpoint 0 relay state on (date=true)
+        }
+
+        # Endpoint 0 relay state on (date=true)
       },
       {
-        :parse_hex, "110A000F00551000", %{},
+        :parse_hex,
+        "110A000F00551000",
+        %{},
         %{
           attributeid: "PresentValue",
           attributetype: "Boolean",
@@ -234,8 +274,10 @@ defmodule Parser do
           data: false,
           endpoint: 0,
           report: "Standard"
-        } # Endpoint 0 input state currently off (data=false)
-      },
+        }
+
+        # Endpoint 0 input state currently off (data=false)
+      }
     ]
   end
 end

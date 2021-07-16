@@ -22,41 +22,61 @@ defmodule Parser do
 
   def parse(
         <<
-          9, 1, "EBZ", number_range::binary-1, device_id::32,
-          obis::binary-3,  unit::8,  scaler::8-signed,  value::64,
-          obis2::binary-3, unit2::8, scaler2::8-signed, value2::64
+          9,
+          1,
+          "EBZ",
+          number_range::binary-1,
+          device_id::32,
+          obis::binary-3,
+          unit::8,
+          scaler::8-signed,
+          value::64,
+          obis2::binary-3,
+          unit2::8,
+          scaler2::8-signed,
+          value2::64
         >>,
-        %{meta: %{frame_port: 15}}) do
-
-    serial_suffix = device_id |> Integer.to_string |> String.pad_leading(8, "0")
+        %{meta: %{frame_port: 15}}
+      ) do
+    serial_suffix = device_id |> Integer.to_string() |> String.pad_leading(8, "0")
     serial = "1EBZ#{Base.encode16(number_range)}#{serial_suffix}"
 
     [
       %{
         serial: serial,
         obis: to_obis_string("1-0", obis),
-        unit: unit_to_human(unit),
-      } |> add_obis_value(value, scaler),
+        unit: unit_to_human(unit)
+      }
+      |> add_obis_value(value, scaler),
       %{
         serial: serial,
         obis: to_obis_string("1-0", obis2),
-        unit: unit_to_human(unit2),
-      } |> add_obis_value(value2, scaler2),
+        unit: unit_to_human(unit2)
+      }
+      |> add_obis_value(value2, scaler2)
     ]
   end
 
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
   defp add_obis_value(%{unit: "Wh"} = row, value, scaler) do
     obis_value = scale(value, scaler)
+
     Map.merge(row, %{
-      obis_value: obis_value / 1000,  # Need to fix from Wh to kWh for MSCONS
-      unit: "kWh",
+      # Need to fix from Wh to kWh for MSCONS
+      obis_value: obis_value / 1000,
+      unit: "kWh"
     })
   end
+
   defp add_obis_value(row, _value, _scaler), do: row
 
   defp to_obis_string(prefix, <<o1::8, o2::8, o3::8>>), do: "#{prefix}:#{o1}.#{o2}.#{o3}"
@@ -66,18 +86,17 @@ defmodule Parser do
 
   defp scale(value, scaler), do: value * :math.pow(10, scaler)
 
-
   # Define fields with human readable name and a SI unit if available.
   def fields() do
     [
       # The first field should be a numeric value, so it can be used for graphs.
       %{
         field: "obis_value",
-        display: "Value",
+        display: "Value"
       },
       %{
         field: "unit",
-        display: "Unit",
+        display: "Unit"
       },
       %{
         field: "serial",
@@ -85,19 +104,19 @@ defmodule Parser do
       },
       %{
         field: "obis_code",
-        display: "OBIS",
-      },
+        display: "OBIS"
+      }
     ]
   end
 
   def tests() do
     [
-      {:parse_hex, "090145425A01000C02B60108001EFB000000000D185B200208001EFB0000000000000000", %{meta: %{frame_port: 15}},
-        [
-          %{obis: "1-0:1.8.0", obis_value: 2.197, serial: "1EBZ0100787126", unit: "kWh"},
-          %{obis: "1-0:2.8.0", obis_value: 0.0, serial: "1EBZ0100787126", unit: "kWh"}
-        ]
-      },
+      {:parse_hex, "090145425A01000C02B60108001EFB000000000D185B200208001EFB0000000000000000",
+       %{meta: %{frame_port: 15}},
+       [
+         %{obis: "1-0:1.8.0", obis_value: 2.197, serial: "1EBZ0100787126", unit: "kWh"},
+         %{obis: "1-0:2.8.0", obis_value: 0.0, serial: "1EBZ0100787126", unit: "kWh"}
+       ]}
     ]
   end
 end

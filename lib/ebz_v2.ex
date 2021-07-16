@@ -9,56 +9,80 @@ defmodule Parser do
   #   2020-05-27 [nk]: Initial implementation of new version
   #
 
-  def parse(<<_version::1, _options::1, 3::6, _more::1, _num_tuples::7, tuples::binary>>, %{meta: %{frame_port: 15}}) do
+  def parse(<<_version::1, _options::1, 3::6, _more::1, _num_tuples::7, tuples::binary>>, %{
+        meta: %{frame_port: 15}
+      }) do
     %{}
     |> Map.merge(parse_tuples(tuples))
   end
 
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
-  def parse_tuples(<<id::8, 0::1, len::7, data::unit(8)-size(len)-binary, rest::binary>>) when id in 12..24 do
+  def parse_tuples(<<id::8, 0::1, len::7, data::unit(8)-size(len)-binary, rest::binary>>)
+      when id in 12..24 do
     <<unit::8, scaler::8-signed, data::binary>> = data
     unit = parse_unit(unit)
-    value = data
-    |> :binary.decode_unsigned()
-    |> scale(scaler)
+
+    value =
+      data
+      |> :binary.decode_unsigned()
+      |> scale(scaler)
+
     %{
       "#{id_to_sting(id)}" => value,
       "#{id_to_sting(id)}_unit" => unit
     }
     |> Map.merge(parse_tuples(rest))
   end
-  def parse_tuples(<<id::8, 0::1, len::7, data::unit(8)-size(len)-binary, rest::binary>>) when id in [0, 1, 2, 3, 4, 8, 10, 11] do
-    data = if String.printable?(data) do
-      data
-    else
-      Base.encode16(data)
-    end
+
+  def parse_tuples(<<id::8, 0::1, len::7, data::unit(8)-size(len)-binary, rest::binary>>)
+      when id in [0, 1, 2, 3, 4, 8, 10, 11] do
+    data =
+      if String.printable?(data) do
+        data
+      else
+        Base.encode16(data)
+      end
+
     %{
-      "#{id_to_sting(id)}" => data # should be ascii coded
+      # should be ascii coded
+      "#{id_to_sting(id)}" => data
     }
     |> Map.merge(parse_tuples(rest))
   end
-  def parse_tuples(<<9, 10, 9, sparte, manufacturer::binary-3, fabrication_block, num::integer-32, rest::binary>>) do
+
+  def parse_tuples(
+        <<9, 10, 9, sparte, manufacturer::binary-3, fabrication_block, num::integer-32,
+          rest::binary>>
+      ) do
     num = String.pad_leading("#{num}", 8, "0")
     fabrication_block = String.pad_leading("#{fabrication_block}", 2, "0")
+
     %{
       "#{id_to_sting(9)}" => "#{sparte}#{manufacturer}#{fabrication_block}#{num}"
     }
     |> Map.merge(parse_tuples(rest))
   end
+
   def parse_tuples(<<id::8, 0::1, len::7, data::unit(8)-size(len)-binary, rest::binary>>) do
     %{
       "id_#{id}_unknown" => Base.encode16(data)
     }
     |> Map.merge(parse_tuples(rest))
   end
+
   def parse_tuples(<<>>) do
     %{}
   end
+
   def parse_tuples(<<rest::binary>>) do
     %{"parsing_rest_error" => Base.encode16(rest)}
   end
@@ -245,6 +269,7 @@ defmodule Parser do
     (value * :math.pow(10, scaler))
     |> Float.round(3)
   end
+
   defp scale(value, scaler) do
     (value * :math.pow(10, scaler))
     |> Float.round(scaler * -1)
@@ -259,32 +284,29 @@ defmodule Parser do
     [
       # Test format:
       # {:parse_hex, received_payload_as_hex, meta_map, expected_result},
-      {:parse_hex, "03020C0A1EFB000000000EC85CFA0F0A1EFB000000000CF6C960", %{meta: %{frame_port: 15}},
-        %{
-          "ID_OBIS_1_8_0" => 2480.12026,
-          "ID_OBIS_1_8_0_unit" => "Wh",
-          "ID_OBIS_2_8_0" => 2175.0,
-          "ID_OBIS_2_8_0_unit" => "Wh"
-        }
-      },
+      {:parse_hex, "03020C0A1EFB000000000EC85CFA0F0A1EFB000000000CF6C960",
+       %{meta: %{frame_port: 15}},
+       %{
+         "ID_OBIS_1_8_0" => 2480.12026,
+         "ID_OBIS_1_8_0_unit" => "Wh",
+         "ID_OBIS_2_8_0" => 2175.0,
+         "ID_OBIS_2_8_0_unit" => "Wh"
+       }},
       {:parse_hex, "0301090A090145425A0100BC614E", %{meta: %{frame_port: 15}},
-        %{"ID_OBIS_0_0_9" => "1EBZ0112345678"}
-      },
-      {:parse_hex, "03030C0A1EFB000000000EC85CFA090A090145425A0100BC614E0F0A1EFB000000000CF6C960", %{meta: %{frame_port: 15}},
-        %{
-          "ID_OBIS_1_8_0" => 2480.12026,
-          "ID_OBIS_1_8_0_unit" => "Wh",
-          "ID_OBIS_2_8_0" => 2175.0,
-          "ID_OBIS_2_8_0_unit" => "Wh",
-          "ID_OBIS_0_0_9" => "1EBZ0112345678",
-        }
-      },
+       %{"ID_OBIS_0_0_9" => "1EBZ0112345678"}},
+      {:parse_hex, "03030C0A1EFB000000000EC85CFA090A090145425A0100BC614E0F0A1EFB000000000CF6C960",
+       %{meta: %{frame_port: 15}},
+       %{
+         "ID_OBIS_1_8_0" => 2480.12026,
+         "ID_OBIS_1_8_0_unit" => "Wh",
+         "ID_OBIS_2_8_0" => 2175.0,
+         "ID_OBIS_2_8_0_unit" => "Wh",
+         "ID_OBIS_0_0_9" => "1EBZ0112345678"
+       }},
       {:parse_hex, "0301090A090145425A0100BC614E 4203010203", %{meta: %{frame_port: 15}},
-        %{"ID_OBIS_0_0_9" => "1EBZ0112345678", "id_66_unknown" => "010203"}
-      },
+       %{"ID_OBIS_0_0_9" => "1EBZ0112345678", "id_66_unknown" => "010203"}},
       {:parse_hex, "0301090A090145425A0100BC614E 420301", %{meta: %{frame_port: 15}},
-        %{"ID_OBIS_0_0_9" => "1EBZ0112345678", "parsing_rest_error" => "420301"}
-      },
+       %{"ID_OBIS_0_0_9" => "1EBZ0112345678", "parsing_rest_error" => "420301"}}
     ]
   end
 end

@@ -16,12 +16,19 @@ defmodule Parser do
 
   def parse(<<value::16>>, %{meta: %{frame_port: 42}} = meta) do
     factor = get(meta, [:device, :fields, :my_profile, :my_field], 1)
+
     %{
-      value: value * factor,
+      value: value * factor
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
@@ -29,12 +36,18 @@ defmodule Parser do
     [
       {
         # No profile given, default factor =1 will be used.
-        :parse_hex, "1337", %{meta: %{frame_port: 42}}, %{value: 4919},
+        :parse_hex,
+        "1337",
+        %{meta: %{frame_port: 42}},
+        %{value: 4919}
       },
       {
         # Profile has factor value =2.
-        :parse_hex, "1337", %{meta: %{frame_port: 42}, device: %{fields: %{my_profile: %{my_field: 2}}}}, %{value: 9838},
-      },
+        :parse_hex,
+        "1337",
+        %{meta: %{frame_port: 42}, device: %{fields: %{my_profile: %{my_field: 2}}}},
+        %{value: 9838}
+      }
     ]
   end
 end

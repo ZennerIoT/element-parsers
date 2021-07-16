@@ -9,21 +9,30 @@ defmodule Parser do
   #
 
   def parse(<<data::float-32>>, _meta) do
-   # Also possible: float-signed-32 or float-signed-little-32
-   %{
+    # Also possible: float-signed-32 or float-signed-little-32
+    %{
       value: data
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
   def tests() do
     [
       {
-        :parse_hex, "41500000", %{}, %{value: 13.0},
-      },
+        :parse_hex,
+        "41500000",
+        %{},
+        %{value: 13.0}
+      }
     ]
   end
 end

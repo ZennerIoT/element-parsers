@@ -23,29 +23,38 @@ defmodule Parser do
     |> Enum.map(fn
       %{memory_address: m, sub_device: sd, tariff: t, data: %{desc: d, unit: "", value: v}} ->
         %{"#{m}_#{sd}_#{t}_#{d}" => v}
+
       %{memory_address: m, sub_device: sd, tariff: t, data: %{desc: d, unit: u, value: v}} ->
         %{"#{m}_#{sd}_#{t}_#{d}_#{u}" => v}
+
       error ->
-        Logger.warn("Invalid result from parse_dibs: #{inspect error}")
+        Logger.warn("Invalid result from parse_dibs: #{inspect(error)}")
         %{}
     end)
     |> Enum.reduce(%{frame_port: frame_port}, &Map.merge(&2, &1))
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
   # Will remove all unknown fields from LibWmbus.Dib.parse_dib(payload) result.
   defp filter_unknown_data(parse_dib_result) do
     Enum.filter(parse_dib_result, fn
-      (%{data: %{desc: desc}}) ->
+      %{data: %{desc: desc}} ->
         case to_string(desc) do
           <<"unkown_", _::binary>> -> false
           <<"unknown_", _::binary>> -> false
           _ -> true
         end
-      (_) ->
+
+      _ ->
         true
     end)
   end
@@ -57,41 +66,41 @@ defmodule Parser do
       %{
         field: "0_0_0_energy_Wh",
         display: "Energy",
-        unit: "Wh",
+        unit: "Wh"
       },
       %{
         field: "0_0_0_flow_m³/h",
         display: "Flow",
-        unit: "m³/h",
+        unit: "m³/h"
       },
       %{
         field: "0_0_0_power_W",
         display: "Power",
-        unit: "W",
+        unit: "W"
       },
       %{
         field: "0_0_0_volume_m³",
         display: "Volume",
-        unit: "m³",
+        unit: "m³"
       },
       %{
         field: "0_0_0_return_temperature_°C",
         display: "Return Temp.",
-        unit: "°C",
+        unit: "°C"
       },
       %{
         field: "0_0_0_supply_temperature_°C",
         display: "Supply Temp.",
-        unit: "°C",
+        unit: "°C"
       },
       %{
         field: "0_0_0_datetime",
-        display: "DateTime",
+        display: "DateTime"
       },
       %{
         field: "0_0_0_fabrication_block",
-        display: "Fabrication-Block",
-      },
+        display: "Fabrication-Block"
+      }
     ]
   end
 
@@ -105,7 +114,7 @@ defmodule Parser do
           :frame_port => 2,
           "0_0_0_datetime" => ~N[2020-06-09 08:30:00],
           "0_0_0_energy_Wh" => 1000,
-          "0_0_0_fabrication_block" => 25337164,
+          "0_0_0_fabrication_block" => 25_337_164,
           "0_0_0_flow_m³/h" => 0.0,
           "0_0_0_power_W" => 0,
           "0_0_0_return_temperature_°C" => 20.68,
@@ -123,8 +132,8 @@ defmodule Parser do
         %{
           :frame_port => 2,
           "0_0_0_datetime" => ~N[2020-06-26 11:08:00],
-          "0_0_0_energy_Wh" => 201000,
-          "0_0_0_fabrication_block" => 25337121,
+          "0_0_0_energy_Wh" => 201_000,
+          "0_0_0_fabrication_block" => 25_337_121,
           "0_0_0_flow_m³/h" => 0.0,
           "0_0_0_power_W" => 0,
           "0_0_0_return_temperature_°C" => 22.3,
@@ -134,8 +143,7 @@ defmodule Parser do
           "20_0_0_energy_Wh" => 0,
           "20_0_0_volume_m³" => 0.0
         }
-      },
-
+      }
     ]
   end
 end

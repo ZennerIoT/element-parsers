@@ -8,8 +8,8 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
-  def parse(<<evt::8, count::16>>, %{meta: %{frame_port: 30 }}) do
-    << _res::3, _ins::2, blow::1, tamper::1, intr::1 >> = <<evt::8>>
+  def parse(<<evt::8, count::16>>, %{meta: %{frame_port: 30}}) do
+    <<_res::3, _ins::2, blow::1, tamper::1, intr::1>> = <<evt::8>>
 
     %{
       messagetype: "event",
@@ -20,8 +20,8 @@ defmodule Parser do
     }
   end
 
-  def parse(<< _bat_t::1, bat_p::7, evt::8, count::16>>, %{meta: %{frame_port: 9 }}) do
-    << _res::3, _ins::2, blow::1, tamper::1, intr::1>> = <<evt::8>>
+  def parse(<<_bat_t::1, bat_p::7, evt::8, count::16>>, %{meta: %{frame_port: 9}}) do
+    <<_res::3, _ins::2, blow::1, tamper::1, intr::1>> = <<evt::8>>
 
     %{
       messagetype: "status",
@@ -34,7 +34,12 @@ defmodule Parser do
   end
 
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
@@ -42,7 +47,7 @@ defmodule Parser do
     [
       %{
         "field" => "counter",
-        "display" => "Openings",
+        "display" => "Openings"
       }
     ]
   end
@@ -50,7 +55,10 @@ defmodule Parser do
   def tests() do
     [
       {
-        :parse_hex, "020001", %{meta: %{frame_port: 30}}, %{
+        :parse_hex,
+        "020001",
+        %{meta: %{frame_port: 30}},
+        %{
           messagetype: "event",
           intrusion: 0,
           tamper: 1,
@@ -59,7 +67,10 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "E4000016", %{meta: %{frame_port: 9}}, %{
+        :parse_hex,
+        "E4000016",
+        %{meta: %{frame_port: 9}},
+        %{
           messagetype: "status",
           intrusion: 0,
           tamper: 0,
@@ -70,5 +81,4 @@ defmodule Parser do
       }
     ]
   end
-
 end

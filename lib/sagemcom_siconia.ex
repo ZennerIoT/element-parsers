@@ -11,16 +11,20 @@ defmodule Parser do
   #
 
   def parse(<<temp::signed-little-32, humid::little-32, bat::little-32>>, _meta) do
-
-  %{
-    temperature: temp/100,
-    humidity: humid/100,
-    battery: bat,
-  }
+    %{
+      temperature: temp / 100,
+      humidity: humid / 100,
+      battery: bat
+    }
   end
 
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 

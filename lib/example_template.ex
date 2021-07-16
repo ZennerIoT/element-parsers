@@ -12,17 +12,24 @@ defmodule Parser do
   def parse(<<v1, v2, v3>>, %{meta: %{frame_port: 1}}) do
     %{
       type: :boot,
-      version: "#{v1}.#{v2}.#{v3}",
+      version: "#{v1}.#{v2}.#{v3}"
     }
   end
+
   def parse(<<distance::32>>, %{meta: %{frame_port: 2}}) do
     %{
       type: :measurement,
-      distance: distance,
+      distance: distance
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
@@ -33,12 +40,12 @@ defmodule Parser do
       %{
         field: "distance",
         display: "Distanz",
-        unit: "cm",
+        unit: "cm"
       },
       %{
         field: "type",
-        display: "Typ",
-      },
+        display: "Typ"
+      }
     ]
   end
 
@@ -48,8 +55,8 @@ defmodule Parser do
       # {:parse_hex, received_payload_as_hex, meta_map, expected_result},
 
       {:parse_hex, "010203", %{meta: %{frame_port: 1}}, %{type: :boot, version: "1.2.3"}},
-
-      {:parse_hex, "12345678", %{meta: %{frame_port: 2}}, %{type: :measurement, distance: 305419896}},
+      {:parse_hex, "12345678", %{meta: %{frame_port: 2}},
+       %{type: :measurement, distance: 305_419_896}}
     ]
   end
 end

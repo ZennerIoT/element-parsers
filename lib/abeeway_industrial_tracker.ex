@@ -114,7 +114,7 @@ defmodule Parser do
   end
 
   def parse_heartbeat(<<cause::8, fw_version::24>>),
-      do: %{message_type: :heartbeat, reset_cause: cause, firmware_version: fw_version}
+    do: %{message_type: :heartbeat, reset_cause: cause, firmware_version: fw_version}
 
   def parse_heartbeat(<<cause::8>>), do: %{message_type: :heartbeat, reset_cause: cause}
 
@@ -193,18 +193,18 @@ defmodule Parser do
   end
 
   def parse_activity_or_configuration(<<
-    2,
-    p0_id::8,
-    p0_val::32,
-    p1_id::8,
-    p1_val::32,
-    p2_id::8,
-    p2_val::32,
-    p3_id::8,
-    p3_val::32,
-    p4_id::8,
-    p4_val::32
-  >>) do
+        2,
+        p0_id::8,
+        p0_val::32,
+        p1_id::8,
+        p1_val::32,
+        p2_id::8,
+        p2_val::32,
+        p3_id::8,
+        p3_val::32,
+        p4_id::8,
+        p4_val::32
+      >>) do
     %{
       message_type: :configuration,
       parame0_id: p0_id,
@@ -327,23 +327,23 @@ defmodule Parser do
           }
         },
         {%{
-          ack_token: 1,
-          battery: 2.794466403162055,
-          location_age: 16.0,
-          location_ehpe: 19.6078431372549,
-          location_encrypted: "0083AE",
-          location_lat: 43.6185088,
-          location_lon: 7.0510336,
-          message_type: :position,
-          moving: 0,
-          operating_mode: :permanent_tracking,
-          periodic_position: 0,
-          position_on_demand: 0,
-          position_type: :gps_fix,
-          sos: 0,
-          temperature: 25.30588235294117,
-          tracker_state: :tracking
-        }, [location: {7.0510336, 43.6185088}]}
+           ack_token: 1,
+           battery: 2.794466403162055,
+           location_age: 16.0,
+           location_ehpe: 19.6078431372549,
+           location_encrypted: "0083AE",
+           location_lat: 43.6185088,
+           location_lon: 7.0510336,
+           message_type: :position,
+           moving: 0,
+           operating_mode: :permanent_tracking,
+           periodic_position: 0,
+           position_on_demand: 0,
+           position_type: :gps_fix,
+           sos: 0,
+           temperature: 25.30588235294117,
+           tracker_state: :tracking
+         }, [location: {7.0510336, 43.6185088}]}
       },
 
       # Energy Status
@@ -463,24 +463,24 @@ defmodule Parser do
           }
         },
         {%{
-          ack_token: 2,
-          battery: 3.524901185770751,
-          location_age: 0.0,
-          location_ehpe: 39.2156862745098,
-          location_encrypted: "",
-          location_lat: 49.009664,
-          location_lon: 8.3443968,
-          message_type: :position,
-          moving: 0,
-          operating_mode: :permanent_tracking,
-          periodic_position: 0,
-          position_on_demand: 0,
-          position_type: :gps_fix,
-          sos: 0,
-          temperature: 24.799999999999997,
-          tracker_state: :tracking
-        }, [location: {8.3443968, 49.009664}]}
-      },
+           ack_token: 2,
+           battery: 3.524901185770751,
+           location_age: 0.0,
+           location_ehpe: 39.2156862745098,
+           location_encrypted: "",
+           location_lat: 49.009664,
+           location_lon: 8.3443968,
+           message_type: :position,
+           moving: 0,
+           operating_mode: :permanent_tracking,
+           periodic_position: 0,
+           position_on_demand: 0,
+           position_type: :gps_fix,
+           sos: 0,
+           temperature: 24.799999999999997,
+           tracker_state: :tracking
+         }, [location: {8.3443968, 49.009664}]}
+      }
     ]
   end
 end

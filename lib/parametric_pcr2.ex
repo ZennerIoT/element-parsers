@@ -16,18 +16,31 @@ defmodule Parser do
 
   # Firmware v4
   # Extended Application Payload Format (PTYPE = 2)
-  def parse(<<
-    0xbe, # Vendor ID, always 0xbe for Parametric Devices
-    0x01, # Device Family, always 0x01 for PCR2 Devices
-    0x04, # Payload Version, always 0x04 for V4 Payloads
-    ltr::16, # left-to-right counter
-    rtl::16, # right-to-left counter
-    ltr_sum::16, # sum of left-to-right counts since device power up
-    rtl_sum::16, # sum of right-to-left counts since device power up
-    sbx_batt::16, # battery gauge when equiped with an SBX solar charger 0…100%
-    sbx_pv::16, # Solar panel power when equiped with SBX 0…65.535 mW
-    cpu_temp::16-signed, # CPU Temperature -3276.8°C –>3276.7°C
-  >>, %{meta: %{frame_port: 14}}) do
+  def parse(
+        <<
+          # Vendor ID, always 0xbe for Parametric Devices
+          0xBE,
+          # Device Family, always 0x01 for PCR2 Devices
+          0x01,
+          # Payload Version, always 0x04 for V4 Payloads
+          0x04,
+          # left-to-right counter
+          ltr::16,
+          # right-to-left counter
+          rtl::16,
+          # sum of left-to-right counts since device power up
+          ltr_sum::16,
+          # sum of right-to-left counts since device power up
+          rtl_sum::16,
+          # battery gauge when equiped with an SBX solar charger 0…100%
+          sbx_batt::16,
+          # Solar panel power when equiped with SBX 0…65.535 mW
+          sbx_pv::16,
+          # CPU Temperature -3276.8°C –>3276.7°C
+          cpu_temp::16-signed
+        >>,
+        %{meta: %{frame_port: 14}}
+      ) do
     %{
       payload_version: 4,
       left_to_right: ltr,
@@ -36,75 +49,98 @@ defmodule Parser do
       right_to_left_sum: rtl_sum,
       solar_battery: sbx_batt,
       solar_panel_power: sbx_pv,
-      cpu_temp: cpu_temp/10,
+      cpu_temp: cpu_temp / 10
     }
   end
 
   # Firmware v4
   # This document describes version 4 of the configuration payload introduced with Firmware V3.6.0
-  def parse(<<
-    0xbe, # Vendor ID, always 0xbe for Parametric Devices
-    0x01, # Device Family, always 0x01 for PCR2 Devices
-    0x04, # Payload Version, always 0x04 for V4 Payloads
-    device_type,
-    firmware_version::binary-3,
-    operating_mode,
-    payload_type,
-    device_class,
-    uplink_type,
-    uplink_interval::16, # 1-1440 Minutes
-    link_check_interval::16, # 1-1440 Minutes, 0 = No LinkChecks
-    capacity_limit::16, #  	0-65535 Objects
-    holdoff_time::16, # 0-600s
-    inactivity_timeout::16, # 1-1440 Minutes, 0 = Off
-    mounting_direction, # 90°: Parallel to Movement, 0°: Frontal
-    mounting_tilt, # 90° = Overhead (Facing downwards), 0° Sideways
-    beam, # 30-80° Detection Area (Radar Beam)
-    min_dist::16, # Min Distance to Target 10-3000 cm
-    max_dist::16, # Max Distance to Target 10-3000 cm
-    min_speed, # Min Detection Speed 1-MaxSpeed km/h
-    max_speed, # Max Detection Speed MinSpeed-80km/h
-    radar_sensitivity, # 10-100%
-  >>, %{meta: %{frame_port: 190}}) do
-
-    device_type = case device_type do
-      0 -> :pcr2_in
-      1 -> :pcr2_od
-      2 -> :pcr2_r
-      3 -> :pcr2_t
-      4 -> :pcr2_xio
-      _ -> "unknown_#{device_type}"
-    end
+  def parse(
+        <<
+          # Vendor ID, always 0xbe for Parametric Devices
+          0xBE,
+          # Device Family, always 0x01 for PCR2 Devices
+          0x01,
+          # Payload Version, always 0x04 for V4 Payloads
+          0x04,
+          device_type,
+          firmware_version::binary-3,
+          operating_mode,
+          payload_type,
+          device_class,
+          uplink_type,
+          # 1-1440 Minutes
+          uplink_interval::16,
+          # 1-1440 Minutes, 0 = No LinkChecks
+          link_check_interval::16,
+          #  	0-65535 Objects
+          capacity_limit::16,
+          # 0-600s
+          holdoff_time::16,
+          # 1-1440 Minutes, 0 = Off
+          inactivity_timeout::16,
+          # 90°: Parallel to Movement, 0°: Frontal
+          mounting_direction,
+          # 90° = Overhead (Facing downwards), 0° Sideways
+          mounting_tilt,
+          # 30-80° Detection Area (Radar Beam)
+          beam,
+          # Min Distance to Target 10-3000 cm
+          min_dist::16,
+          # Max Distance to Target 10-3000 cm
+          max_dist::16,
+          # Min Detection Speed 1-MaxSpeed km/h
+          min_speed,
+          # Max Detection Speed MinSpeed-80km/h
+          max_speed,
+          # 10-100%
+          radar_sensitivity
+        >>,
+        %{meta: %{frame_port: 190}}
+      ) do
+    device_type =
+      case device_type do
+        0 -> :pcr2_in
+        1 -> :pcr2_od
+        2 -> :pcr2_r
+        3 -> :pcr2_t
+        4 -> :pcr2_xio
+        _ -> "unknown_#{device_type}"
+      end
 
     <<fw1, fw2, fw3>> = firmware_version
 
-    operating_mode = case operating_mode do
-      0 -> :timespan
-      1 -> :not_zero
-      2 -> :trigger
-      3 -> :capacity_alert
-      _ -> "unknown_#{operating_mode}"
-    end
+    operating_mode =
+      case operating_mode do
+        0 -> :timespan
+        1 -> :not_zero
+        2 -> :trigger
+        3 -> :capacity_alert
+        _ -> "unknown_#{operating_mode}"
+      end
 
-    payload_type = case payload_type do
-      0 -> :elsys
-      1 -> :cayenne_lpp
-      2 -> :extended
-      _ -> "unknown_#{payload_type}"
-    end
+    payload_type =
+      case payload_type do
+        0 -> :elsys
+        1 -> :cayenne_lpp
+        2 -> :extended
+        _ -> "unknown_#{payload_type}"
+      end
 
-    device_class = case device_class do
-      0 -> :a
-      1 -> :b
-      2 -> :c
-      _ -> "unknown_#{device_class}"
-    end
+    device_class =
+      case device_class do
+        0 -> :a
+        1 -> :b
+        2 -> :c
+        _ -> "unknown_#{device_class}"
+      end
 
-    uplink_type = case uplink_type do
-      0 -> :unconfirmed
-      1 -> :confirmed
-      _ -> "unknown_#{uplink_type}"
-    end
+    uplink_type =
+      case uplink_type do
+        0 -> :unconfirmed
+        1 -> :confirmed
+        _ -> "unknown_#{uplink_type}"
+      end
 
     %{
       payload_version: 4,
@@ -114,36 +150,59 @@ defmodule Parser do
       payload_type: payload_type,
       device_class: device_class,
       uplink_type: uplink_type,
-      uplink_interval: uplink_interval, # Minutes
-      link_check_interval: link_check_interval, # minutes, 0 = disabled
-      capacity_limit: capacity_limit, # objects
-      holdoff_time: holdoff_time, # seconds
-      inactivity_timeout: inactivity_timeout, # minutes, 0 = disabled
-      mounting_direction: mounting_direction, # 90°: Parallel to Movement, 0°: Frontal
-      mounting_tilt: mounting_tilt, # 90° = Overhead (Facing downwards), 0° Sideways
+      # Minutes
+      uplink_interval: uplink_interval,
+      # minutes, 0 = disabled
+      link_check_interval: link_check_interval,
+      # objects
+      capacity_limit: capacity_limit,
+      # seconds
+      holdoff_time: holdoff_time,
+      # minutes, 0 = disabled
+      inactivity_timeout: inactivity_timeout,
+      # 90°: Parallel to Movement, 0°: Frontal
+      mounting_direction: mounting_direction,
+      # 90° = Overhead (Facing downwards), 0° Sideways
+      mounting_tilt: mounting_tilt,
       bream: beam,
-      min_dist: min_dist, # cm
+      # cm
+      min_dist: min_dist,
       max_dist: max_dist,
-      min_speed: min_speed, # km/h
+      # km/h
+      min_speed: min_speed,
       max_speed: max_speed,
-      radar_sensitivity: radar_sensitivity, # %
+      # %
+      radar_sensitivity: radar_sensitivity
     }
   end
 
   # Firmware v3
   # Extended Application Payload Format (PTYPE = 2)
-  def parse(<<
-    0xbe, # Vendor ID, always 0xbe for Parametric Devices
-    0x01, # Device Family, always 0x01 for PCR2 Devices
-    0x03, # Payload Version, always 0x03 for V3 Payloads
-    ltr::16, # left-to-right counter
-    rtl::16, # right-to-left counter
-    ltr_sum::16, # sum of left-to-right counts since device power up
-    rtl_sum::16, # sum of right-to-left counts since device power up
-    sbx_batt::8, # battery gauge when equiped with an SBX solar charger 0…100%
-    sbx_pv::16, # Solar panel power when equiped with SBX 0…65.535 mW
-    cpu_temp::16-signed, # CPU Temperature -3276.8°C –>3276.7°C
-  >>, %{meta: %{frame_port: 14}}) do
+  def parse(
+        <<
+          # Vendor ID, always 0xbe for Parametric Devices
+          0xBE,
+          # Device Family, always 0x01 for PCR2 Devices
+          0x01,
+          # Payload Version, always 0x03 for V3 Payloads
+          0x03,
+          # left-to-right counter
+          ltr::16,
+          # right-to-left counter
+          rtl::16,
+          # sum of left-to-right counts since device power up
+          ltr_sum::16,
+          # sum of right-to-left counts since device power up
+          rtl_sum::16,
+          # battery gauge when equiped with an SBX solar charger 0…100%
+          sbx_batt::8,
+          # Solar panel power when equiped with SBX 0…65.535 mW
+          sbx_pv::16,
+          # CPU Temperature -3276.8°C –>3276.7°C
+          cpu_temp::16-signed
+        >>,
+        %{meta: %{frame_port: 14}}
+      ) do
     %{
       payload_version: 3,
       left_to_right: ltr,
@@ -152,47 +211,53 @@ defmodule Parser do
       right_to_left_sum: rtl_sum,
       solar_battery: sbx_batt,
       solar_panel_power: sbx_pv,
-      cpu_temp: cpu_temp/10,
+      cpu_temp: cpu_temp / 10
     }
   end
 
   # Firmware v3
   # ELSYS Application Payload Format (PTYPE = 0)
-  def parse(<<0x0a, ltr::16, 0x0a, rtl::16, 0x01, temp::signed-16>>, %{meta: %{frame_port: 14}}) do
+  def parse(<<0x0A, ltr::16, 0x0A, rtl::16, 0x01, temp::signed-16>>, %{meta: %{frame_port: 14}}) do
     %{
       payload_version: :elsys,
       left_to_right: ltr,
       right_to_left: rtl,
-      cpu_temp: temp/10
+      cpu_temp: temp / 10
     }
   end
 
   # Firmware v2
   # PCR2 is sending 9 bytes of hex encoded data on port 14
   # after interval time expired or after a trigger event (trigger mode only).
-  def parse(<<0x0a, ltr::16, 0x16, rtl::16, 0x01, temp::signed-16>>, %{meta: %{frame_port: 14}}) do
+  def parse(<<0x0A, ltr::16, 0x16, rtl::16, 0x01, temp::signed-16>>, %{meta: %{frame_port: 14}}) do
     %{
       payload_version: 2,
       left_to_right: ltr,
       right_to_left: rtl,
-      cpu_temp: temp/10
+      cpu_temp: temp / 10
     }
   end
 
   # Firmware v2
   # Directly after a join, the device is sending a configuration payload once using port 190.
-  def parse(<<type, fw1, fw2, fw3, mode, payload_type, confirmed, interval::16, lci::16, hot::16, radar_sens::8>>, %{meta: %{frame_port: 190}}) do
-    payload_type = case payload_type do
-      0 -> :parametric
-      1 -> :cayennelp
-      _ -> :unknown
-    end
+  def parse(
+        <<type, fw1, fw2, fw3, mode, payload_type, confirmed, interval::16, lci::16, hot::16,
+          radar_sens::8>>,
+        %{meta: %{frame_port: 190}}
+      ) do
+    payload_type =
+      case payload_type do
+        0 -> :parametric
+        1 -> :cayennelp
+        _ -> :unknown
+      end
 
-    confirmed = case confirmed do
-      0 -> :disabled
-      1 -> :enabled
-      _ -> :unknown
-    end
+    confirmed =
+      case confirmed do
+        0 -> :disabled
+        1 -> :enabled
+        _ -> :unknown
+      end
 
     %{
       device_type: type,
@@ -204,12 +269,17 @@ defmodule Parser do
       measurement_interval: interval,
       linkcheck_interval: lci,
       hold_off_time: hot,
-      radar_sensitivity: radar_sens,
+      radar_sensitivity: radar_sens
     }
   end
 
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
@@ -219,58 +289,55 @@ defmodule Parser do
       # The first field should be a numeric value, so it can be used for graphs.
       %{
         field: "left_to_right",
-        display: "Left to Right",
+        display: "Left to Right"
       },
       %{
         field: "right_to_left",
-        display: "Right to Left",
+        display: "Right to Left"
       },
-
       %{
         field: "left_to_right_sum",
-        display: "Left to Right Summe",
+        display: "Left to Right Summe"
       },
       %{
         field: "right_to_left_sum",
-        display: "Right to Left Summe",
+        display: "Right to Left Summe"
       },
-
       %{
         field: "cpu_temp",
         display: "CPU Temperature",
-        unit: "°C",
+        unit: "°C"
       },
       %{
         field: "measurement_interval",
         display: "Measurement Interval",
-        unit: "min",
+        unit: "min"
       },
       %{
         field: "linkcheck_interval",
         display: "LinkCheck Interval",
-        unit: "min",
+        unit: "min"
       },
       %{
         field: "hold_off_time",
         display: "Hold Off Time",
-        unit: "s",
+        unit: "s"
       },
       %{
         field: "radar_sensitivity",
         display: "Radar Sensitivity",
-        unit: "%",
+        unit: "%"
       },
-
       %{
         field: "solar_battery",
         display: "Solar Battery",
-        unit: "%",
+        unit: "%"
       },
       %{
         field: "solar_panel_power",
         display: "Solar Panel Power",
-        unit: "mW",
-      },
+        unit: "mW"
+      }
     ]
   end
 
@@ -295,7 +362,6 @@ defmodule Parser do
         %{meta: %{frame_port: 14}},
         %{left_to_right: 16, right_to_left: 19, cpu_temp: -10.2, payload_version: 2}
       },
-
       {
         :parse_hex,
         "00030000000001000A05A0000064",
@@ -310,7 +376,7 @@ defmodule Parser do
           operation_mode: 0,
           payload_type: :parametric,
           radar_sensitivity: 100,
-          payload_version: 2,
+          payload_version: 2
         }
       },
 
@@ -327,7 +393,7 @@ defmodule Parser do
           right_to_left_sum: 0,
           solar_battery: 100,
           solar_panel_power: 3300,
-          payload_version: 3,
+          payload_version: 3
         }
       },
       # v3 firmware, short
@@ -337,7 +403,6 @@ defmodule Parser do
         %{meta: %{frame_port: 14}},
         %{left_to_right: 2, right_to_left: 1, cpu_temp: 31.3, payload_version: :elsys}
       },
-
 
       # v4 firmware, config
       {
@@ -398,8 +463,7 @@ defmodule Parser do
           solar_battery: 7200,
           solar_panel_power: 3300
         }
-      },
-
+      }
     ]
   end
 end

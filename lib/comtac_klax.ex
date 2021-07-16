@@ -17,8 +17,7 @@ defmodule Parser do
   #   2019-12-11 [jb]: Added field obis_value in all readings for MSCONS rule compatability.
   #   2021-04-15 [jb]: Using new config() function.
 
-
-  #----- Configuration
+  # ----- Configuration
   def config() do
     %{
       # Needs to be 4 distinct values!
@@ -47,17 +46,22 @@ defmodule Parser do
 
       # Skip negative values
       # Default: true
-      skip_negative_values: true,
+      skip_negative_values: true
     }
   end
+
   defp config(key, meta), do: get(meta, [:_config, key], Map.get(config(), key))
 
-
-  #----- Implementation
+  # ----- Implementation
 
   # Startup Message on Port 100
-  def parse(<<version::8, connection_test::1, registers_configured::1, mode::2, battery::4, interval::16>>, %{meta: %{frame_port: 100}} = _meta) do
+  def parse(
+        <<version::8, connection_test::1, registers_configured::1, mode::2, battery::4,
+          interval::16>>,
+        %{meta: %{frame_port: 100}} = _meta
+      ) do
     mode = _mode(mode)
+
     %{
       version: version,
       connection_test: connection_test == 1,
@@ -69,8 +73,13 @@ defmodule Parser do
   end
 
   # Startup Message on Port 101
-  def parse(<<version::8, connection_test::1, registers_configured::1, mode::2, battery::4, main::8, minor::8>>, %{meta: %{frame_port: 101}} = _meta) do
+  def parse(
+        <<version::8, connection_test::1, registers_configured::1, mode::2, battery::4, main::8,
+          minor::8>>,
+        %{meta: %{frame_port: 101}} = _meta
+      ) do
     mode = _mode(mode)
+
     %{
       version: version,
       connection_test: connection_test == 1,
@@ -82,69 +91,83 @@ defmodule Parser do
   end
 
   # Periodic message containing four measurement of two registers.
-  def parse(<<version::8, connection_test::1, registers_configured::1, mode::2, battery::4, message_index::8, message_num::4, message_of::4, registers::binary>>, %{meta: %{frame_port: 103}} = _meta) do
+  def parse(
+        <<version::8, connection_test::1, registers_configured::1, mode::2, battery::4,
+          message_index::8, message_num::4, message_of::4, registers::binary>>,
+        %{meta: %{frame_port: 103}} = _meta
+      ) do
     mode = _mode(mode)
 
-    (for <<x::8, y::8, z::8 <- registers >>, do: "1-0:#{x}.#{y}.#{z}")
+    for(<<x::8, y::8, z::8 <- registers>>, do: "1-0:#{x}.#{y}.#{z}")
     |> Enum.with_index(1)
-    |> Enum.map(fn {name, index} -> {"register_#{index}", name} end) # TODO if message_of > 1, index must be offseted
-    |> Map.new
-    |> Map.merge(
-         %{
-           version: version,
-           connection_test: connection_test == 1,
-           registers_configured: registers_configured == 1,
-           mode: mode,
-           battery: battery * 10,
-           message_num: message_num,
-           message_of: message_of,
-           message_index: message_index
-         }
-       )
+    # TODO if message_of > 1, index must be offseted
+    |> Enum.map(fn {name, index} -> {"register_#{index}", name} end)
+    |> Map.new()
+    |> Map.merge(%{
+      version: version,
+      connection_test: connection_test == 1,
+      registers_configured: registers_configured == 1,
+      mode: mode,
+      battery: battery * 10,
+      message_num: message_num,
+      message_of: message_of,
+      message_index: message_index
+    })
   end
 
-  def parse(<<version::8, connection_test::1, registers_configured::1, mode::2, battery::4, active_filters::binary-1, registers::binary>>, %{meta: %{frame_port: 104}} = _meta) do
+  def parse(
+        <<version::8, connection_test::1, registers_configured::1, mode::2, battery::4,
+          active_filters::binary-1, registers::binary>>,
+        %{meta: %{frame_port: 104}} = _meta
+      ) do
     mode = _mode(mode)
 
     <<_::4, reg_4::1, reg_3::1, reg_2::1, reg_1::1>> = active_filters
 
-    (for <<x::8, y::8, z::8 <- registers >>, do: "1-0:#{x}.#{y}.#{z}")
+    for(<<x::8, y::8, z::8 <- registers>>, do: "1-0:#{x}.#{y}.#{z}")
     |> Enum.with_index(1)
     |> Enum.map(fn {name, index} -> {"register_#{index}", name} end)
-    |> Map.new
-    |> Map.merge(
-         %{
-           version: version,
-           connection_test: connection_test == 1,
-           registers_configured: registers_configured == 1,
-           mode: mode,
-           battery: battery * 10,
-           register_1_set: reg_1 == 1,
-           register_2_set: reg_2 == 1,
-           register_3_set: reg_3 == 1,
-           register_4_set: reg_4 == 1,
-         }
-       )
+    |> Map.new()
+    |> Map.merge(%{
+      version: version,
+      connection_test: connection_test == 1,
+      registers_configured: registers_configured == 1,
+      mode: mode,
+      battery: battery * 10,
+      register_1_set: reg_1 == 1,
+      register_2_set: reg_2 == 1,
+      register_3_set: reg_3 == 1,
+      register_4_set: reg_4 == 1
+    })
   end
 
-  def parse(<<_version::8, _connection_test::1, _registers_configured::1, _mode::2, battery::4, _message_index::8, _message_num::4, _message_of::4, payload::binary>>, %{meta: %{frame_port: 3}} = meta) do
-    _parse_payload(payload, meta)
-    ++
-    [
-      {
-        %{battery: battery * 10},
-        [measured_at: meta[:transceived_at]]
-      }
-    ]
+  def parse(
+        <<_version::8, _connection_test::1, _registers_configured::1, _mode::2, battery::4,
+          _message_index::8, _message_num::4, _message_of::4, payload::binary>>,
+        %{meta: %{frame_port: 3}} = meta
+      ) do
+    _parse_payload(payload, meta) ++
+      [
+        {
+          %{battery: battery * 10},
+          [measured_at: meta[:transceived_at]]
+        }
+      ]
   end
 
   def parse(payload, meta) do
-    Logger.info("Unhandled meta.frame_port: #{inspect get_in(meta, [:meta, :frame_port])} with payload #{inspect payload}")
+    Logger.info(
+      "Unhandled meta.frame_port: #{inspect(get_in(meta, [:meta, :frame_port]))} with payload #{
+        inspect(payload)
+      }"
+    )
+
     []
   end
 
   defp _parse_payload(<<1, data::binary-34, rest::binary>>, meta) do
-    <<pos_2_valid::1, pos_2_selector::2, pos_2_active::1, pos_1_valid::1, pos_1_selector::2, pos_1_active::1, unit_2::4, unit_1::4, content::binary>> = data
+    <<pos_2_valid::1, pos_2_selector::2, pos_2_active::1, pos_1_valid::1, pos_1_selector::2,
+      pos_1_active::1, unit_2::4, unit_1::4, content::binary>> = data
 
     <<
       pos_1_now::signed-32,
@@ -154,92 +177,98 @@ defmodule Parser do
       pos_2_now::signed-32,
       pos_2_minus_1::signed-32,
       pos_2_minus_2::signed-32,
-      pos_2_minus_3::signed-32,
+      pos_2_minus_3::signed-32
     >> = content
 
-    list_pos1 = if pos_1_active == 1 && pos_1_valid == 1 do # TODO: Warn if not valid
-       {unit, scaler} = _map_unit(unit_1)
-       obis = Enum.at(config(:registers, meta), pos_1_selector)
-       obis_full = Enum.at(config(:registers_full_obis, meta), pos_1_selector)
-       value = round_as_float(pos_1_now * scaler)
-       [
-         # Always adding the first value, because the _valid flag is set for it.
-         {
-           %{
-             "obis" => obis_full,
-             obis => value,
-             obis_full => value,
-             "obis_value" => value,
-             "unit" => unit
-           },
-           [measured_at: meta[:transceived_at]]
-         },
-       ]
-       |> _add_valid_reading(
-            [obis_full, obis],
-            pos_1_minus_1 * scaler,
-            unit,
-            Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta))
-          )
-       |> _add_valid_reading(
-            [obis_full, obis],
-            pos_1_minus_2 * scaler,
-            unit,
-            Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta) * 2)
-          )
-       |> _add_valid_reading(
-            [obis_full, obis],
-            pos_1_minus_3 * scaler,
-            unit,
-            Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta) * 3)
-          )
-       |> skip_negative_values(meta)
-       |> build_missing(meta)
-    else
-      []
-    end
+    # TODO: Warn if not valid
+    list_pos1 =
+      if pos_1_active == 1 && pos_1_valid == 1 do
+        {unit, scaler} = _map_unit(unit_1)
+        obis = Enum.at(config(:registers, meta), pos_1_selector)
+        obis_full = Enum.at(config(:registers_full_obis, meta), pos_1_selector)
+        value = round_as_float(pos_1_now * scaler)
 
-    list_pos2 = if pos_2_active == 1 && pos_2_valid == 1 do # TODO: Warn if not valid
-      {unit, scaler} = _map_unit(unit_2)
-      obis = Enum.at(config(:registers, meta), pos_2_selector)
-      obis_full = Enum.at(config(:registers_full_obis, meta), pos_2_selector)
-      value = round_as_float(pos_2_now * scaler)
-      [
-       # Always adding the first value, because the _valid flag is set for it.
-       {
-         %{
-           "obis" => obis_full,
-           obis => value,
-           obis_full => value,
-           "obis_value" => value,
-           "unit" => unit
-         },
-         [measured_at: meta[:transceived_at]]
-       },
-      ]
-      |> _add_valid_reading(
+        [
+          # Always adding the first value, because the _valid flag is set for it.
+          {
+            %{
+              "obis" => obis_full,
+              obis => value,
+              obis_full => value,
+              "obis_value" => value,
+              "unit" => unit
+            },
+            [measured_at: meta[:transceived_at]]
+          }
+        ]
+        |> _add_valid_reading(
+          [obis_full, obis],
+          pos_1_minus_1 * scaler,
+          unit,
+          Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta))
+        )
+        |> _add_valid_reading(
+          [obis_full, obis],
+          pos_1_minus_2 * scaler,
+          unit,
+          Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta) * 2)
+        )
+        |> _add_valid_reading(
+          [obis_full, obis],
+          pos_1_minus_3 * scaler,
+          unit,
+          Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta) * 3)
+        )
+        |> skip_negative_values(meta)
+        |> build_missing(meta)
+      else
+        []
+      end
+
+    # TODO: Warn if not valid
+    list_pos2 =
+      if pos_2_active == 1 && pos_2_valid == 1 do
+        {unit, scaler} = _map_unit(unit_2)
+        obis = Enum.at(config(:registers, meta), pos_2_selector)
+        obis_full = Enum.at(config(:registers_full_obis, meta), pos_2_selector)
+        value = round_as_float(pos_2_now * scaler)
+
+        [
+          # Always adding the first value, because the _valid flag is set for it.
+          {
+            %{
+              "obis" => obis_full,
+              obis => value,
+              obis_full => value,
+              "obis_value" => value,
+              "unit" => unit
+            },
+            [measured_at: meta[:transceived_at]]
+          }
+        ]
+        |> _add_valid_reading(
           [obis_full, obis],
           pos_2_minus_1 * scaler,
           unit,
           Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta))
         )
-      |> _add_valid_reading(
+        |> _add_valid_reading(
           [obis_full, obis],
           pos_2_minus_2 * scaler,
           unit,
           Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta) * 2)
         )
-      |> _add_valid_reading(
+        |> _add_valid_reading(
           [obis_full, obis],
           pos_2_minus_3 * scaler,
           unit,
           Timex.shift(meta[:transceived_at], minutes: -1 * config(:interval_minutes, meta) * 3)
         )
-      |> skip_negative_values(meta)
-      |> build_missing(meta)
-    else
-      []
-    end
+        |> skip_negative_values(meta)
+        |> build_missing(meta)
+      else
+        []
+      end
 
     list = list_pos1 ++ list_pos2
 
@@ -258,27 +287,31 @@ defmodule Parser do
 
   defp _parse_payload(<<3, server_id_bin::binary-10, rest::binary>>, meta) do
     <<server_id_int::80>> = server_id_bin
-    list =
-      [{
+
+    list = [
+      {
         %{
           server_id: server_id_int,
-          server_id_hex: Base.encode16(server_id_bin),
+          server_id_hex: Base.encode16(server_id_bin)
         },
         [measured_at: meta[:transceived_at]]
-      }]
+      }
+    ]
+
     case rest do
       <<>> -> list
       _ -> _parse_payload(rest, meta) ++ list
     end
   end
+
   defp _parse_payload(unknown_binary, _meta) do
-    Logger.info("Unhandled payload binary part: #{inspect unknown_binary}")
+    Logger.info("Unhandled payload binary part: #{inspect(unknown_binary)}")
     []
   end
 
   defp skip_negative_values(list, meta) do
     if config(:skip_negative_values, meta) do
-      Enum.filter(list, fn({%{"obis" => obis} = data, _meta}) ->
+      Enum.filter(list, fn {%{"obis" => obis} = data, _meta} ->
         Map.fetch!(data, obis) >= 0
       end)
     else
@@ -286,52 +319,67 @@ defmodule Parser do
     end
   end
 
-  defp build_missing([{%{"obis" => obis, "unit" => unit}, _current_meta} | _] = current_readings, meta) do
+  defp build_missing(
+         [{%{"obis" => obis, "unit" => unit}, _current_meta} | _] = current_readings,
+         meta
+       ) do
     if config(:interpolate, meta) do
-      case get_last_reading(meta, [obis: obis, unit: unit]) do
+      case get_last_reading(meta, obis: obis, unit: unit) do
         %{data: %{"obis" => ^obis} = last_data, measured_at: last_measured_at} ->
           last_value = Map.fetch!(last_data, obis)
 
-          actual_readings = current_readings
-          |> Enum.reverse()
-          |> Enum.map(fn({%{"obis" => obis} = data, meta}) ->
-            {%{value: Map.fetch!(data, obis)}, [measured_at: Keyword.fetch!(meta, :measured_at)]}
-          end)
-          actual_readings = [{%{value: last_value}, [measured_at: last_measured_at]}|actual_readings]
+          actual_readings =
+            current_readings
+            |> Enum.reverse()
+            |> Enum.map(fn {%{"obis" => obis} = data, meta} ->
+              {%{value: Map.fetch!(data, obis)},
+               [measured_at: Keyword.fetch!(meta, :measured_at)]}
+            end)
 
-          missing_readings = actual_readings
-          |> TimeSeries.fill_gaps(
-            fn datetime_a, datetime_b ->
-              # Calculate all tuples with x=nil between a and b where a value should be interpolated
-              interval = Timex.Interval.new(
-                from: datetime_a |> Timex.to_datetime(config(:timezone, meta)) |> datetime_add_to_multiple_of_minutes(config(:interpolate_minutes, meta)),
-                until: datetime_b,
-                left_open: false,
-                step: [minutes: config(:interpolate_minutes, meta)]
-              )
-              Enum.map(interval, &({nil, [measured_at: &1]}))
-            end,
-            :linear,
-            x_access_path: [Access.elem(1), :measured_at],
-            y_access_path: [Access.elem(0)],
-            x_pre_calc_fun: &Timex.to_unix/1,
-            x_post_calc_fun: &Timex.to_datetime/1,
-            y_pre_calc_fun: fn %{value: value} -> value end,
-            y_post_calc_fun: &(%{value: &1, _interpolated: true})
-          )
-          |> Enum.filter(fn ({data, _meta}) -> Map.get(data, :_interpolated, false) end)
-          |> Enum.map(fn {%{value: value}, reading_meta} ->
-            value = round_as_float(value)
-            {
-              %{
-                "obis" => obis,
-                obis => value,
-                "obis_value" => value,
-                "unit" => unit,
-              },
-              reading_meta
-            }
-          end)
+          actual_readings = [
+            {%{value: last_value}, [measured_at: last_measured_at]} | actual_readings
+          ]
+
+          missing_readings =
+            actual_readings
+            |> TimeSeries.fill_gaps(
+              fn datetime_a, datetime_b ->
+                # Calculate all tuples with x=nil between a and b where a value should be interpolated
+                interval =
+                  Timex.Interval.new(
+                    from:
+                      datetime_a
+                      |> Timex.to_datetime(config(:timezone, meta))
+                      |> datetime_add_to_multiple_of_minutes(config(:interpolate_minutes, meta)),
+                    until: datetime_b,
+                    left_open: false,
+                    step: [minutes: config(:interpolate_minutes, meta)]
+                  )
+
+                Enum.map(interval, &{nil, [measured_at: &1]})
+              end,
+              :linear,
+              x_access_path: [Access.elem(1), :measured_at],
+              y_access_path: [Access.elem(0)],
+              x_pre_calc_fun: &Timex.to_unix/1,
+              x_post_calc_fun: &Timex.to_datetime/1,
+              y_pre_calc_fun: fn %{value: value} -> value end,
+              y_post_calc_fun: &%{value: &1, _interpolated: true}
+            )
+            |> Enum.filter(fn {data, _meta} -> Map.get(data, :_interpolated, false) end)
+            |> Enum.map(fn {%{value: value}, reading_meta} ->
+              value = round_as_float(value)
+
+              {
+                %{
+                  "obis" => obis,
+                  obis => value,
+                  "obis_value" => value,
+                  "unit" => unit
+                },
+                reading_meta
+              }
+            end)
 
           current_readings ++ missing_readings
 
@@ -339,41 +387,49 @@ defmodule Parser do
           current_readings
 
         invalid_prev_reading ->
-          Logger.warn("Could not build_missing() because of invalid previous reading: #{inspect invalid_prev_reading}")
+          Logger.warn(
+            "Could not build_missing() because of invalid previous reading: #{
+              inspect(invalid_prev_reading)
+            }"
+          )
+
           current_readings
       end
-
     else
       current_readings
     end
   end
+
   defp build_missing([], _meta) do
     # Allow empty current_readings
     []
   end
+
   defp build_missing(current_readings, _meta) do
     Logger.warn("Could not build_missing() because of invalid current_readings")
     current_readings
   end
 
-
   # Will add a reading to list when value is not zero, or skip that reading
   defp _add_valid_reading(list, _obis, 0.0, _unit, _measured_at), do: list
   defp _add_valid_reading(list, _obis, 0, _unit, _measured_at), do: list
+
   defp _add_valid_reading(list, [obis_full, obis], value, unit, measured_at) do
     value = round_as_float(value)
-    list ++ [
-      {
-        %{
-          "obis" => obis_full,
-          obis => value,
-          obis_full => value,
-          "obis_value" => value,
-          "unit" => unit,
-        },
-        [measured_at: measured_at]
-      }
-    ]
+
+    list ++
+      [
+        {
+          %{
+            "obis" => obis_full,
+            obis => value,
+            obis_full => value,
+            "obis_value" => value,
+            "unit" => unit
+          },
+          [measured_at: measured_at]
+        }
+      ]
   end
 
   defp _map_unit(0), do: {"NDEF", 1}
@@ -389,7 +445,7 @@ defmodule Parser do
       1 -> "IEC 62056-21 Mode B"
       2 -> "IEC 62056-21 Mode C"
       3 -> "Logarex"
-      _ -> "unknown mode: #{inspect mode}"
+      _ -> "unknown mode: #{inspect(mode)}"
     end
   end
 
@@ -397,7 +453,7 @@ defmodule Parser do
   defp datetime_add_to_multiple_of_minutes(%DateTime{} = dt, minutes) do
     minute_seconds = minutes * 60
     rem = rem(DateTime.to_unix(dt), minute_seconds)
-    Timex.shift(dt, seconds: (minute_seconds - rem))
+    Timex.shift(dt, seconds: minute_seconds - rem)
   end
 
   defp round_as_float(value) do
@@ -408,53 +464,52 @@ defmodule Parser do
     [
       %{
         "field" => "server_id",
-        "display" => "ServerId",
+        "display" => "ServerId"
       },
       %{
         "field" => "server_id_hex",
-        "display" => "ServerId-Hex",
+        "display" => "ServerId-Hex"
       },
       %{
         "field" => "battery",
         "display" => "Battery",
-        "unit" => "%",
+        "unit" => "%"
       },
       %{
         "field" => "connection_test",
-        "display" => "ConnectionTest",
+        "display" => "ConnectionTest"
       },
       %{
         "field" => "interval",
         "display" => "Interval",
-        "unit" => "minutes",
+        "unit" => "minutes"
       },
       %{
         "field" => "mode",
-        "display" => "Mode",
+        "display" => "Mode"
       },
       %{
         "field" => "registers_configured",
-        "display" => "Registers Configured",
+        "display" => "Registers Configured"
       },
       %{
         "field" => "version",
-        "display" => "Version",
+        "display" => "Version"
       },
       %{
         "field" => "app_version",
-        "display" => "App Version",
-      },
-    ] ++ Enum.map(config(:registers, %{}), fn(register) ->
-      %{
-        "field" => "#{register}",
-        "display" => "OBIS #{register}",
+        "display" => "App Version"
       }
-    end)
+    ] ++
+      Enum.map(config(:registers, %{}), fn register ->
+        %{
+          "field" => "#{register}",
+          "display" => "OBIS #{register}"
+        }
+      end)
   end
 
-
-  #--------- Tests
-
+  # --------- Tests
 
   def tests() do
     [
@@ -470,9 +525,8 @@ defmodule Parser do
           mode: "SML",
           registers_configured: true,
           version: 0
-        },
+        }
       },
-
 
       # beim start, info
       {
@@ -486,7 +540,7 @@ defmodule Parser do
           mode: "SML",
           registers_configured: true,
           version: 0
-        },
+        }
       },
 
       # bei start, register search
@@ -508,9 +562,8 @@ defmodule Parser do
           "register_2" => "1-0:2.8.0",
           "register_3" => "1-0:1.29.0",
           "register_4" => "1-0:2.29.0"
-        },
+        }
       },
-
 
       # bei start, register set antwort auf DOWN
       {
@@ -528,7 +581,7 @@ defmodule Parser do
           :version => 0,
           "register_1" => "1-0:1.8.0",
           "register_2" => "1-0:2.8.0"
-        },
+        }
       },
 
       # bei start, register set antwort auf DOWN
@@ -536,9 +589,8 @@ defmodule Parser do
         :parse_hex,
         "054A6811",
         %{meta: %{frame_port: 3}},
-        [{%{battery: 100}, [measured_at: nil]}],
+        [{%{battery: 100}, [measured_at: nil]}]
       },
-
 
       # Regelmäßige Nachricht
       {
@@ -546,17 +598,66 @@ defmodule Parser do
         "00493511030A01495452000346848001B911000105B8000105B8000105B8000105B8000007D0000007D0000007D0000007D00175000000000000000000000000000000000000000000000000000000000000000000",
         %{meta: %{frame_port: 3}, transceived_at: test_datetime("2019-01-01T12:00:00Z")},
         [
-          {%{"obis" => "1-0:1.8.0", "obis_value" => 67.0, "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "obis_value" => 67.0, "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "obis_value" => 67.0, "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "obis_value" => 67.0, "1-0:1.8.0" => 67.0, "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
-          {%{"obis" => "1-0:2.8.0", "obis_value" => 2.0, "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
-          {%{"obis" => "1-0:2.8.0", "obis_value" => 2.0, "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
-          {%{"obis" => "1-0:2.8.0", "obis_value" => 2.0, "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
-          {%{"obis" => "1-0:2.8.0", "obis_value" => 2.0, "1-0:2.8.0" => 2.0, "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
-          {%{server_id: 47247395511192982553728, server_id_hex: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{
+             "obis" => "1-0:1.8.0",
+             "obis_value" => 67.0,
+             "1-0:1.8.0" => 67.0,
+             "unit" => "kWh",
+             "1_8_0" => 67.0
+           }, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{
+             "obis" => "1-0:1.8.0",
+             "obis_value" => 67.0,
+             "1-0:1.8.0" => 67.0,
+             "unit" => "kWh",
+             "1_8_0" => 67.0
+           }, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{
+             "obis" => "1-0:1.8.0",
+             "obis_value" => 67.0,
+             "1-0:1.8.0" => 67.0,
+             "unit" => "kWh",
+             "1_8_0" => 67.0
+           }, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
+          {%{
+             "obis" => "1-0:1.8.0",
+             "obis_value" => 67.0,
+             "1-0:1.8.0" => 67.0,
+             "unit" => "kWh",
+             "1_8_0" => 67.0
+           }, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
+          {%{
+             "obis" => "1-0:2.8.0",
+             "obis_value" => 2.0,
+             "1-0:2.8.0" => 2.0,
+             "unit" => "kWh",
+             "2_8_0" => 2.0
+           }, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{
+             "obis" => "1-0:2.8.0",
+             "obis_value" => 2.0,
+             "1-0:2.8.0" => 2.0,
+             "unit" => "kWh",
+             "2_8_0" => 2.0
+           }, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{
+             "obis" => "1-0:2.8.0",
+             "obis_value" => 2.0,
+             "1-0:2.8.0" => 2.0,
+             "unit" => "kWh",
+             "2_8_0" => 2.0
+           }, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
+          {%{
+             "obis" => "1-0:2.8.0",
+             "obis_value" => 2.0,
+             "1-0:2.8.0" => 2.0,
+             "unit" => "kWh",
+             "2_8_0" => 2.0
+           }, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
+          {%{server_id: 47_247_395_511_192_982_553_728, server_id_hex: "0A014954520003468480"},
+           [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
           {%{battery: 90}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
-        ],
+        ]
       },
 
       # Nachricht mit Fehler beim vierten 1.8.0 Messwert
@@ -565,11 +666,30 @@ defmodule Parser do
         "004AE41103090149534B00041A1C260109010028C4B20028C4850028C4610000000000000000000000000000000000000000",
         %{meta: %{frame_port: 3}, transceived_at: test_datetime("2019-01-01T12:00:00Z")},
         [
-          {%{"obis" => "1-0:1.8.0", "obis_value" => 2671.794, "1-0:1.8.0" => 2671.794, "unit" => "kWh", "1_8_0" => 2671.794}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "obis_value" => 2671.749, "1-0:1.8.0" => 2671.749, "unit" => "kWh", "1_8_0" => 2671.749}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "obis_value" => 2671.713, "1-0:1.8.0" => 2671.713, "unit" => "kWh", "1_8_0" => 2671.713}, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
+          {%{
+             "obis" => "1-0:1.8.0",
+             "obis_value" => 2671.794,
+             "1-0:1.8.0" => 2671.794,
+             "unit" => "kWh",
+             "1_8_0" => 2671.794
+           }, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{
+             "obis" => "1-0:1.8.0",
+             "obis_value" => 2671.749,
+             "1-0:1.8.0" => 2671.749,
+             "unit" => "kWh",
+             "1_8_0" => 2671.749
+           }, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{
+             "obis" => "1-0:1.8.0",
+             "obis_value" => 2671.713,
+             "1-0:1.8.0" => 2671.713,
+             "unit" => "kWh",
+             "1_8_0" => 2671.713
+           }, [measured_at: test_datetime("2019-01-01T11:30:00Z")]},
           # This value is omitted, because its faulty. {%{"1_8_0" => 0.0, "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01T11:15:00Z")]},
-          {%{server_id: 42525028739151793101862, server_id_hex: "090149534B00041A1C26"}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{server_id: 42_525_028_739_151_793_101_862, server_id_hex: "090149534B00041A1C26"},
+           [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
           {%{battery: 100}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
         ]
       },
@@ -580,13 +700,25 @@ defmodule Parser do
         "004A71110306454D48010E15C1E250013901001A9FE4001A9FE40000000000000000000000000000000000000000000000000175001337",
         %{meta: %{frame_port: 3}, transceived_at: test_datetime("2019-01-01T12:00:00Z")},
         [
-          {%{"obis" => "1-0:1.8.0", "obis_value" => 1744.868, "1-0:1.8.0" => 1744.868, "unit" => "kWh", "1_8_0" => 1744.868}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
-          {%{"obis" => "1-0:1.8.0", "obis_value" => 1744.868, "1-0:1.8.0" => 1744.868, "unit" => "kWh", "1_8_0" => 1744.868}, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
-          {%{server_id: 29612592940403080159824, server_id_hex: "06454D48010E15C1E250"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
+          {%{
+             "obis" => "1-0:1.8.0",
+             "obis_value" => 1744.868,
+             "1-0:1.8.0" => 1744.868,
+             "unit" => "kWh",
+             "1_8_0" => 1744.868
+           }, [measured_at: test_datetime("2019-01-01T12:00:00Z")]},
+          {%{
+             "obis" => "1-0:1.8.0",
+             "obis_value" => 1744.868,
+             "1-0:1.8.0" => 1744.868,
+             "unit" => "kWh",
+             "1_8_0" => 1744.868
+           }, [measured_at: test_datetime("2019-01-01T11:45:00Z")]},
+          {%{server_id: 29_612_592_940_403_080_159_824, server_id_hex: "06454D48010E15C1E250"},
+           [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
           {%{battery: 100}, [measured_at: test_datetime("2019-01-01T12:00:00Z")]}
         ]
       },
-
 
       # Regelmäßige Nachricht mit Interpolation auf 15 Minuten seit dem letzten Messwert
       {
@@ -596,45 +728,108 @@ defmodule Parser do
           meta: %{frame_port: 3},
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
           _config: %{
-interpolate: true,
-                   },
-          _last_reading_map: %{
-            [obis: "1-0:1.8.0", unit: "kWh"] =>
-              %{measured_at: test_datetime("2019-01-01T11:34:56Z"), data: %{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 65.0, "unit" => "kWh"}},
-            [obis: "1-0:2.8.0", unit: "kWh"] =>
-             %{measured_at: test_datetime("2019-01-01T11:34:56Z"), data: %{"obis" => "1-0:2.8.0", "1-0:2.8.0" => 0.0, "unit" => "kWh"}},
+            interpolate: true
           },
+          _last_reading_map: %{
+            [obis: "1-0:1.8.0", unit: "kWh"] => %{
+              measured_at: test_datetime("2019-01-01T11:34:56Z"),
+              data: %{"obis" => "1-0:1.8.0", "1-0:1.8.0" => 65.0, "unit" => "kWh"}
+            },
+            [obis: "1-0:2.8.0", unit: "kWh"] => %{
+              measured_at: test_datetime("2019-01-01T11:34:56Z"),
+              data: %{"obis" => "1-0:2.8.0", "1-0:2.8.0" => 0.0, "unit" => "kWh"}
+            }
+          }
         },
         [
           # Current 1.8.0
-          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
-          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
-          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
-          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh", "1_8_0" => 67.0}, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
+          {%{
+             "obis_value" => 67.0,
+             "1-0:1.8.0" => 67.0,
+             "obis" => "1-0:1.8.0",
+             "unit" => "kWh",
+             "1_8_0" => 67.0
+           }, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+          {%{
+             "obis_value" => 67.0,
+             "1-0:1.8.0" => 67.0,
+             "obis" => "1-0:1.8.0",
+             "unit" => "kWh",
+             "1_8_0" => 67.0
+           }, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
+          {%{
+             "obis_value" => 67.0,
+             "1-0:1.8.0" => 67.0,
+             "obis" => "1-0:1.8.0",
+             "unit" => "kWh",
+             "1_8_0" => 67.0
+           }, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
+          {%{
+             "obis_value" => 67.0,
+             "1-0:1.8.0" => 67.0,
+             "obis" => "1-0:1.8.0",
+             "unit" => "kWh",
+             "1_8_0" => 67.0
+           }, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
 
           # Calculated 1.8.0
-          {%{"obis_value" => 66.342, "1-0:1.8.0" => 66.342, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
-          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
-          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
-          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
+          {%{
+             "obis_value" => 66.342,
+             "1-0:1.8.0" => 66.342,
+             "obis" => "1-0:1.8.0",
+             "unit" => "kWh"
+           }, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
+          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"},
+           [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
+          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"},
+           [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
+          {%{"obis_value" => 67.0, "1-0:1.8.0" => 67.0, "obis" => "1-0:1.8.0", "unit" => "kWh"},
+           [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
 
           # Current 2.8.0
-          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
-          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
-          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
-          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh", "2_8_0" => 2.0}, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
+          {%{
+             "obis_value" => 2.0,
+             "1-0:2.8.0" => 2.0,
+             "obis" => "1-0:2.8.0",
+             "unit" => "kWh",
+             "2_8_0" => 2.0
+           }, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+          {%{
+             "obis_value" => 2.0,
+             "1-0:2.8.0" => 2.0,
+             "obis" => "1-0:2.8.0",
+             "unit" => "kWh",
+             "2_8_0" => 2.0
+           }, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
+          {%{
+             "obis_value" => 2.0,
+             "1-0:2.8.0" => 2.0,
+             "obis" => "1-0:2.8.0",
+             "unit" => "kWh",
+             "2_8_0" => 2.0
+           }, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
+          {%{
+             "obis_value" => 2.0,
+             "1-0:2.8.0" => 2.0,
+             "obis" => "1-0:2.8.0",
+             "unit" => "kWh",
+             "2_8_0" => 2.0
+           }, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
 
           # Calculated 2.8.0
-          {%{"obis_value" => 1.342, "1-0:2.8.0" => 1.342, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
-          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
-          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
-          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"}, [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
-
-          {%{server_id: 47247395511192982553728, server_id_hex: "0A014954520003468480"}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+          {%{"obis_value" => 1.342, "1-0:2.8.0" => 1.342, "obis" => "1-0:2.8.0", "unit" => "kWh"},
+           [measured_at: test_datetime("2019-01-01 11:45:00Z")]},
+          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"},
+           [measured_at: test_datetime("2019-01-01 12:00:00Z")]},
+          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"},
+           [measured_at: test_datetime("2019-01-01 12:15:00Z")]},
+          {%{"obis_value" => 2.0, "1-0:2.8.0" => 2.0, "obis" => "1-0:2.8.0", "unit" => "kWh"},
+           [measured_at: test_datetime("2019-01-01 12:30:00Z")]},
+          {%{server_id: 47_247_395_511_192_982_553_728, server_id_hex: "0A014954520003468480"},
+           [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
           {%{battery: 90}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]}
         ]
       },
-
 
       # Nachricht mit schlagartig hohem Wert, bei dem jedoch keine negativen werte rauskommen sollen.
       {
@@ -643,41 +838,42 @@ interpolate: true,
         %{
           meta: %{frame_port: 3},
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
-          _last_reading_map: %{},
+          _last_reading_map: %{}
         },
         [
           {%{
-            "1-0:1.8.0" => 0.001,
-            "obis_value" => 0.001,
-            "1_8_0" => 0.001,
-            "obis" => "1-0:1.8.0",
-            "unit" => "kWh"
-          }, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+             "1-0:1.8.0" => 0.001,
+             "obis_value" => 0.001,
+             "1_8_0" => 0.001,
+             "obis" => "1-0:1.8.0",
+             "unit" => "kWh"
+           }, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
           {%{
-            "1-0:1.8.0" => 0.001,
-            "obis_value" => 0.001,
-            "1_8_0" => 0.001,
-            "obis" => "1-0:1.8.0",
-            "unit" => "kWh"
-          }, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
+             "1-0:1.8.0" => 0.001,
+             "obis_value" => 0.001,
+             "1_8_0" => 0.001,
+             "obis" => "1-0:1.8.0",
+             "unit" => "kWh"
+           }, [measured_at: test_datetime("2019-01-01 12:19:56Z")]},
           {%{
-            "1-0:1.8.0" => 0.001,
-            "obis_value" => 0.001,
-            "1_8_0" => 0.001,
-            "obis" => "1-0:1.8.0",
-            "unit" => "kWh"
-          }, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
+             "1-0:1.8.0" => 0.001,
+             "obis_value" => 0.001,
+             "1_8_0" => 0.001,
+             "obis" => "1-0:1.8.0",
+             "unit" => "kWh"
+           }, [measured_at: test_datetime("2019-01-01 12:04:56Z")]},
           {%{
-            "1-0:1.8.0" => 0.001,
-            "obis_value" => 0.001,
-            "1_8_0" => 0.001,
-            "obis" => "1-0:1.8.0",
-          "unit" => "kWh"
-          }, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
-          {%{server_id: 47247321209504247356950, server_id_hex: "0A01484C590200009E16"}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
+             "1-0:1.8.0" => 0.001,
+             "obis_value" => 0.001,
+             "1_8_0" => 0.001,
+             "obis" => "1-0:1.8.0",
+             "unit" => "kWh"
+           }, [measured_at: test_datetime("2019-01-01 11:49:56Z")]},
+          {%{server_id: 47_247_321_209_504_247_356_950, server_id_hex: "0A01484C590200009E16"},
+           [measured_at: test_datetime("2019-01-01 12:34:56Z")]},
           {%{battery: 100}, [measured_at: test_datetime("2019-01-01 12:34:56Z")]}
         ]
-      },
+      }
     ]
   end
 
@@ -686,5 +882,4 @@ interpolate: true,
     {:ok, datetime, _} = DateTime.from_iso8601(iso8601)
     datetime
   end
-
 end

@@ -103,13 +103,13 @@ defmodule Parser do
         }
       end
     ) ++
-    [
-      %{
-        "field" => "register_value",
-        "display" => "A+",
-        "unit" => "kWh"
-      }
-    ]
+      [
+        %{
+          "field" => "register_value",
+          "display" => "A+",
+          "unit" => "kWh"
+        }
+      ]
   end
 
   # Test case and data for automatic testing

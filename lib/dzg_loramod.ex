@@ -11,28 +11,36 @@ defmodule Parser do
 
   # Test hex payload: "51BBF1BD0228000000"
   def parse(<<header::8, meterid::integer-little-32, register_value::integer-little-32>>, _meta) do
-  << _version::integer-little-2, medium::integer-little-3,qualifier::integer-little-3 >> = <<header::8>>
+    <<_version::integer-little-2, medium::integer-little-3, qualifier::integer-little-3>> =
+      <<header::8>>
 
-    {medium_name, scaler} = case medium do
-      0 -> {"heatcostallocator", 0}
-      1 -> {"temperature", 0.01}
-      2 -> {"electricity", 0.01}
-      3 -> {"gas", 0.01}
-      4 -> {"heat", 0.01}
-      6 -> {"hotwater", 0.01}
-      7 -> {"water", 0.01}
-      _ -> {"unknown", 1}
-    end
+    {medium_name, scaler} =
+      case medium do
+        0 -> {"heatcostallocator", 0}
+        1 -> {"temperature", 0.01}
+        2 -> {"electricity", 0.01}
+        3 -> {"gas", 0.01}
+        4 -> {"heat", 0.01}
+        6 -> {"hotwater", 0.01}
+        7 -> {"water", 0.01}
+        _ -> {"unknown", 1}
+      end
 
     %{
       qualifier: qualifier,
       meterid: meterid,
       medium: medium_name,
-      register: register_value * scaler,
+      register: register_value * scaler
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
@@ -40,11 +48,11 @@ defmodule Parser do
     [
       %{
         "field" => "register",
-        "display" => "Register",
+        "display" => "Register"
       },
       %{
         "field" => "qualifier",
-        "display" => "Qualifier",
+        "display" => "Qualifier"
       },
       %{
         "field" => "medium",
@@ -60,17 +68,23 @@ defmodule Parser do
   def tests() do
     [
       {
-        :parse_hex, "51D0F1BD0263000000", %{}, %{
+        :parse_hex,
+        "51D0F1BD0263000000",
+        %{},
+        %{
           qualifier: 1,
-          meterid: 46002640,
+          meterid: 46_002_640,
           medium: "electricity",
           register: 0.99
         }
       },
       {
-        :parse_hex, "51294BBC000D000000", %{},  %{
+        :parse_hex,
+        "51294BBC000D000000",
+        %{},
+        %{
           medium: "electricity",
-          meterid: 12340009,
+          meterid: 12_340_009,
           qualifier: 1,
           register: 0.13
         }
@@ -79,8 +93,11 @@ defmodule Parser do
       # Heat cost allocator
 
       {
-        :parse_hex, "41294BBC000D000000", %{},  %{medium: "heatcostallocator", meterid: 12340009, qualifier: 1, register: 0}
-      },
+        :parse_hex,
+        "41294BBC000D000000",
+        %{},
+        %{medium: "heatcostallocator", meterid: 12_340_009, qualifier: 1, register: 0}
+      }
     ]
   end
 end

@@ -32,45 +32,62 @@ defmodule Parser do
       interpolate_minutes: 60,
 
       # Timezone (default: "Europe/Berlin")
-      timezone: "Europe/Berlin",
+      timezone: "Europe/Berlin"
     }
   end
+
   defp config(key, meta), do: get(meta, [:_config, key], Map.get(config(), key))
-  
 
-  defp add_obis(%{"digital1_reporting_medium_type" => :gas_in_liter, :digital1_reporting => value} = reading) do
+  defp add_obis(
+         %{"digital1_reporting_medium_type" => :gas_in_liter, :digital1_reporting => value} =
+           reading
+       ) do
     Map.merge(reading, %{
       :obis => "7-0:3.0.0",
-       "7-0:3.0.0" => round_as_float(value / 1000), # Convert liter to m3
+      # Convert liter to m3
+      "7-0:3.0.0" => round_as_float(value / 1000)
     })
   end
-  defp add_obis(%{"digital2_reporting_medium_type" => :gas_in_liter, :digital2_reporting => value} = reading) do
+
+  defp add_obis(
+         %{"digital2_reporting_medium_type" => :gas_in_liter, :digital2_reporting => value} =
+           reading
+       ) do
     Map.merge(reading, %{
       :obis => "7-0:3.0.0",
-      "7-0:3.0.0" => round_as_float(value / 1000), # Convert liter to m3
+      # Convert liter to m3
+      "7-0:3.0.0" => round_as_float(value / 1000)
     })
   end
 
-  defp add_obis(%{"digital1_reporting_medium_type" => :electricity_in_wh, :digital1_reporting => value} = reading) do
+  defp add_obis(
+         %{"digital1_reporting_medium_type" => :electricity_in_wh, :digital1_reporting => value} =
+           reading
+       ) do
     Map.merge(reading, %{
       :obis => "1-0:1.8.0",
-      "1-0:1.8.0" => round_as_float(value / 1000), # Convert wh to kwh
+      # Convert wh to kwh
+      "1-0:1.8.0" => round_as_float(value / 1000)
     })
   end
-  defp add_obis(%{"digital2_reporting_medium_type" => :electricity_in_wh, :digital2_reporting => value} = reading) do
+
+  defp add_obis(
+         %{"digital2_reporting_medium_type" => :electricity_in_wh, :digital2_reporting => value} =
+           reading
+       ) do
     Map.merge(reading, %{
       :obis => "1-0:1.8.0",
-      "1-0:1.8.0" => round_as_float(value / 1000), # Convert wh to kwh
+      # Convert wh to kwh
+      "1-0:1.8.0" => round_as_float(value / 1000)
     })
   end
 
+  # --- Do not edit blow here! ---
 
-  #--- Do not edit blow here! ---
-
-
-  defp add_obis([_|_] = readings) do
+  defp add_obis([_ | _] = readings) do
     Enum.map(readings, &add_obis(&1))
   end
+
   defp add_obis(%{} = data), do: data
   defp add_obis({data, opts}), do: {add_obis(data), opts}
 
@@ -87,74 +104,91 @@ defmodule Parser do
 
     case get_last_reading(meta, last_reading_query) do
       %{data: %{^key => last_value}, measured_at: last_measured_at} ->
-         [
-           {%{value: last_value}, [measured_at: last_measured_at]},
-           {%{value: current_value}, [measured_at: current_measured_at]},
-         ]
-         |> TimeSeries.fill_gaps(
-              fn datetime_a, datetime_b ->
-                # Calculate all tuples with x=nil between a and b where a value should be interpolated
-                interval = Timex.Interval.new(
-                  from: datetime_a |> Timex.to_datetime(timezone) |> datetime_add_to_multiple_of_minutes(interpolate_minutes),
-                  until: datetime_b,
-                  left_open: false,
-                  step: [minutes: interpolate_minutes]
-                )
-                Enum.map(interval, &({nil, [measured_at: &1]}))
-              end,
-              :linear,
-              x_access_path: [Access.elem(1), :measured_at],
-              y_access_path: [Access.elem(0)],
-              x_pre_calc_fun: &Timex.to_unix/1,
-              x_post_calc_fun: &Timex.to_datetime/1,
-              y_pre_calc_fun: fn %{value: value} -> value end,
-              y_post_calc_fun: &(%{value: &1, _interpolated: true})
-            )
-         |> Enum.filter(fn ({data, _meta}) -> Map.get(data, :_interpolated, false) end)
-         |> Enum.map(fn {%{value: value}, reading_meta} ->
-            value = round_as_float(value)
-            data = add_obis(%{
+        [
+          {%{value: last_value}, [measured_at: last_measured_at]},
+          {%{value: current_value}, [measured_at: current_measured_at]}
+        ]
+        |> TimeSeries.fill_gaps(
+          fn datetime_a, datetime_b ->
+            # Calculate all tuples with x=nil between a and b where a value should be interpolated
+            interval =
+              Timex.Interval.new(
+                from:
+                  datetime_a
+                  |> Timex.to_datetime(timezone)
+                  |> datetime_add_to_multiple_of_minutes(interpolate_minutes),
+                until: datetime_b,
+                left_open: false,
+                step: [minutes: interpolate_minutes]
+              )
+
+            Enum.map(interval, &{nil, [measured_at: &1]})
+          end,
+          :linear,
+          x_access_path: [Access.elem(1), :measured_at],
+          y_access_path: [Access.elem(0)],
+          x_pre_calc_fun: &Timex.to_unix/1,
+          x_post_calc_fun: &Timex.to_datetime/1,
+          y_pre_calc_fun: fn %{value: value} -> value end,
+          y_post_calc_fun: &%{value: &1, _interpolated: true}
+        )
+        |> Enum.filter(fn {data, _meta} -> Map.get(data, :_interpolated, false) end)
+        |> Enum.map(fn {%{value: value}, reading_meta} ->
+          value = round_as_float(value)
+
+          data =
+            add_obis(%{
               key => value,
-              "#{key}_interpolated" => 1,
+              "#{key}_interpolated" => 1
             })
-            {
-              data,
-              reading_meta
-            }
-          end)
+
+          {
+            data,
+            reading_meta
+          }
+        end)
 
       nil ->
-        Logger.info("No result for get_last_reading(#{inspect last_reading_query})")
+        Logger.info("No result for get_last_reading(#{inspect(last_reading_query)})")
         []
 
       invalid_prev_reading ->
-        Logger.warn("Could not interpolate_value(#{key}) because of invalid previous reading: #{inspect invalid_prev_reading}")
+        Logger.warn(
+          "Could not interpolate_value(#{key}) because of invalid previous reading: #{
+            inspect(invalid_prev_reading)
+          }"
+        )
+
         []
     end
   end
 
   # Interpolate if enabled.
   defp add_missing(data, meta) when is_list(data) do
-    Enum.flat_map(data, fn(row) ->
+    Enum.flat_map(data, fn row ->
       add_missing(row, meta)
     end)
   end
+
   defp add_missing(data, meta) do
     if config(:interpolate, meta) do
+      digital1 =
+        case data do
+          %{:digital1_reporting => value} ->
+            interpolate_value(:digital1_reporting, value, meta)
 
-      digital1 = case data do
-        %{:digital1_reporting => value} ->
-          interpolate_value(:digital1_reporting, value, meta)
-        _ ->
-          []
-      end
+          _ ->
+            []
+        end
 
-      digital2 = case data do
-        %{:digital2_reporting => value} ->
-          interpolate_value(:digital2_reporting, value, meta)
-        _ ->
-          []
-      end
+      digital2 =
+        case data do
+          %{:digital2_reporting => value} ->
+            interpolate_value(:digital2_reporting, value, meta)
+
+          _ ->
+            []
+        end
 
       [data] ++ digital1 ++ digital2
     else
@@ -166,15 +200,19 @@ defmodule Parser do
   defp datetime_add_to_multiple_of_minutes(%DateTime{} = dt, minutes) do
     minute_seconds = minutes * 60
     rem = rem(DateTime.to_unix(dt), minute_seconds)
-    Timex.shift(dt, seconds: (minute_seconds - rem))
+    Timex.shift(dt, seconds: minute_seconds - rem)
   end
 
   # Status Message
-  def parse(<<settings::binary-1, battery::unsigned, temp::signed, rssi::signed, interface_status::binary>>, %{meta: %{frame_port:  24}} = meta) do
+  def parse(
+        <<settings::binary-1, battery::unsigned, temp::signed, rssi::signed,
+          interface_status::binary>>,
+        %{meta: %{frame_port: 24}} = meta
+      ) do
     %{
       battery: battery,
       temp: temp,
-      rssi: rssi * -1,
+      rssi: rssi * -1
     }
     |> parse_reporting(settings, interface_status)
     |> add_missing(meta)
@@ -182,7 +220,7 @@ defmodule Parser do
   end
 
   # Status Message
-  def parse(<<settings::binary-1, interface_status::binary>>, %{meta: %{frame_port:  25}} = meta) do
+  def parse(<<settings::binary-1, interface_status::binary>>, %{meta: %{frame_port: 25}} = meta) do
     %{}
     |> parse_reporting(settings, interface_status)
     |> add_missing(meta)
@@ -190,17 +228,27 @@ defmodule Parser do
   end
 
   # Boot Message
-  def parse(<<0x00, serial::4-binary, firmware::3-binary, rest::binary>>, %{meta: %{frame_port:  99}}) do
+  def parse(<<0x00, serial::4-binary, firmware::3-binary, rest::binary>>, %{
+        meta: %{frame_port: 99}
+      }) do
     <<major::8, minor::8, patch::8>> = firmware
+
     {%{
-      type: :boot,
-      serial: Base.encode16(serial),
-      firmware: "#{major}.#{minor}.#{patch}",
-    }, rest}
+       type: :boot,
+       serial: Base.encode16(serial),
+       firmware: "#{major}.#{minor}.#{patch}"
+     }, rest}
     |> case do
       {reading, <<reset_reason, rest::binary>>} ->
-        reset_msg = Map.get(%{0x02 => :watchdog_reset, 0x04 => :soft_reset, 0x10 => :normal_magnet}, reset_reason, :unknown)
+        reset_msg =
+          Map.get(
+            %{0x02 => :watchdog_reset, 0x04 => :soft_reset, 0x10 => :normal_magnet},
+            reset_reason,
+            :unknown
+          )
+
         {Map.put(reading, :reset_reason, reset_msg), rest}
+
       default ->
         default
     end
@@ -208,117 +256,162 @@ defmodule Parser do
       {reading, <<battery_info>>} ->
         battery_voltage = Map.get(%{0x1 => "3.0V", 0x2 => "3.6V"}, battery_info, :unknown)
         {Map.put(reading, :battery_voltage, battery_voltage), rest}
+
       default ->
         default
     end
     |> Kernel.elem(0)
   end
+
   # Shutdown Message
-  def parse(<<0x01>>, %{meta: %{frame_port:  99}}) do
+  def parse(<<0x01>>, %{meta: %{frame_port: 99}}) do
     %{
-      type: :shutdown,
+      type: :shutdown
     }
   end
-  def parse(<<0x01, reason, status_message::binary>>, %{meta: %{frame_port:  99}}) do
-    reason = Map.get(%{0x02 => :hardware_error, 0x31 => :user_magnet, 0x32 => :user_dfu}, reason, :unknown)
 
-    List.wrap(parse(status_message, %{meta: %{frame_port: 25}})) ++ [
-      %{
-        type: :shutdown,
-        reason: reason,
-      }
-    ]
+  def parse(<<0x01, reason, status_message::binary>>, %{meta: %{frame_port: 99}}) do
+    reason =
+      Map.get(
+        %{0x02 => :hardware_error, 0x31 => :user_magnet, 0x32 => :user_dfu},
+        reason,
+        :unknown
+      )
+
+    List.wrap(parse(status_message, %{meta: %{frame_port: 25}})) ++
+      [
+        %{
+          type: :shutdown,
+          reason: reason
+        }
+      ]
   end
+
   # Error Code Message
-  def parse(<<0x10, error_code>>, %{meta: %{frame_port:  99}}) do
+  def parse(<<0x10, error_code>>, %{meta: %{frame_port: 99}}) do
     %{
       type: :error,
-      error_code: error_code,
+      error_code: error_code
     }
   end
 
   # Configuration Message
-  def parse(_payload, %{meta: %{frame_port:  49}}) do
+  def parse(_payload, %{meta: %{frame_port: 49}}) do
     %{
-      type: :config_req,
+      type: :config_req
     }
   end
 
   # MBus connect Message
   def parse(<<0x01, packet_info::binary-1, rest::binary>>, %{meta: %{frame_port: 53}}) do
-    <<only_drh::1, mbus_fixed_header::1, _rfu::2, packets_to_follow::1, packet_number::3>> = packet_info
+    <<only_drh::1, mbus_fixed_header::1, _rfu::2, packets_to_follow::1, packet_number::3>> =
+      packet_info
+
     packet_info_map = %{
       type: :mbus_connect,
       packet_number: packet_number,
-      packets_to_follow: (packets_to_follow == 1),
+      packets_to_follow: packets_to_follow == 1,
       mbus_fixed_header: sent_or_not(mbus_fixed_header),
-      only_drh: (only_drh == 1),
+      only_drh: only_drh == 1
     }
 
-    mbus_fixed = if mbus_fixed_header == 1 do
-      <<bcd_ident_number::little-32, manufacturer_id::binary-2, sw_version::binary-1, medium::binary-1, access_number:: binary-1, status::binary-1, signature::binary-2, _drh_bytes::binary>> = rest
+    mbus_fixed =
+      if mbus_fixed_header == 1 do
+        <<bcd_ident_number::little-32, manufacturer_id::binary-2, sw_version::binary-1,
+          medium::binary-1, access_number::binary-1, status::binary-1, signature::binary-2,
+          _drh_bytes::binary>> = rest
 
-      %{
-        bcd_ident_number: Base.encode16(<<bcd_ident_number::32>>),
-        manufacturer_id: Base.encode16(manufacturer_id),
-        sw_version: Base.encode16(sw_version),
-        medium: Base.encode16(medium),
-        access_number: Base.encode16(access_number),
-        status: Base.encode16(status),
-        signature: Base.encode16(signature),
-      }
-    else
-      %{}
-    end
+        %{
+          bcd_ident_number: Base.encode16(<<bcd_ident_number::32>>),
+          manufacturer_id: Base.encode16(manufacturer_id),
+          sw_version: Base.encode16(sw_version),
+          medium: Base.encode16(medium),
+          access_number: Base.encode16(access_number),
+          status: Base.encode16(status),
+          signature: Base.encode16(signature)
+        }
+      else
+        %{}
+      end
 
     Map.merge(packet_info_map, mbus_fixed)
   end
 
   # Catchall for any other message.
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
   defp parse_reporting(map, <<settings::binary-1>>, interface_status) do
-    <<_rfu::1, user_triggered::1, mbus::1, ssi::1, analog2_reporting::1, analog1_reporting::1, digital2_reporting::1, digital1_reporting::1>> = settings
+    <<_rfu::1, user_triggered::1, mbus::1, ssi::1, analog2_reporting::1, analog1_reporting::1,
+      digital2_reporting::1, digital1_reporting::1>> = settings
+
     settings_map = %{
-      user_triggered: (1 == user_triggered),
-      mbus: (1 == mbus),
-      ssi: (1 == ssi)
+      user_triggered: 1 == user_triggered,
+      mbus: 1 == mbus,
+      ssi: 1 == ssi
     }
-    
-    [digital1_reporting: digital1_reporting, digital2_reporting: digital2_reporting, analog1_reporting: analog1_reporting, analog2_reporting: analog2_reporting, mbus_reporting: mbus]
-    |> Enum.filter(fn {_,y} -> y == 1 end)
-    |> Enum.map(&elem(&1,0))
+
+    [
+      digital1_reporting: digital1_reporting,
+      digital2_reporting: digital2_reporting,
+      analog1_reporting: analog1_reporting,
+      analog2_reporting: analog2_reporting,
+      mbus_reporting: mbus
+    ]
+    |> Enum.filter(fn {_, y} -> y == 1 end)
+    |> Enum.map(&elem(&1, 0))
     |> parse_single_reporting(Map.merge(settings_map, map), interface_status)
   end
 
-  defp parse_single_reporting([type | _more_types], map, <<status::binary-1, mbus_status, dr::binary>>) when type in [:mbus_reporting] do
+  defp parse_single_reporting(
+         [type | _more_types],
+         map,
+         <<status::binary-1, mbus_status, dr::binary>>
+       )
+       when type in [:mbus_reporting] do
     <<_rfu::4, parameter::4>> = status
+
     mbus_map = %{
       mbus_parameter: mbus_parameter(parameter),
-      mbus_status: mbus_status,
+      mbus_status: mbus_status
     }
 
     [Map.merge(mbus_map, map)] ++ filter_and_flatmap_mbus_data(dr)
   end
 
-  defp parse_single_reporting([type | more_types], map, <<settings::8, counter::little-32, rest::binary>>) when type in [:digital1_reporting, :digital2_reporting] do
+  defp parse_single_reporting(
+         [type | more_types],
+         map,
+         <<settings::8, counter::little-32, rest::binary>>
+       )
+       when type in [:digital1_reporting, :digital2_reporting] do
     <<medium_type::4, _rfu::1, trigger_alert::1, trigger_mode::1, value_high::1>> = <<settings>>
+
     result = %{
       type => counter,
       "#{type}_medium_type" => medium_type(medium_type),
-      "#{type}_trigger_alert" => %{0=>:ok, 1=>:alert}[trigger_alert],
-      "#{type}_trigger_mode2" => %{0=>:disabled, 1=>:enabled}[trigger_mode],
-      "#{type}_value_during_reporting" => %{0=>:low, 1=>:high}[value_high],
+      "#{type}_trigger_alert" => %{0 => :ok, 1 => :alert}[trigger_alert],
+      "#{type}_trigger_mode2" => %{0 => :disabled, 1 => :enabled}[trigger_mode],
+      "#{type}_value_during_reporting" => %{0 => :low, 1 => :high}[value_high]
     }
 
     parse_single_reporting(more_types, Map.merge(map, result), rest)
   end
 
   # analog: both current (instant) and average value are sent
-  defp parse_single_reporting([type | more_types], map, <<status_settings::binary-1, rest::binary>>) when type in [:analog1_reporting, :analog2_reporting] do
+  defp parse_single_reporting(
+         [type | more_types],
+         map,
+         <<status_settings::binary-1, rest::binary>>
+       )
+       when type in [:analog1_reporting, :analog2_reporting] do
     <<average_flag::1, instant_flag::1, _rfu::4, _thresh_alert::1, mode::1>> = status_settings
 
     {new_map, new_rest} =
@@ -340,6 +433,7 @@ defmodule Parser do
       rest
     }
   end
+
   defp parse_analog_value({map, rest}, _, 0), do: {map, rest}
 
   defp filter_and_flatmap_mbus_data(mbus_data) do
@@ -355,9 +449,11 @@ defmodule Parser do
       %{desc: "error codes", value: v} = map ->
         Map.merge(map, %{"error codes" => v, :unit => ""})
         |> Map.drop([:desc, :value])
+
       %{desc: d = "energy", value: v, unit: "Wh"} = map ->
         Map.merge(map, %{d => Float.round(v / 1000, 3), :unit => "kWh"})
         |> Map.drop([:desc, :value])
+
       %{desc: d, value: v} = map ->
         Map.merge(map, %{d => v})
         |> Map.drop([:desc, :value])
@@ -367,13 +463,14 @@ defmodule Parser do
   # Will remove all unknown fields from LibWmbus.Dib.parse_dib(payload) result.
   defp filter_unknown_data(parse_dib_result) do
     Enum.filter(parse_dib_result, fn
-      (%{data: %{desc: desc}}) ->
+      %{data: %{desc: desc}} ->
         case to_string(desc) do
           <<"unkown_", _::binary>> -> false
           <<"unknown_", _::binary>> -> false
           _ -> true
         end
-      (_) ->
+
+      _ ->
         true
     end)
   end
@@ -392,7 +489,7 @@ defmodule Parser do
   defp medium_type(0x03), do: :electricity_in_wh
   defp medium_type(0x04), do: :gas_in_liter
   defp medium_type(0x05), do: :heat_in_wh
-  defp medium_type(_),    do: :rfu
+  defp medium_type(_), do: :rfu
 
   defp sent_or_not(0), do: :not_sent
   defp sent_or_not(1), do: :sent
@@ -401,51 +498,64 @@ defmodule Parser do
   def tests() do
     [
       {
-        :parse_hex,  "03E6172C50000000002000000000", %{meta: %{frame_port: 24}, _comment: "Simple heat and water"},  [%{
-          :battery => 230,
-          :digital1_reporting => 0,
-          :digital2_reporting => 0,
-          :mbus => false,
-          :rssi => -44,
-          :ssi => false,
-          :temp => 23,
-          :user_triggered => false,
-          "digital1_reporting_medium_type" => :heat_in_wh,
-          "digital1_reporting_trigger_alert" => :ok,
-          "digital1_reporting_trigger_mode2" => :disabled,
-          "digital1_reporting_value_during_reporting" => :low,
-          "digital2_reporting_medium_type" => :water_in_liter,
-          "digital2_reporting_trigger_alert" => :ok,
-          "digital2_reporting_trigger_mode2" => :disabled,
-          "digital2_reporting_value_during_reporting" => :low
-        }],
+        :parse_hex,
+        "03E6172C50000000002000000000",
+        %{meta: %{frame_port: 24}, _comment: "Simple heat and water"},
+        [
+          %{
+            :battery => 230,
+            :digital1_reporting => 0,
+            :digital2_reporting => 0,
+            :mbus => false,
+            :rssi => -44,
+            :ssi => false,
+            :temp => 23,
+            :user_triggered => false,
+            "digital1_reporting_medium_type" => :heat_in_wh,
+            "digital1_reporting_trigger_alert" => :ok,
+            "digital1_reporting_trigger_mode2" => :disabled,
+            "digital1_reporting_value_during_reporting" => :low,
+            "digital2_reporting_medium_type" => :water_in_liter,
+            "digital2_reporting_trigger_alert" => :ok,
+            "digital2_reporting_trigger_mode2" => :disabled,
+            "digital2_reporting_value_during_reporting" => :low
+          }
+        ]
       },
       {
-        :parse_hex, "0FF61A4B120100000010C40900004039C160404140C9D740", %{meta: %{frame_port: 24}, _comment: "Example Payload for UM3023 from docs v0.7.0"}, [%{
-          :battery => 246,
-          :digital1_reporting => 1,
-          :digital2_reporting => 2500,
-          :temp => 26,
-          :rssi => -75,
-          :mbus => false,
-          :ssi => false,
-          :user_triggered => false,
-          "analog1_reporting_current_value" => 3.511793375015259,
-          "analog1_reporting_mode" => "0..10V",
-          "analog2_reporting_current_value" => 6.743316650390625,
-          "analog2_reporting_mode" => "4..20mA",
-          "digital1_reporting_medium_type" => :pulses,
-          "digital1_reporting_trigger_alert" => :ok,
-          "digital1_reporting_trigger_mode2" => :enabled,
-          "digital1_reporting_value_during_reporting" => :low,
-          "digital2_reporting_medium_type" => :pulses,
-          "digital2_reporting_trigger_alert" => :ok,
-          "digital2_reporting_trigger_mode2" => :disabled,
-          "digital2_reporting_value_during_reporting" => :low,
-        }]
+        :parse_hex,
+        "0FF61A4B120100000010C40900004039C160404140C9D740",
+        %{meta: %{frame_port: 24}, _comment: "Example Payload for UM3023 from docs v0.7.0"},
+        [
+          %{
+            :battery => 246,
+            :digital1_reporting => 1,
+            :digital2_reporting => 2500,
+            :temp => 26,
+            :rssi => -75,
+            :mbus => false,
+            :ssi => false,
+            :user_triggered => false,
+            "analog1_reporting_current_value" => 3.511793375015259,
+            "analog1_reporting_mode" => "0..10V",
+            "analog2_reporting_current_value" => 6.743316650390625,
+            "analog2_reporting_mode" => "4..20mA",
+            "digital1_reporting_medium_type" => :pulses,
+            "digital1_reporting_trigger_alert" => :ok,
+            "digital1_reporting_trigger_mode2" => :enabled,
+            "digital1_reporting_value_during_reporting" => :low,
+            "digital2_reporting_medium_type" => :pulses,
+            "digital2_reporting_trigger_alert" => :ok,
+            "digital2_reporting_trigger_mode2" => :disabled,
+            "digital2_reporting_value_during_reporting" => :low
+          }
+        ]
       },
       {
-        :parse_hex, "63F51B361000000000100000000000000B2D4700009B102D5800000C0616160000046D0A0E5727", %{meta: %{frame_port: 24}, _comment: "Example MBUS Payload for UM3033 from docs v0.7.0"}, [
+        :parse_hex,
+        "63F51B361000000000100000000000000B2D4700009B102D5800000C0616160000046D0A0E5727",
+        %{meta: %{frame_port: 24}, _comment: "Example MBUS Payload for UM3033 from docs v0.7.0"},
+        [
           %{
             :battery => 245,
             :digital1_reporting => 0,
@@ -483,7 +593,7 @@ defmodule Parser do
             unit: "W"
           },
           %{
-            energy: 1616000,
+            energy: 1_616_000,
             function_field: :current_value,
             memory_address: 0,
             sub_device: 0,
@@ -501,25 +611,32 @@ defmodule Parser do
         ]
       },
       {
-        :parse_hex,  "0350000000002006000000", %{meta: %{frame_port: 25}, _comment: "Obis heat and water"}, [%{
-          :digital1_reporting => 0,
-          :digital2_reporting => 6,
-          :mbus => false,
-          :ssi => false,
-          :user_triggered => false,
-          "digital1_reporting_medium_type" => :heat_in_wh,
-          "digital1_reporting_trigger_alert" => :ok,
-          "digital1_reporting_trigger_mode2" => :disabled,
-          "digital1_reporting_value_during_reporting" => :low,
-          "digital2_reporting_medium_type" => :water_in_liter,
-          "digital2_reporting_trigger_alert" => :ok,
-          "digital2_reporting_trigger_mode2" => :disabled,
-          "digital2_reporting_value_during_reporting" => :low
-        }],
+        :parse_hex,
+        "0350000000002006000000",
+        %{meta: %{frame_port: 25}, _comment: "Obis heat and water"},
+        [
+          %{
+            :digital1_reporting => 0,
+            :digital2_reporting => 6,
+            :mbus => false,
+            :ssi => false,
+            :user_triggered => false,
+            "digital1_reporting_medium_type" => :heat_in_wh,
+            "digital1_reporting_trigger_alert" => :ok,
+            "digital1_reporting_trigger_mode2" => :disabled,
+            "digital1_reporting_value_during_reporting" => :low,
+            "digital2_reporting_medium_type" => :water_in_liter,
+            "digital2_reporting_trigger_alert" => :ok,
+            "digital2_reporting_trigger_mode2" => :disabled,
+            "digital2_reporting_value_during_reporting" => :low
+          }
+        ]
       },
-
       {
-        :parse_hex,  "0340060000005000000000", %{meta: %{frame_port: 25}, _comment: "Obis GAS and NO interpolation"},  [
+        :parse_hex,
+        "0340060000005000000000",
+        %{meta: %{frame_port: 25}, _comment: "Obis GAS and NO interpolation"},
+        [
           %{
             :digital1_reporting => 6,
             :digital2_reporting => 0,
@@ -537,9 +654,8 @@ defmodule Parser do
             "digital2_reporting_trigger_mode2" => :disabled,
             "digital2_reporting_value_during_reporting" => :low
           }
-        ],
+        ]
       },
-
       {
         :parse_hex,
         "0340060000005000000000",
@@ -548,12 +664,18 @@ defmodule Parser do
           _comment: "Obis GAS and interpolation",
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
           _config: %{
-            interpolate: true,
+            interpolate: true
           },
           _last_reading_map: %{
-            [digital1_reporting: :_] => %{measured_at: test_datetime("2019-01-01T10:34:11Z"), data: %{:digital1_reporting => 3}},
-            [digital2_reporting: :_] => %{measured_at: test_datetime("2019-01-01T10:34:11Z"), data: %{:digital2_reporting => 0}},
-          },
+            [digital1_reporting: :_] => %{
+              measured_at: test_datetime("2019-01-01T10:34:11Z"),
+              data: %{:digital1_reporting => 3}
+            },
+            [digital2_reporting: :_] => %{
+              measured_at: test_datetime("2019-01-01T10:34:11Z"),
+              data: %{:digital2_reporting => 0}
+            }
+          }
         },
         [
           %{
@@ -574,16 +696,15 @@ defmodule Parser do
             "digital2_reporting_value_during_reporting" => :low
           },
           {%{:digital1_reporting => 3.641, "digital1_reporting_interpolated" => 1},
-            [measured_at: ~U[2019-01-01 11:00:00Z]]},
+           [measured_at: ~U[2019-01-01 11:00:00Z]]},
           {%{:digital1_reporting => 5.132, "digital1_reporting_interpolated" => 1},
-            [measured_at: ~U[2019-01-01 12:00:00Z]]},
+           [measured_at: ~U[2019-01-01 12:00:00Z]]},
           {%{:digital2_reporting => 0.0, "digital2_reporting_interpolated" => 1},
-            [measured_at: ~U[2019-01-01 11:00:00Z]]},
+           [measured_at: ~U[2019-01-01 11:00:00Z]]},
           {%{:digital2_reporting => 0.0, "digital2_reporting_interpolated" => 1},
-            [measured_at: ~U[2019-01-01 12:00:00Z]]}
-        ],
+           [measured_at: ~U[2019-01-01 12:00:00Z]]}
+        ]
       },
-
       {
         :parse_hex,
         "0110ECF00800",
@@ -592,15 +713,18 @@ defmodule Parser do
           _comment: "Only Digital1 in pulses and interpolation",
           transceived_at: test_datetime("2019-01-01T12:34:56Z"),
           _config: %{
-            interpolate: true,
+            interpolate: true
           },
           _last_reading_map: %{
-            [digital1_reporting: :_] => %{measured_at: test_datetime("2019-01-01T10:34:11Z"), data: %{:digital1_reporting => 3}},
-          },
+            [digital1_reporting: :_] => %{
+              measured_at: test_datetime("2019-01-01T10:34:11Z"),
+              data: %{:digital1_reporting => 3}
+            }
+          }
         },
         [
           %{
-            :digital1_reporting => 585964,
+            :digital1_reporting => 585_964,
             :mbus => false,
             :ssi => false,
             :user_triggered => false,
@@ -609,41 +733,54 @@ defmodule Parser do
             "digital1_reporting_trigger_mode2" => :disabled,
             "digital1_reporting_value_during_reporting" => :low
           },
-          {%{:digital1_reporting => 125282.998, "digital1_reporting_interpolated" => 1},
-            [measured_at: ~U[2019-01-01 11:00:00Z]]},
-          {%{:digital1_reporting => 416443.744, "digital1_reporting_interpolated" => 1},
-            [measured_at: ~U[2019-01-01 12:00:00Z]]}
-        ],
-      },
-
-      {
-        :parse_hex, "0F12010000001000000000C0DA365C400B7E5E40C140C9D740DC73D940", %{meta: %{frame_port: 25}, _comment: "analog1 volt and analog2 mA and digital1 pulses and digital2 pulses"}, [%{
-          :digital1_reporting => 1,
-          :digital2_reporting => 0,
-          :mbus => false,
-          :ssi => false,
-          :user_triggered => false,
-          "analog1_reporting_current_value" => 3.440847873687744,
-          "analog1_reporting_average_value" => 3.47644305229187,
-          "analog1_reporting_mode" => "0..10V",
-          "analog2_reporting_current_value" => 6.743316650390625,
-          "analog2_reporting_average_value" => 6.795392990112305,
-          "analog2_reporting_mode" => "4..20mA",
-          "digital1_reporting_medium_type" => :pulses,
-          "digital1_reporting_trigger_alert" => :ok,
-          "digital1_reporting_trigger_mode2" => :enabled,
-          "digital1_reporting_value_during_reporting" => :low,
-          "digital2_reporting_medium_type" => :pulses,
-          "digital2_reporting_trigger_alert" => :ok,
-          "digital2_reporting_trigger_mode2" => :disabled,
-          "digital2_reporting_value_during_reporting" => :low,
-        }]
+          {%{:digital1_reporting => 125_282.998, "digital1_reporting_interpolated" => 1},
+           [measured_at: ~U[2019-01-01 11:00:00Z]]},
+          {%{:digital1_reporting => 416_443.744, "digital1_reporting_interpolated" => 1},
+           [measured_at: ~U[2019-01-01 12:00:00Z]]}
+        ]
       },
       {
-        :parse_hex,  "00D002A005000357020000803F27020000803F", %{meta: %{frame_port: 49}},  %{type: :config_req},
+        :parse_hex,
+        "0F12010000001000000000C0DA365C400B7E5E40C140C9D740DC73D940",
+        %{
+          meta: %{frame_port: 25},
+          _comment: "analog1 volt and analog2 mA and digital1 pulses and digital2 pulses"
+        },
+        [
+          %{
+            :digital1_reporting => 1,
+            :digital2_reporting => 0,
+            :mbus => false,
+            :ssi => false,
+            :user_triggered => false,
+            "analog1_reporting_current_value" => 3.440847873687744,
+            "analog1_reporting_average_value" => 3.47644305229187,
+            "analog1_reporting_mode" => "0..10V",
+            "analog2_reporting_current_value" => 6.743316650390625,
+            "analog2_reporting_average_value" => 6.795392990112305,
+            "analog2_reporting_mode" => "4..20mA",
+            "digital1_reporting_medium_type" => :pulses,
+            "digital1_reporting_trigger_alert" => :ok,
+            "digital1_reporting_trigger_mode2" => :enabled,
+            "digital1_reporting_value_during_reporting" => :low,
+            "digital2_reporting_medium_type" => :pulses,
+            "digital2_reporting_trigger_alert" => :ok,
+            "digital2_reporting_trigger_mode2" => :disabled,
+            "digital2_reporting_value_during_reporting" => :low
+          }
+        ]
       },
       {
-        :parse_hex, "01C888020969A732070415000000097409700C060C140B2D0B3B0B5A0B5E0B620C788910713C220C220C268C9010069B102D", %{meta: %{frame_port: 53}}, %{
+        :parse_hex,
+        "00D002A005000357020000803F27020000803F",
+        %{meta: %{frame_port: 49}},
+        %{type: :config_req}
+      },
+      {
+        :parse_hex,
+        "01C888020969A732070415000000097409700C060C140B2D0B3B0B5A0B5E0B620C788910713C220C220C268C9010069B102D",
+        %{meta: %{frame_port: 53}},
+        %{
           :type => :mbus_connect,
           :packet_number => 0,
           :packets_to_follow => true,
@@ -659,7 +796,10 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "01819B103B9B105A9B105E9410AD6F9410BB6F9410DA6F9410DE6F4C064C147C224C26CC901006DB102DDB103BDB105ADB105E848F0F6D046D", %{meta: %{frame_port: 53}}, %{
+        :parse_hex,
+        "01819B103B9B105A9B105E9410AD6F9410BB6F9410DA6F9410DE6F4C064C147C224C26CC901006DB102DDB103BDB105ADB105E848F0F6D046D",
+        %{meta: %{frame_port: 53}},
+        %{
           :type => :mbus_connect,
           :packet_number => 1,
           :packets_to_follow => false,
@@ -668,140 +808,161 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex,  "01", %{meta: %{frame_port: 99}}, %{type: :shutdown},
+        :parse_hex,
+        "01",
+        %{meta: %{frame_port: 99}},
+        %{type: :shutdown}
       },
       {
-        :parse_hex,  "1001", %{meta: %{frame_port: 99}}, %{error_code: 1, type: :error},
+        :parse_hex,
+        "1001",
+        %{meta: %{frame_port: 99}},
+        %{error_code: 1, type: :error}
       },
       {
-        :parse_hex,  "00D701164C0007081002", %{meta: %{frame_port: 99}},  %{
+        :parse_hex,
+        "00D701164C0007081002",
+        %{meta: %{frame_port: 99}},
+        %{
           battery_voltage: "3.6V",
           firmware: "0.7.8",
           reset_reason: :normal_magnet,
           serial: "D701164C",
           type: :boot
-        },
+        }
       },
       {
-        :parse_hex, "0131033A0B7C10000000001000000000", %{meta: %{frame_port: 99}, _comment: "User magnet and digital 1 kwh"}, [
+        :parse_hex,
+        "0131033A0B7C10000000001000000000",
+        %{meta: %{frame_port: 99}, _comment: "User magnet and digital 1 kwh"},
+        [
+          %{
+            :digital1_reporting => 1_080_331,
+            :digital2_reporting => 1_048_576,
+            :mbus => false,
+            :obis => "1-0:1.8.0",
+            :ssi => false,
+            :user_triggered => false,
+            "1-0:1.8.0" => 1080.331,
+            "digital1_reporting_medium_type" => :electricity_in_wh,
+            "digital1_reporting_trigger_alert" => :ok,
+            "digital1_reporting_trigger_mode2" => :enabled,
+            "digital1_reporting_value_during_reporting" => :low,
+            "digital2_reporting_medium_type" => :not_available,
+            "digital2_reporting_trigger_alert" => :ok,
+            "digital2_reporting_trigger_mode2" => :disabled,
+            "digital2_reporting_value_during_reporting" => :low
+          },
+          %{reason: :user_magnet, type: :shutdown}
+        ]
+      },
+      {
+        :parse_hex,
+        "00CA021C4E000722100200",
+        %{meta: %{frame_port: 99}},
         %{
-          :digital1_reporting => 1080331,
-          :digital2_reporting => 1048576,
-          :mbus => false,
-          :obis => "1-0:1.8.0",
-          :ssi => false,
-          :user_triggered => false,
-          "1-0:1.8.0" => 1080.331,
-          "digital1_reporting_medium_type" => :electricity_in_wh,
-          "digital1_reporting_trigger_alert" => :ok,
-          "digital1_reporting_trigger_mode2" => :enabled,
-          "digital1_reporting_value_during_reporting" => :low,
-          "digital2_reporting_medium_type" => :not_available,
-          "digital2_reporting_trigger_alert" => :ok,
-          "digital2_reporting_trigger_mode2" => :disabled,
-          "digital2_reporting_value_during_reporting" => :low
-        },
-        %{reason: :user_magnet, type: :shutdown}
-      ]
-      },
-      {
-        :parse_hex,  "00CA021C4E000722100200", %{meta: %{frame_port: 99}}, %{
           firmware: "0.7.34",
           reset_reason: :normal_magnet,
           serial: "CA021C4E",
           type: :boot
-        },
-      },
-      {
-        :parse_hex, "211000000000000406A71140000259C525025D5B1802616A0D0414181E2201043C68010000042D84050000143CBF010000142DFC08000082086C9F2C", %{meta: %{frame_port: 25}}, [
-        %{
-          :digital1_reporting => 0,
-          :mbus => true,
-          :mbus_parameter => :ok,
-          :mbus_status => 4,
-          :ssi => false,
-          :user_triggered => false,
-          "digital1_reporting_medium_type" => :pulses,
-          "digital1_reporting_trigger_alert" => :ok,
-          "digital1_reporting_trigger_mode2" => :disabled,
-          "digital1_reporting_value_during_reporting" => :low
-        },
-        %{
-          function_field: :current_value,
-          memory_address: 0,
-          operation_time: 41529532088384,
-          sub_device: 0,
-          tariff: 0,
-          unit: "days with unknown vife (<<17::size(7)>>)"
-        },
-        %{
-          function_field: :current_value,
-          memory_address: 0,
-          return_temperature: 62.35,
-          sub_device: 0,
-          tariff: 0,
-          unit: "°C"
-        },
-        %{
-          function_field: :current_value,
-          memory_address: 0,
-          sub_device: 0,
-          tariff: 0,
-          temperature_difference: 34.34,
-          unit: "K"
-        },
-        %{
-          function_field: :current_value,
-          memory_address: 0,
-          sub_device: 0,
-          tariff: 0,
-          unit: "m³",
-          volume: 190131.44
-        },
-        %{
-          flow: 3.6,
-          function_field: :current_value,
-          memory_address: 0,
-          sub_device: 0,
-          tariff: 0,
-          unit: "m³/h"
-        },
-        %{
-          function_field: :current_value,
-          memory_address: 0,
-          power: 141200,
-          sub_device: 0,
-          tariff: 0,
-          unit: "W"
-        },
-        %{
-          flow: 4.47,
-          function_field: :max_value,
-          memory_address: 0,
-          sub_device: 0,
-          tariff: 0,
-          unit: "m³/h"
-        },
-        %{
-          function_field: :max_value,
-          memory_address: 0,
-          power: 230000,
-          sub_device: 0,
-          tariff: 0,
-          unit: "W"
-        },
-        %{
-          date: ~D[2020-12-31],
-          function_field: :current_value,
-          memory_address: 16,
-          sub_device: 0,
-          tariff: 0,
-          unit: ""
         }
-      ]
       },
       {
-        :parse_hex, "200004063E0000000413E410000002591409025DA408042D00000000043B00000000", %{meta: %{frame_port: 25}}, [
+        :parse_hex,
+        "211000000000000406A71140000259C525025D5B1802616A0D0414181E2201043C68010000042D84050000143CBF010000142DFC08000082086C9F2C",
+        %{meta: %{frame_port: 25}},
+        [
+          %{
+            :digital1_reporting => 0,
+            :mbus => true,
+            :mbus_parameter => :ok,
+            :mbus_status => 4,
+            :ssi => false,
+            :user_triggered => false,
+            "digital1_reporting_medium_type" => :pulses,
+            "digital1_reporting_trigger_alert" => :ok,
+            "digital1_reporting_trigger_mode2" => :disabled,
+            "digital1_reporting_value_during_reporting" => :low
+          },
+          %{
+            function_field: :current_value,
+            memory_address: 0,
+            operation_time: 41_529_532_088_384,
+            sub_device: 0,
+            tariff: 0,
+            unit: "days with unknown vife (<<17::size(7)>>)"
+          },
+          %{
+            function_field: :current_value,
+            memory_address: 0,
+            return_temperature: 62.35,
+            sub_device: 0,
+            tariff: 0,
+            unit: "°C"
+          },
+          %{
+            function_field: :current_value,
+            memory_address: 0,
+            sub_device: 0,
+            tariff: 0,
+            temperature_difference: 34.34,
+            unit: "K"
+          },
+          %{
+            function_field: :current_value,
+            memory_address: 0,
+            sub_device: 0,
+            tariff: 0,
+            unit: "m³",
+            volume: 190_131.44
+          },
+          %{
+            flow: 3.6,
+            function_field: :current_value,
+            memory_address: 0,
+            sub_device: 0,
+            tariff: 0,
+            unit: "m³/h"
+          },
+          %{
+            function_field: :current_value,
+            memory_address: 0,
+            power: 141_200,
+            sub_device: 0,
+            tariff: 0,
+            unit: "W"
+          },
+          %{
+            flow: 4.47,
+            function_field: :max_value,
+            memory_address: 0,
+            sub_device: 0,
+            tariff: 0,
+            unit: "m³/h"
+          },
+          %{
+            function_field: :max_value,
+            memory_address: 0,
+            power: 230_000,
+            sub_device: 0,
+            tariff: 0,
+            unit: "W"
+          },
+          %{
+            date: ~D[2020-12-31],
+            function_field: :current_value,
+            memory_address: 16,
+            sub_device: 0,
+            tariff: 0,
+            unit: ""
+          }
+        ]
+      },
+      {
+        :parse_hex,
+        "200004063E0000000413E410000002591409025DA408042D00000000043B00000000",
+        %{meta: %{frame_port: 25}},
+        [
           %{
             mbus: true,
             mbus_parameter: :ok,
@@ -810,7 +971,7 @@ defmodule Parser do
             user_triggered: false
           },
           %{
-            flow: -30704654090240,
+            flow: -30_704_654_090_240,
             function_field: :current_value,
             memory_address: 0,
             sub_device: 0,
@@ -866,7 +1027,7 @@ defmodule Parser do
             unit: "m³/h"
           }
         ]
-      },
+      }
     ]
   end
 
@@ -875,5 +1036,4 @@ defmodule Parser do
     {:ok, datetime, _} = DateTime.from_iso8601(iso8601)
     datetime
   end
-
 end

@@ -11,23 +11,37 @@ defmodule Parser do
   #
 
   # 6.7.1 standard format without SDC
-  def parse(<<0x00, 0x02, 0x65, temperature::signed-little-16, 0x01, 0xFB, 0x1B, humidity::8>>, _meta) do
+  def parse(
+        <<0x00, 0x02, 0x65, temperature::signed-little-16, 0x01, 0xFB, 0x1B, humidity::8>>,
+        _meta
+      ) do
     %{
       type: :standard,
       temperature: calculate_temperature(temperature),
-      humidity: humidity,
+      humidity: humidity
     }
   end
+
   # 6.7.1 standard format withSDC
-  def parse(<<0x00, 0x02, 0x65, temperature::signed-little-16, 0x01, 0xFB, 0x1B, humidity::8, _rest::binary-5>>, _meta) do
+  def parse(
+        <<0x00, 0x02, 0x65, temperature::signed-little-16, 0x01, 0xFB, 0x1B, humidity::8,
+          _rest::binary-5>>,
+        _meta
+      ) do
     %{
       type: :standard,
       temperature: calculate_temperature(temperature),
-      humidity: humidity,
+      humidity: humidity
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
@@ -38,30 +52,33 @@ defmodule Parser do
     [
       %{
         field: "type",
-        display: "Typ",
+        display: "Typ"
       },
       %{
         field: "temperature",
         display: "Temperatur",
-        unit: "°C",
+        unit: "°C"
       },
       %{
         field: "humidity",
         display: "Luftfeuchtigkeit",
-        unit: "%",
-      },
+        unit: "%"
+      }
     ]
   end
 
   def tests() do
     [
       {
-        :parse_hex, "000265750A01FB1B28", %{meta: %{frame_port: 2}}, %{
-        type: :standard,
-        temperature: 26.77,
-        humidity: 40,
+        :parse_hex,
+        "000265750A01FB1B28",
+        %{meta: %{frame_port: 2}},
+        %{
+          type: :standard,
+          temperature: 26.77,
+          humidity: 40
+        }
       }
-      },
     ]
   end
 end

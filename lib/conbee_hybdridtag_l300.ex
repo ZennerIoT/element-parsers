@@ -22,22 +22,23 @@ defmodule Parser do
     get(
       meta,
       [:device, :fields, :conbee, :distance_zero_percent],
-      200 # guessed max value the device can measure
+      # guessed max value the device can measure
+      200
     )
   end
+
   def ullage_distance_hundred_percent(meta) do
     get(
       meta,
       [:device, :fields, :conbee, :distance_hundred_percent],
-      0 # guessed min value the device can measure
+      # guessed min value the device can measure
+      0
     )
   end
-
 
   def preloads do
     [device: [profile_data: [:profile]]]
   end
-
 
   def parse(data, %{meta: %{frame_port: 1}} = meta) do
     data
@@ -45,13 +46,18 @@ defmodule Parser do
     |> map_packets
     |> add_ullage(meta)
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
-  #----------------
-
+  # ----------------
 
   def add_ullage(%{proximity: distance} = row, meta) do
     max = ullage_distance_zero_percent(meta)
@@ -59,15 +65,17 @@ defmodule Parser do
 
     Map.merge(row, %{ullage: calculate_ullage_percent(distance, min, max)})
   end
+
   def add_ullage(row, _meta), do: row
 
   def calculate_ullage_percent(_distance, min, max) when min == max, do: 100
+
   def calculate_ullage_percent(distance, min, max) do
     # Move values from min to 0
     distance = distance - min
     max = max - min
     # Calculate percentage
-    percent = (1 - (distance / max)) * 100
+    percent = (1 - distance / max) * 100
     # Cap to 0..100 as integer
     percent |> Kernel.min(100) |> Kernel.max(0) |> Kernel.trunc()
   end
@@ -77,7 +85,6 @@ defmodule Parser do
     |> Enum.reduce(%{}, &map_packet/2)
     |> Enum.into(%{})
   end
-
 
   # Ambient Light
   def map_packet(<<0x01, 0x01, value::16>>, acc) do
@@ -99,9 +106,11 @@ defmodule Parser do
   def map_packet(<<0x04, 0x01, value::signed-16>>, acc) do
     Map.merge(acc, %{accelerate_x: value})
   end
+
   def map_packet(<<0x04, 0x02, value::signed-16>>, acc) do
     Map.merge(acc, %{accelerate_y: value})
   end
+
   def map_packet(<<0x04, 0x03, value::signed-16>>, acc) do
     Map.merge(acc, %{accelerate_z: value})
   end
@@ -110,55 +119,64 @@ defmodule Parser do
   def map_packet(<<0x05, 0x01, value::8>>, acc) do
     Map.merge(acc, %{button_1: value})
   end
+
   def map_packet(<<0x05, 0x02, value::8>>, acc) do
     Map.merge(acc, %{button_2: value})
   end
 
   # Proximity
-  def map_packet(<<0x0b, 0x01, value::16>>, acc) do
-    Map.merge(acc, %{proximity: value}) # Unit: cm
+  def map_packet(<<0x0B, 0x01, value::16>>, acc) do
+    # Unit: cm
+    Map.merge(acc, %{proximity: value})
   end
-  def map_packet(<<0x0b, 0x06, value::8>>, acc) do
-    Map.merge(acc, %{proximity_percent: value}) # Unit: %
+
+  def map_packet(<<0x0B, 0x06, value::8>>, acc) do
+    # Unit: %
+    Map.merge(acc, %{proximity_percent: value})
   end
 
   # Tracking
-  def map_packet(<<0x0f, 0x01, value::16>>, acc) do
+  def map_packet(<<0x0F, 0x01, value::16>>, acc) do
     Map.merge(acc, %{localisation_id: value})
   end
 
   # Indoor Localization
   def map_packet(<<0x12, 0x02, payload::binary>>, acc) do
-    (for <<mac::binary-6, rssi::8-signed <- payload>>, do: {mac, rssi})
+    for(<<mac::binary-6, rssi::8-signed <- payload>>, do: {mac, rssi})
     |> Enum.with_index(1)
-    |> Enum.reduce(acc, fn({{mac, rssi}, index}, acc) ->
+    |> Enum.reduce(acc, fn {{mac, rssi}, index}, acc ->
       Map.merge(acc, %{
         "local_#{index}_mac" => Base.encode16(mac),
-        "local_#{index}_rssi" => rssi,
+        "local_#{index}_rssi" => rssi
       })
     end)
   end
 
   # GPS
   def map_packet(<<0x50, 0x01, value::signed-32>>, acc) do
-    Map.merge(acc, %{gps_lat: value / 1000000})
+    Map.merge(acc, %{gps_lat: value / 1_000_000})
   end
+
   def map_packet(<<0x50, 0x02, value::signed-32>>, acc) do
-    Map.merge(acc, %{gps_lon: value / 1000000})
+    Map.merge(acc, %{gps_lon: value / 1_000_000})
   end
 
   # Battery
   def map_packet(<<0x51, 0x01, value::8>>, acc) do
-    Map.merge(acc, %{battery_voltage: value/10})
+    Map.merge(acc, %{battery_voltage: value / 10})
   end
+
   def map_packet(<<0x51, 0x02, value::8>>, acc) do
-    Map.merge(acc, %{battery_indicator: case value do
-      0x01 -> "FRESH"
-      0x02 -> "FIT"
-      0x03 -> "USEABLE"
-      0x04 -> "REPLACE"
-      _    -> "UNKOWN"
-    end})
+    Map.merge(acc, %{
+      battery_indicator:
+        case value do
+          0x01 -> "FRESH"
+          0x02 -> "FIT"
+          0x03 -> "USEABLE"
+          0x04 -> "REPLACE"
+          _ -> "UNKOWN"
+        end
+    })
   end
 
   # Bluetooth SIG
@@ -169,12 +187,13 @@ defmodule Parser do
   def map_packet({:error, error}, acc) do
     Map.merge(acc, %{parsing_error: error})
   end
+
   def map_packet(invalid, acc) do
     Map.merge(acc, %{invalid_packet_payload: Base.encode16(invalid)})
   end
 
-
   def parse_packets(<<>>, acc), do: acc
+
   def parse_packets(data, acc) do
     case next_packet(data) do
       {:ok, {packet, rest}} -> parse_packets(rest, acc ++ [packet])
@@ -182,11 +201,13 @@ defmodule Parser do
     end
   end
 
-  def next_packet(<<service_data_length, packet_payload::binary-size(service_data_length), rest::binary>>) do
+  def next_packet(
+        <<service_data_length, packet_payload::binary-size(service_data_length), rest::binary>>
+      ) do
     {:ok, {packet_payload, rest}}
   end
-  def next_packet(_invalid), do: {:error, :invalid_payload}
 
+  def next_packet(_invalid), do: {:error, :invalid_payload}
 
   def fields do
     [
@@ -222,11 +243,11 @@ defmodule Parser do
       },
       %{
         "field" => "button_1",
-        "display" => "Button-1",
+        "display" => "Button-1"
       },
       %{
         "field" => "button_2",
-        "display" => "Button-2",
+        "display" => "Button-2"
       },
       %{
         "field" => "proximity",
@@ -245,15 +266,15 @@ defmodule Parser do
       },
       %{
         "field" => "localisation_id",
-        "display" => "Localisation-ID",
+        "display" => "Localisation-ID"
       },
       %{
         "field" => "gps_lat",
-        "display" => "GPS-Lat",
+        "display" => "GPS-Lat"
       },
       %{
         "field" => "gps_lon",
-        "display" => "GPS-Lon",
+        "display" => "GPS-Lon"
       },
       %{
         "field" => "battery_voltage",
@@ -262,112 +283,168 @@ defmodule Parser do
       },
       %{
         "field" => "battery_indicator",
-        "display" => "Battery Indicator",
+        "display" => "Battery Indicator"
       },
       %{
         "field" => "serial_number",
-        "display" => "Serial Number",
-      },
+        "display" => "Serial Number"
+      }
     ]
   end
 
   def tests() do
     [
       {
-        :parse_hex,  "04010109C0", %{meta: %{frame_port: 1}}, %{ambient_light: 2496},
+        :parse_hex,
+        "04010109C0",
+        %{meta: %{frame_port: 1}},
+        %{ambient_light: 2496}
       },
       {
-        :parse_hex,  "06020141C40000", %{meta: %{frame_port: 1}}, %{temperature: 24.5},
+        :parse_hex,
+        "06020141C40000",
+        %{meta: %{frame_port: 1}},
+        %{temperature: 24.5}
       },
       {
-        :parse_hex,  "03030142", %{meta: %{frame_port: 1}}, %{humidity: 66}, # There was no example in documentation
+        # There was no example in documentation
+        :parse_hex,
+        "03030142",
+        %{meta: %{frame_port: 1}},
+        %{humidity: 66}
       },
       {
-        :parse_hex,  "0404010035", %{meta: %{frame_port: 1}}, %{accelerate_x: 53},
+        :parse_hex,
+        "0404010035",
+        %{meta: %{frame_port: 1}},
+        %{accelerate_x: 53}
       },
       {
-        :parse_hex,  "0404020000", %{meta: %{frame_port: 1}}, %{accelerate_y: 0},
+        :parse_hex,
+        "0404020000",
+        %{meta: %{frame_port: 1}},
+        %{accelerate_y: 0}
       },
       {
-        :parse_hex,  "0404030400", %{meta: %{frame_port: 1}}, %{accelerate_z: 1024},
+        :parse_hex,
+        "0404030400",
+        %{meta: %{frame_port: 1}},
+        %{accelerate_z: 1024}
       },
       {
-        :parse_hex,  "040403FC00", %{meta: %{frame_port: 1}}, %{accelerate_z: -1024}, # This was not in documentation, they forgot to add a negative number.
+        # This was not in documentation, they forgot to add a negative number.
+        :parse_hex,
+        "040403FC00",
+        %{meta: %{frame_port: 1}},
+        %{accelerate_z: -1024}
       },
       {
-        :parse_hex,  "03050100", %{meta: %{frame_port: 1}}, %{button_1: 0},
+        :parse_hex,
+        "03050100",
+        %{meta: %{frame_port: 1}},
+        %{button_1: 0}
       },
       {
-        :parse_hex,  "03050101", %{meta: %{frame_port: 1}}, %{button_1: 1},
+        :parse_hex,
+        "03050101",
+        %{meta: %{frame_port: 1}},
+        %{button_1: 1}
       },
       {
-        :parse_hex,  "040B0101F4", %{meta: %{frame_port: 1}}, %{proximity: 500, ullage: 0},
+        :parse_hex,
+        "040B0101F4",
+        %{meta: %{frame_port: 1}},
+        %{proximity: 500, ullage: 0}
       },
       {
-        :parse_hex,  "040F011234", %{meta: %{frame_port: 1}}, %{localisation_id: 4660}, # Missing example in docs.
+        # Missing example in docs.
+        :parse_hex,
+        "040F011234",
+        %{meta: %{frame_port: 1}},
+        %{localisation_id: 4660}
       },
       {
-        :parse_hex,  "06500102FFAC48", %{meta: %{frame_port: 1}}, %{gps_lat: 50.310216},
+        :parse_hex,
+        "06500102FFAC48",
+        %{meta: %{frame_port: 1}},
+        %{gps_lat: 50.310216}
       },
       {
-        :parse_hex,  "0351012D", %{meta: %{frame_port: 1}}, %{battery_voltage: 4.5},
+        :parse_hex,
+        "0351012D",
+        %{meta: %{frame_port: 1}},
+        %{battery_voltage: 4.5}
       },
       {
-        :parse_hex,  "03510201", %{meta: %{frame_port: 1}}, %{battery_indicator: "FRESH"},
+        :parse_hex,
+        "03510201",
+        %{meta: %{frame_port: 1}},
+        %{battery_indicator: "FRESH"}
       },
       {
-        :parse_hex,  "082A250102A2BDAA11", %{meta: %{frame_port: 1}}, %{serial_number: "0102A2BDAA11"},
+        :parse_hex,
+        "082A250102A2BDAA11",
+        %{meta: %{frame_port: 1}},
+        %{serial_number: "0102A2BDAA11"}
       },
-
       {
-        :parse_hex,  "040101026306020141DD83F30351011D", %{meta: %{frame_port: 1}}, %{ambient_light: 611, battery_voltage: 2.9, temperature: 27.689428329467773},
+        :parse_hex,
+        "040101026306020141DD83F30351011D",
+        %{meta: %{frame_port: 1}},
+        %{ambient_light: 611, battery_voltage: 2.9, temperature: 27.689428329467773}
       },
-
       {
-        :parse_hex,  "040101005806020141B17FE8030301220351012103510201", %{meta: %{frame_port: 1}},
+        :parse_hex,
+        "040101005806020141B17FE8030301220351012103510201",
+        %{meta: %{frame_port: 1}},
         %{
           ambient_light: 88,
           battery_indicator: "FRESH",
           battery_voltage: 3.3,
           humidity: 34,
           temperature: 22.187454223632813
-        },
+        }
       },
-
       {
-        :parse_hex,  "040B010089030B060B060201409F802E03510126", %{meta: %{frame_port: 1}},
+        :parse_hex,
+        "040B010089030B060B060201409F802E03510126",
+        %{meta: %{frame_port: 1}},
         %{
           battery_voltage: 3.8,
           proximity: 137,
           proximity_percent: 11,
           temperature: 4.984396934509277,
           ullage: 31
-        },
+        }
       },
-
       {
-        :parse_hex,  "101202AC233F291662C2AC233F291667AC", %{meta: %{frame_port: 1}},
+        :parse_hex,
+        "101202AC233F291662C2AC233F291667AC",
+        %{meta: %{frame_port: 1}},
         %{
           "local_1_mac" => "AC233F291662",
           "local_1_rssi" => -62,
           "local_2_mac" => "AC233F291667",
           "local_2_rssi" => -84
-        },
+        }
       },
-
-
       {
         :parse_hex,
         "040B0100B3030B060006020141DAAF1B03510126",
-        %{meta: %{frame_port: 1}, device: %{fields: %{conbee: %{distance_zero_percent: 152, distance_hundred_percent: 25}}}},
+        %{
+          meta: %{frame_port: 1},
+          device: %{
+            fields: %{conbee: %{distance_zero_percent: 152, distance_hundred_percent: 25}}
+          }
+        },
         %{
           battery_voltage: 3.8,
           proximity: 179,
           proximity_percent: 0,
           temperature: 27.335500717163086,
           ullage: 0
-        },
-      },
+        }
+      }
     ]
   end
 end

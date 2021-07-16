@@ -24,39 +24,54 @@ defmodule Parser do
   def parse(<<usage_counter::32-little, _rest::binary>>, %{meta: %{frame_port: 14}}) do
     %{
       type: :usage,
-      usage_counter: usage_counter, # Liter Count
+      # Liter Count
+      usage_counter: usage_counter
     }
   end
 
   # Status Message
-  def parse(<<usage_counter::32-little, battery, temp::signed, _rfu, status::binary-1, _rest::binary>>, %{meta: %{frame_port: 24}}) do
+  def parse(
+        <<usage_counter::32-little, battery, temp::signed, _rfu, status::binary-1,
+          _rest::binary>>,
+        %{meta: %{frame_port: 24}}
+      ) do
     <<is_alert::1, user_triggered::1, _::3, temp_detection::1, _::2>> = status
+
     %{
       type: :status,
       alert: is_alert,
       user_triggered: user_triggered,
       temperature_detection: temp_detection,
-      usage_counter: usage_counter, # Liter Count
-      battery: (battery * 16) / 1000, # mV => V
-      temperature: temp,
+      # Liter Count
+      usage_counter: usage_counter,
+      # mV => V
+      battery: battery * 16 / 1000,
+      temperature: temp
     }
   end
 
   # Boot Message
-  def parse(<<0x00, serial::4-binary, firmware::3-binary, reset_reason, _rest::binary>>, %{meta: %{frame_port:  99}}) do
+  def parse(<<0x00, serial::4-binary, firmware::3-binary, reset_reason, _rest::binary>>, %{
+        meta: %{frame_port: 99}
+      }) do
     <<major::8, minor::8, patch::8>> = firmware
+
     %{
       type: :boot,
       serial: Base.encode16(serial),
       firmware: "#{major}.#{minor}.#{patch}",
-      reset_reason: reset_reason(reset_reason),
+      reset_reason: reset_reason(reset_reason)
     }
   end
 
-
   # Catchall for any other message.
   def parse(payload, meta) do
-    Logger.info("Unknown payload #{inspect payload} and frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.info(
+      "Unknown payload #{inspect(payload)} and frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
@@ -68,7 +83,7 @@ defmodule Parser do
     [
       %{
         "field" => "type",
-        "display" => "Messagetype",
+        "display" => "Messagetype"
       },
       %{
         "field" => "temperature",
@@ -87,8 +102,8 @@ defmodule Parser do
       },
       %{
         "field" => "alert",
-        "display" => "Alarm",
-      },
+        "display" => "Alarm"
+      }
     ]
   end
 
@@ -99,9 +114,8 @@ defmodule Parser do
         :parse_hex,
         "800A0000",
         %{meta: %{frame_port: 14}},
-        %{type: :usage, usage_counter: 2688},
+        %{type: :usage, usage_counter: 2688}
       },
-
       {
         # Status
         :parse_hex,
@@ -115,9 +129,8 @@ defmodule Parser do
           type: :status,
           usage_counter: 83,
           user_triggered: 0
-        },
+        }
       },
-
       {
         # Status
         :parse_hex,
@@ -131,9 +144,8 @@ defmodule Parser do
           type: :status,
           usage_counter: 17,
           user_triggered: 0
-        },
+        }
       },
-
       {
         # Boot/Debug
         :parse_hex,
@@ -144,9 +156,8 @@ defmodule Parser do
           reset_reason: "unknown_0",
           serial: "4500124C",
           type: :boot
-        },
-      },
+        }
+      }
     ]
   end
-
 end

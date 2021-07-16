@@ -12,8 +12,11 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
-  def parse(<<pluv1::big-16, pluv2::big-16, pluv3::big-16, temp::big-16-signed, hum::big-16, pres::big-16, anemo::big-16, lux::big-16, vane::big-16, wm::big-16, power::big-16>>, _meta) do
-
+  def parse(
+        <<pluv1::big-16, pluv2::big-16, pluv3::big-16, temp::big-16-signed, hum::big-16,
+          pres::big-16, anemo::big-16, lux::big-16, vane::big-16, wm::big-16, power::big-16>>,
+        _meta
+      ) do
     # define the value map for vane
     vane_map = %{
       1 => "N",
@@ -31,33 +34,53 @@ defmodule Parser do
       13 => "W",
       14 => "WNW",
       15 => "NW",
-      16 => "NNW",
+      16 => "NNW"
     }
 
     # return value map
     %{
-      pluv1: pluv1/10,      # Current hour accumulated rainfall in mm/h
-      pluv2: pluv2/10,      # Previous hour accumulated rainfall in mm/h
-      pluv3: pluv3/10,      # Last 24h accumulated rainfall in mm/day
-      temp: temp/10,        # Temperature in °C
-      hum: hum,             # Humidity in %
-      pres: pres/10,        # Pressure in hPa
-      anemo: anemo/10,      # Anemometer in km/h
-      lux: lux,             # Luxes in lux
-      vane: vane_map[vane], # vane
-      wm: (52117.7-(6.83636*(wm/8)))/((wm/8)-47.619)*(-10), # Soil Water Tension in hPa
-      power: power          # Battery level in %
+      # Current hour accumulated rainfall in mm/h
+      pluv1: pluv1 / 10,
+      # Previous hour accumulated rainfall in mm/h
+      pluv2: pluv2 / 10,
+      # Last 24h accumulated rainfall in mm/day
+      pluv3: pluv3 / 10,
+      # Temperature in °C
+      temp: temp / 10,
+      # Humidity in %
+      hum: hum,
+      # Pressure in hPa
+      pres: pres / 10,
+      # Anemometer in km/h
+      anemo: anemo / 10,
+      # Luxes in lux
+      lux: lux,
+      # vane
+      vane: vane_map[vane],
+      # Soil Water Tension in hPa
+      wm: (52117.7 - 6.83636 * (wm / 8)) / (wm / 8 - 47.619) * -10,
+      # Battery level in %
+      power: power
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
   def tests() do
     [
       {
-        :parse_hex, "0000000000000097003D25E300400A7700094FB80064", %{meta: %{frame_port: 30}}, %{
+        :parse_hex,
+        "0000000000000097003D25E300400A7700094FB80064",
+        %{meta: %{frame_port: 30}},
+        %{
           wm: -138.5252410240391,
           vane: "S",
           temp: 15.1,
@@ -70,7 +93,7 @@ defmodule Parser do
           hum: 61,
           anemo: 6.4
         }
-      },
+      }
     ]
   end
 end

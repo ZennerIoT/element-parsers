@@ -23,33 +23,52 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
-  def register_enabled?(name), do: [
-    r0: true,
-    r1: true,
-    r2: false,
-    r3: false,
-    r4: false,
-    r5: false,
-    r6: false,
-    r7: false,
+  def register_enabled?(name),
+    do:
+      [
+        r0: true,
+        r1: true,
+        r2: false,
+        r3: false,
+        r4: false,
+        r5: false,
+        r6: false,
+        r7: false,
+        r8: false,
+        r9: false,
+        r10: false,
+        r11: false,
+        r12: false,
+        r13: false,
+        r14: false,
+        r15: false
+      ][name]
 
-    r8: false,
-    r9: false,
-    r10: false,
-    r11: false,
-    r12: false,
-    r13: false,
-    r14: false,
-    r15: false,
-  ][name]
-  
   # Parsing LoRa uplink payload structure on Port3
-  def parse(<<
-      r0::1, r1::1, r2::1, r3::1, r4::1, r5::1, r6::1, r7::1, # Status Modbus REG00..07
-      r8::1, r9::1, r10::1, r11::1, r12::1,r13::1,r14::1, r15::1, # Status Modbus REG08..15
-      registers_binary::binary
-    >>, %{meta: %{frame_port: 3}}) do
-
+  def parse(
+        <<
+          # Status Modbus REG00..07
+          r0::1,
+          r1::1,
+          r2::1,
+          r3::1,
+          r4::1,
+          r5::1,
+          r6::1,
+          r7::1,
+          # Status Modbus REG08..15
+          r8::1,
+          r9::1,
+          r10::1,
+          r11::1,
+          r12::1,
+          r13::1,
+          r14::1,
+          r15::1,
+          registers_binary::binary
+        >>,
+        %{meta: %{frame_port: 3}}
+      ) do
     registers = [
       r0: r0,
       r1: r1,
@@ -66,36 +85,42 @@ defmodule Parser do
       r12: r12,
       r13: r13,
       r14: r14,
-      r15: r15,
+      r15: r15
     ]
 
     {_, result} = Enum.reduce(registers, {registers_binary, %{}}, &handle_register/2)
 
     result
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
   defp handle_register({register, ok}, {registers_binary, result}) do
-
     case {register_enabled?(register), ok} do
-
-      {true, 0} -> # Enabled but error
+      # Enabled but error
+      {true, 0} ->
         <<value::16, rest::binary>> = registers_binary
         {rest, Map.merge(result, to_result_map(register, value, "error"))}
 
-      {true, 1} -> # Enabled and ok
+      # Enabled and ok
+      {true, 1} ->
         <<value::16, rest::binary>> = registers_binary
         {rest, Map.merge(result, to_result_map(register, value, "ok"))}
 
-      {false, _} -> # Dont care
+      # Dont care
+      {false, _} ->
         {registers_binary, result}
-
     end
   end
-  
+
   # Fix to avoid binary_to_atom
   defp to_result_map(:r0, v, s), do: %{r0_value: v, r0_status: s}
   defp to_result_map(:r1, v, s), do: %{r1_value: v, r1_status: s}
@@ -114,27 +139,27 @@ defmodule Parser do
   defp to_result_map(:r14, v, s), do: %{r14_value: v, r14_status: s}
   defp to_result_map(:r15, v, s), do: %{r15_value: v, r15_status: s}
 
-
-  #def fields() do
+  # def fields() do
   # # Omitted field definitions here so all fields will be shown.
   # # Because of missing information about the values itself.
-  #end
+  # end
 
   def tests() do
     [
       {
         # Both register provide values
-        :parse_hex, "C00000DE00DE",
+        :parse_hex,
+        "C00000DE00DE",
         %{meta: %{frame_port: 3}},
-        %{r0_status: "ok", r0_value: 222, r1_status: "ok", r1_value: 222},
+        %{r0_status: "ok", r0_value: 222, r1_status: "ok", r1_value: 222}
       },
       {
         # Register 2 is faulty
-        :parse_hex, "800000420000",
+        :parse_hex,
+        "800000420000",
         %{meta: %{frame_port: 3}},
-        %{r0_status: "ok", r0_value: 66, r1_status: "error", r1_value: 0},
-      },
+        %{r0_status: "ok", r0_value: 66, r1_status: "error", r1_value: 0}
+      }
     ]
   end
-
 end

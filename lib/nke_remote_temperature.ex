@@ -12,12 +12,15 @@ defmodule Parser do
   #
 
   # Temperature
-  def parse(<<fctrl, 0x0A, 0x04, 0x02, 0x00, 0x00, 0x29, temperature::integer-signed-16>> = payload, %{meta: %{frame_port: 125}} = meta) do
+  def parse(
+        <<fctrl, 0x0A, 0x04, 0x02, 0x00, 0x00, 0x29, temperature::integer-signed-16>> = payload,
+        %{meta: %{frame_port: 125}} = meta
+      ) do
     with {:ok, endpoint} <- fctrl_to_endppoint(fctrl) do
       %{
         type: :temperature,
         endpoint: endpoint,
-        temperature: temperature/100,
+        temperature: temperature / 100
       }
     else
       error -> fail(error, payload, meta)
@@ -25,12 +28,17 @@ defmodule Parser do
   end
 
   # Battery report
-  def parse(<<fctrl, 0x0A, 0x00, 0x50, 0x00, 0x06, 0x41, 0x07, _current_power_mode, _avail_power_sources, voltage::32, _current_power_source>> = payload, %{meta: %{frame_port: 125}} = meta) do
+  def parse(
+        <<fctrl, 0x0A, 0x00, 0x50, 0x00, 0x06, 0x41, 0x07, _current_power_mode,
+          _avail_power_sources, voltage::32, _current_power_source>> = payload,
+        %{meta: %{frame_port: 125}} = meta
+      ) do
     with {:ok, endpoint} <- fctrl_to_endppoint(fctrl) do
       %{
         type: :power,
         endpoint: endpoint,
-        battery: voltage / 1000, # Millivolt -> Volt
+        # Millivolt -> Volt
+        battery: voltage / 1000
       }
     else
       error -> fail(error, payload, meta)
@@ -40,15 +48,24 @@ defmodule Parser do
   #
 
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
 
   def fail(error, payload, meta) do
-    Logger.warn("NKE Parser with payload #{inspect payload} and frame_port #{inspect get_in(meta, [:meta, :frame_port])} failed with: #{inspect error}")
+    Logger.warn(
+      "NKE Parser with payload #{inspect(payload)} and frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      } failed with: #{inspect(error)}"
+    )
+
     []
   end
-
 
   # See: http://support.nke-watteco.com/ino/#ApplicativeLayer
   def fctrl_to_endppoint(fctrl) do
@@ -72,45 +89,50 @@ defmodule Parser do
       %{
         field: "temperature",
         display: "Temperature",
-        unit: "°C",
+        unit: "°C"
       },
       %{
         field: "battery",
         display: "Battery",
-        unit: "V",
+        unit: "V"
       },
       %{
         field: "endpoint",
-        display: "Endpoint",
+        display: "Endpoint"
       },
       %{
         field: "type",
-        display: "Type",
-      },
+        display: "Type"
+      }
     ]
   end
 
   def tests() do
     [
       {
-        :parse_hex, "11 0A 0402000029090A", %{meta: %{frame_port: 125}},
+        :parse_hex,
+        "11 0A 0402000029090A",
+        %{meta: %{frame_port: 125}},
         %{endpoint: 0, temperature: 23.14, type: :temperature}
       },
-
       {
-        :parse_hex, "11 0a 04 02 00 00 29 00 64", %{meta: %{frame_port: 125}},
+        :parse_hex,
+        "11 0a 04 02 00 00 29 00 64",
+        %{meta: %{frame_port: 125}},
         %{endpoint: 0, temperature: 1.0, type: :temperature}
       },
-
       {
-        :parse_hex, "110A0402000029FFDB", %{meta: %{frame_port: 125}},
+        :parse_hex,
+        "110A0402000029FFDB",
+        %{meta: %{frame_port: 125}},
         %{endpoint: 0, temperature: -0.37, type: :temperature}
       },
-
       {
-        :parse_hex, "11 0A 0050 0006 41 07 010500000DE304", %{meta: %{frame_port: 125}},
+        :parse_hex,
+        "11 0A 0050 0006 41 07 010500000DE304",
+        %{meta: %{frame_port: 125}},
         %{battery: 3.555, endpoint: 0, type: :power}
-      },
+      }
     ]
   end
 end

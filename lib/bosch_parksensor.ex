@@ -21,7 +21,7 @@ defmodule Parser do
     %{
       message_type: "parking_status",
       p_state: park_state_name(state),
-      map_state: state,
+      map_state: state
     }
   end
 
@@ -30,29 +30,36 @@ defmodule Parser do
     %{
       message_type: "heartbeat",
       p_state: park_state_name(state),
-      map_state: state,
+      map_state: state
     }
   end
 
   # 3.1.3 Startup
-  def parse(<<debug::binary-12, firmware::24, reset_cause::8, _reserved::7, state::1>>, %{meta: %{frame_port: 3}}) do
-    << major::8, minor::8, patch::8 >> = << firmware::24 >>
+  def parse(<<debug::binary-12, firmware::24, reset_cause::8, _reserved::7, state::1>>, %{
+        meta: %{frame_port: 3}
+      }) do
+    <<major::8, minor::8, patch::8>> = <<firmware::24>>
+
     %{
       message_type: "startup",
       p_state: park_state_name(state),
       map_state: state,
       reset_cause: reset_cause(reset_cause),
       firmware: "#{major}.#{minor}.#{patch}",
-      debug: Base.encode16(debug),
+      debug: Base.encode16(debug)
     }
   end
 
   # Catchall for reparsing
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
-
 
   def park_state_name(0), do: "free"
   def park_state_name(1), do: "occupied"
@@ -67,59 +74,72 @@ defmodule Parser do
     [
       %{
         "field" => "message_type",
-        "display" => "Message Type",
+        "display" => "Message Type"
       },
       %{
         "field" => "p_state",
-        "display" => "Parking State Name",
+        "display" => "Parking State Name"
       },
       %{
         "field" => "map_state",
-        "display" => "Parking State",
+        "display" => "Parking State"
       },
       %{
         "field" => "debug",
-        "display" => "Debug Info",
+        "display" => "Debug Info"
       },
       %{
         "field" => "firmware",
-        "display" => "Firmware",
+        "display" => "Firmware"
       },
       %{
         "field" => "reset_cause",
-        "display" => "Reset Cause",
+        "display" => "Reset Cause"
       },
-
       %{
         "field" => "message_type",
         "display" => "DI2-ChangeAfter",
         "unit" => "s"
-      },
+      }
     ]
   end
-
 
   def tests() do
     [
       # 3.1.1 Parking status
       {
-        :parse_hex, "00", %{meta: %{frame_port: 1}}, %{message_type: "parking_status", map_state: 0, p_state: "free"},
+        :parse_hex,
+        "00",
+        %{meta: %{frame_port: 1}},
+        %{message_type: "parking_status", map_state: 0, p_state: "free"}
       },
       {
-        :parse_hex, "01", %{meta: %{frame_port: 1}}, %{message_type: "parking_status", map_state: 1, p_state: "occupied"},
+        :parse_hex,
+        "01",
+        %{meta: %{frame_port: 1}},
+        %{message_type: "parking_status", map_state: 1, p_state: "occupied"}
       },
 
       # 3.1.2 Heartbeat
       {
-        :parse_hex, "00", %{meta: %{frame_port: 2}}, %{message_type: "heartbeat", map_state: 0, p_state: "free"},
+        :parse_hex,
+        "00",
+        %{meta: %{frame_port: 2}},
+        %{message_type: "heartbeat", map_state: 0, p_state: "free"}
       },
       {
-        :parse_hex, "01", %{meta: %{frame_port: 2}}, %{message_type: "heartbeat", map_state: 1, p_state: "occupied"},
+        :parse_hex,
+        "01",
+        %{meta: %{frame_port: 2}},
+        %{message_type: "heartbeat", map_state: 1, p_state: "occupied"}
       },
 
       # 3.1.3 Startup
       {
-        :parse_hex, "0000000099020206006F00000017030200", %{meta: %{frame_port: 3}}, %{
+        :parse_hex,
+        "0000000099020206006F00000017030200",
+        %{meta: %{frame_port: 3}},
+        %{
           debug: "0000000099020206006F0000",
           firmware: "0.23.3",
           map_state: 0,
@@ -129,7 +149,10 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "D0000000AB0301F50C0000000017030301", %{meta: %{frame_port: 3}}, %{
+        :parse_hex,
+        "D0000000AB0301F50C0000000017030301",
+        %{meta: %{frame_port: 3}},
+        %{
           debug: "D0000000AB0301F50C000000",
           firmware: "0.23.3",
           map_state: 1,
@@ -139,7 +162,10 @@ defmodule Parser do
         }
       },
       {
-        :parse_hex, "D0000000AB0301F50C0000000017030401", %{meta: %{frame_port: 3}}, %{
+        :parse_hex,
+        "D0000000AB0301F50C0000000017030401",
+        %{meta: %{frame_port: 3}},
+        %{
           debug: "D0000000AB0301F50C000000",
           firmware: "0.23.3",
           map_state: 1,
@@ -148,8 +174,6 @@ defmodule Parser do
           reset_cause: "other_reset:4"
         }
       }
-
     ]
   end
-
 end

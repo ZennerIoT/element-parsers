@@ -12,13 +12,14 @@ defmodule Parser do
 
   # Configuration
   # Can be found on the pressure sensor.
-  def pressure_min(), do: 0.0 # bar
-  def pressure_max(), do: 1.0 # bar
+  # bar
+  def pressure_min(), do: 0.0
+  # bar
+  def pressure_max(), do: 1.0
 
   # Pressure Sensor
   def parse(<<2::8, device_id::16, rest::binary>>, _meta), do: do_parse(device_id, rest)
   def parse(_payload, _meta), do: []
-
 
   def do_parse(device_id, <<_::14, sensor1::1, sensor0::1, payload::binary>>) do
     %{
@@ -26,30 +27,35 @@ defmodule Parser do
       device_type: "pressure_sensor",
       sensor0_flag: sensor0,
       sensor1_flag: sensor1,
-      payload: payload, # Will be removed later.
+      # Will be removed later.
+      payload: payload
     }
     |> case do
       # Add data from sensor 0 if available
       %{sensor0_flag: 1, payload: <<pressure::16, temp::16, rest::binary>>} = reading ->
         Map.merge(reading, %{
-          pressure: ((pressure - 16384) / 32768 *  (pressure_max() - pressure_min()) + pressure_min()),
-          temperature: ((temp - 384) / 64000 * 200 - 50),
-          payload: rest,
+          pressure:
+            (pressure - 16384) / 32768 * (pressure_max() - pressure_min()) + pressure_min(),
+          temperature: (temp - 384) / 64000 * 200 - 50,
+          payload: rest
         })
-      reading -> reading
+
+      reading ->
+        reading
     end
     |> case do
       # Add data from sensor 1 if available
       %{sensor1_flag: 1, payload: <<batt::16, rest::binary>>} = reading ->
         Map.merge(reading, %{
           battery_voltage: batt / 1000,
-          payload: rest,
+          payload: rest
         })
-      reading -> reading
+
+      reading ->
+        reading
     end
     |> Map.drop([:payload])
   end
-
 
   def fields do
     [
@@ -60,11 +66,11 @@ defmodule Parser do
       },
       %{
         "field" => "device_id",
-        "display" => "Device-ID",
+        "display" => "Device-ID"
       },
       %{
         "field" => "device_type",
-        "display" => "Device-Type",
+        "display" => "Device-Type"
       },
       %{
         "field" => "pressure",
@@ -75,7 +81,7 @@ defmodule Parser do
         "field" => "temperature",
         "display" => "Temperature",
         "unit" => "°C"
-      },
+      }
     ]
   end
 
@@ -83,7 +89,10 @@ defmodule Parser do
     [
       {
         # Value from docs
-        :parse_hex, "02016700033e8060170c7f", %{}, %{
+        :parse_hex,
+        "02016700033e8060170c7f",
+        %{},
+        %{
           battery_voltage: 3.199,
           device_id: 359,
           device_type: "pressure_sensor",
@@ -95,7 +104,10 @@ defmodule Parser do
       },
       {
         # Value from docs
-        :parse_hex, "02016700020c7f", %{}, %{
+        :parse_hex,
+        "02016700020c7f",
+        %{},
+        %{
           battery_voltage: 3.199,
           device_id: 359,
           device_type: "pressure_sensor",
@@ -105,7 +117,10 @@ defmodule Parser do
       },
       {
         # Value from real device with undocumented device_id
-        :parse_hex, "02016700033FD85D2E0C1C", %{}, %{
+        :parse_hex,
+        "02016700033FD85D2E0C1C",
+        %{},
+        %{
           battery_voltage: 3.1,
           device_id: 359,
           device_type: "pressure_sensor",
@@ -114,8 +129,7 @@ defmodule Parser do
           sensor1_flag: 1,
           temperature: 23.34375
         }
-      },
+      }
     ]
   end
-
 end

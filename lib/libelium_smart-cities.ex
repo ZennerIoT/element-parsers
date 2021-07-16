@@ -12,21 +12,37 @@ defmodule Parser do
   #   2019-09-06 [jb]: Added parsing catchall for unknown payloads.
   #
 
-  def parse(<<temp::big-16, hum::big-16, pres::big-16, range::big-16, lum::big-16, noise::big-16, batt::big-16>>, _meta) do
+  def parse(
+        <<temp::big-16, hum::big-16, pres::big-16, range::big-16, lum::big-16, noise::big-16,
+          batt::big-16>>,
+        _meta
+      ) do
     # return value map
     %{
-      temperature: temp/10,  # Temperature in °C
-      humidity: hum/10,    # Humidity in %
-      pressure: pres/10,  # Pressure in hPa
-      range: range/100, # distance in m
-      luminosity: lum, # luminosity in lux
-      noise_level: noise/10, # noise in dBa
-      battery: batt    # Battery level in %
+      # Temperature in °C
+      temperature: temp / 10,
+      # Humidity in %
+      humidity: hum / 10,
+      # Pressure in hPa
+      pressure: pres / 10,
+      # distance in m
+      range: range / 100,
+      # luminosity in lux
+      luminosity: lum,
+      # noise in dBa
+      noise_level: noise / 10,
+      # Battery level in %
+      battery: batt
     }
   end
+
   def parse(payload, meta) do
-    Logger.warn("Could not parse payload #{inspect payload} with frame_port #{inspect get_in(meta, [:meta, :frame_port])}")
+    Logger.warn(
+      "Could not parse payload #{inspect(payload)} with frame_port #{
+        inspect(get_in(meta, [:meta, :frame_port]))
+      }"
+    )
+
     []
   end
-
 end
