@@ -141,7 +141,7 @@ Last Change | Parser Name
 2020-05-04 | Nexelec D678C Insafe+ Carbon, Temperature and Humidity
 2021-06-16 | NKE Watteco - Eolane Bob Assistant
 2020-10-15 | NKE Watteco Clos'O
-2018-11-19 | NKE Watteco IN'O
+2019-05-09 | NKE Watteco IN'O
 2021-02-11 | NKE Watteco Intens'O
 2019-11-18 | NKE Watteco Remote Temp
 2020-11-23 | NKE Watteco Pulse Sens'O
@@ -193,8 +193,9 @@ Last Change | Parser Name
 2021-04-28 | ZENNER Smoke Detector D1722
 2020-02-27 | ZENNER T&H Sensor D1801
 2019-07-05 | ZENNER Water Meter
+2019-04-04 | ZENNER IoT Oskar v2 smart waste ultrasonic sensor
 2019-05-09 | ZIS Oskar 1.0
 2019-09-06 | ZIS DigitalInputSurveillance 8
 2021-07-15 | ZRI Simple EDC and PDC
-2019-09-06 | ZENNER Water Meters
+2021-08-19 | ZENNER Water Meters
 2021-07-13 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
