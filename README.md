@@ -182,7 +182,7 @@ Last Change | Parser Name
 2021-03-11 | TENEO CO2 Ampel
 2021-05-10 | Terabee Level Monitoring XL
 2020-10-29 | Tetraedre
-2021-04-21 | TrackNet Tabs
+2021-08-24 | TrackNet Tabs
 2020-12-10 | Ursalink AM100/102 and Milesight AM104/AM107
 2020-04-27 | Ursalink UC11-T1 Temperature
 2021-03-01 | VEGAPULS Air 41
