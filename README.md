@@ -27,7 +27,11 @@ These parsers are available on request.
 
 ### Important notice
 
-Wir betreiben großen Aufwand um unseren Kunden die größte und aktuellste Sammlung von Parsern für LoRaWAN-Endgeräte zur Verfügung zu stellen. Wir hätten diese Sammlung gerne weiter öffentlich zur Verfügung gestellt. Leider hat sich unser Wettbewerb komplett darauf verlassen, dass diese Parser kostenfrei zur Verfügung stehen, ohne selber zu dieser Sammlung etwas beizutragen. Da vermehrt auch die Kunden des Wettbewerbs unsere Supportkapazitäten belastet haben, können wir die Parser nicht weiter öffentlich zur Verfügung stellen. Unseren Kunden geben wir weiterhin und jederzeit sehr gerne alle Parser auf Anfrage. Zusätzlich haben wir in ELEMENT IoT direkt eine Möglichkeit geschaffen, Parser zentral für alle Mandaten bereitzustellen und werden so nach und nach die Parser über diesen Weg allen unseren Kunden bereitstellen.
+>We go to great lengths to provide our customers with the largest and most up-to-date collection of parsers for LoRaWAN devices. We would have liked to continue to make this collection publicly available. Unfortunately, our competition has completely relied on these parsers being available for free without contributing anything to this collection themselves. Since more and more of the competition's customers have put a strain on our support capacities, we cannot continue to make the parsers publicly available. We are still happy to provide our customers with all parsers on request. In addition, we have created a possibility in ELEMENT IoT to provide parsers centrally for all tenants and will thus gradually make the parsers available to all our customers via this path.
+
+#### Translated into German
+
+>Wir betreiben großen Aufwand um unseren Kunden die größte und aktuellste Sammlung von Parsern für LoRaWAN-Endgeräte zur Verfügung zu stellen. Wir hätten diese Sammlung gerne weiter öffentlich zur Verfügung gestellt. Leider hat sich unser Wettbewerb komplett darauf verlassen, dass diese Parser kostenfrei zur Verfügung stehen, ohne selber zu dieser Sammlung etwas beizutragen. Da vermehrt auch die Kunden des Wettbewerbs unsere Supportkapazitäten belastet haben, können wir die Parser nicht weiter öffentlich zur Verfügung stellen. Unseren Kunden geben wir weiterhin und jederzeit sehr gerne alle Parser auf Anfrage. Zusätzlich haben wir in ELEMENT IoT direkt eine Möglichkeit geschaffen, Parser zentral für alle Mandaten bereitzustellen und werden so nach und nach die Parser über diesen Weg allen unseren Kunden bereitstellen.
 
 
 Last Change | Parser Name
