@@ -190,7 +190,7 @@ Last Change | Parser Name
 2020-07-23 | Xter Connect people counter
 2019-09-06 | yabby GPS tracker
 2021-04-22 | Yokogawa Sushi Sensor
-2021-04-28 | ZENNER Smoke Detector D1722
+2021-08-25 | ZENNER Smoke Detector D1722
 2020-02-27 | ZENNER T&H Sensor D1801
 2019-07-05 | ZENNER Water Meter
 2019-04-04 | ZENNER IoT Oskar v2 smart waste ultrasonic sensor
