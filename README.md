@@ -86,6 +86,7 @@ Last Change | Parser Name
 2020-12-02 | Dragino distance sensor
 2021-08-13 | Dragino LGT-92 LoRaWAN GPS Tracker
 2020-01-01 | Dragino LHT65
+2021-08-25 | Dragino LLMS01 Leaf Moisture
 2020-12-22 | Dragino LSE01 Soil Sensor
 2021-03-17 | Dragino LSN50
 2021-07-14 | Dragino LT22222-L I/O Controller
