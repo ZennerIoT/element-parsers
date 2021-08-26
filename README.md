@@ -89,6 +89,8 @@ Last Change | Parser Name
 2021-08-25 | Dragino LLMS01 Leaf Moisture
 2020-12-22 | Dragino LSE01 Soil Sensor
 2021-03-17 | Dragino LSN50
+2021-08-26 | Dragino LSNOK01 Soil Fertility Nutrient
+2021-08-26 | Dragino LSPH01 Soil PH Sensor
 2021-07-14 | Dragino LT22222-L I/O Controller
 2021-01-17 | DZG Node
 2021-01-17 | DZG Node
