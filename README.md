@@ -137,6 +137,7 @@ Last Change | Parser Name
 2021-01-22 | Lobaro WMBus Bridge
 2019-03-07 | LPP Cayenne
 2021-02-18 | MCF88 Multiparser
+2021-08-27 | MClimate Vicky
 2021-02-01 | Milesight and Ursalink EM300
 2021-01-28 | Milesight and Ursalink UC11xx
 2021-07-01 | Mutelcor MTC-PB01 / MTC-CO2-01 / MTC-XX-MH01 / MTC-XX-CF01
