@@ -136,7 +136,7 @@ Last Change | Parser Name
 2019-11-21 | Lobaro Pressure Sensor 26D
 2021-01-22 | Lobaro WMBus Bridge
 2019-03-07 | LPP Cayenne
-2021-02-18 | MCF88 Multiparser
+2021-09-07 | MCF88 Multiparser
 2021-08-27 | MClimate Vicky
 2021-02-01 | Milesight and Ursalink EM300
 2021-01-28 | Milesight and Ursalink UC11xx
