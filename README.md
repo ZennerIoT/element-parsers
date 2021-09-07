@@ -159,7 +159,7 @@ Last Change | Parser Name
 2019-11-18 | NKE Watteco Remote Temp
 2020-11-23 | NKE Watteco Pulse Sens'O
 2021-05-12 | NKE Watteco Smart Plug
-2021-08-12 | Parametric PCR2 People Counter Radar
+2021-09-07 | Parametric PCR2 People Counter Radar
 2020-09-29 | Parametric TCR Radar Traffic Counter
 2020-03-26 | PaulWegener Datenlogger
 2021-02-08 | PaulWegener Datenlogger
