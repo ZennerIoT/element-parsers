@@ -76,7 +76,7 @@ Last Change | Parser Name
 2021-07-12 | Comtac Modbus Bridge Template
 2021-08-10 | Comtac TSM (Trafo Station Monitor)
 2020-04-22 | conbee HybridTag L300
-2021-03-18 | de-build.net POWER Gmbh - LoRa Protocol
+2021-09-22 | de-build.net POWER Gmbh - LoRa Protocol
 2020-12-23 | DECENTLAB DL-MBX-001/002/003 Ultrasonic Distance Sensor
 2020-03-31 | DECENTLAB DL-PR26 Pressure Sensor
 2019-07-10 | Decentlab DL-TRS12 Soil Moisture
