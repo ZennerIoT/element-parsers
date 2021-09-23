@@ -173,6 +173,7 @@ Last Change | Parser Name
 2020-07-02 | Sensative Strips Comfort
 2021-04-06 | Sensingslabs Multisensor
 2019-09-06 | Sensinglabs SenLab LED
+2021-09-23 | Sensoco Loomair
 2019-10-16 | SensoNeo Quatro Sensor
 2020-12-10 | SensoNeo Single Sensor
 2020-11-17 | Sentinum APOLLON-Q
