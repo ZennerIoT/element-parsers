@@ -130,7 +130,7 @@ Last Change | Parser Name
 2021-01-26 | Libelium Smart Water Xtreme
 2020-01-23 | Lobaro Environmental Sensor
 2020-12-04 | Lobaro GPS Tracker
-2021-07-14 | Lobaro Modbus Bridge v1.0
+2021-09-23 | Lobaro Modbus Bridge v1.0
 2018-01-01 | Lobaro Oscar smart waste ultrasonic sensor
 2019-10-04 | Lobaro Oskar v2
 2019-11-21 | Lobaro Pressure Sensor 26D
