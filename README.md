@@ -171,7 +171,7 @@ Last Change | Parser Name
 2021-08-03 | SEBA SlimCom IoT-LR for Dipper Datensammler
 2021-04-19 | SenseCAP
 2020-07-02 | Sensative Strips Comfort
-2021-04-06 | Sensingslabs Multisensor
+2021-09-24 | Sensingslabs Multisensor
 2019-09-06 | Sensinglabs SenLab LED
 2021-09-23 | Sensoco Loomair
 2019-10-16 | SensoNeo Quatro Sensor
