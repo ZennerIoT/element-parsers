@@ -115,6 +115,7 @@ Last Change | Parser Name
 2020-11-25 | Innotas LoRa EHKV
 2020-11-25 | Innotas LoRa Water Meter
 2021-07-14 | Integra Topas Sonic Water Meter
+2021-09-30 | InterAct - IOT Controller
 2021-01-11 | Itron Cyble5
 2021-07-30 | Keller
 2020-12-16 | Kerlink Wanesy Wave
