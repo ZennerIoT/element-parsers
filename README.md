@@ -110,7 +110,7 @@ Last Change | Parser Name
 2019-09-06 | Gupsy temperature and humidity sensor
 2021-08-17 | GWF LoRaWAN module for GWF metering units
 2021-04-08 | Holley E-Meter
-2020-12-10 | Imbuildings People Counter
+2021-10-12 | Imbuildings People Counter
 2020-11-30 | Innotas LoRa Pulse
 2020-11-25 | Innotas LoRa EHKV
 2020-11-25 | Innotas LoRa Water Meter
@@ -213,4 +213,4 @@ Last Change | Parser Name
 2019-09-06 | ZIS DigitalInputSurveillance 8
 2021-07-15 | ZRI Simple EDC and PDC
 2021-08-19 | ZENNER Water Meters
-2021-07-13 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
+2021-10-07 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
