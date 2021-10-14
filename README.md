@@ -83,7 +83,9 @@ Last Change | Parser Name
 2020-09-10 | Diehl HRLGc G3 Water Meter
 2019-08-26 | Diehl OMS
 2021-04-06 | DigitalMatter Oyster GPS
+2021-10-13 | Dragino LAQ4 Air Quality Sensor
 2020-12-02 | Dragino distance sensor
+2021-10-13 | Dragino LDS01 Door Sensor
 2021-08-13 | Dragino LGT-92 LoRaWAN GPS Tracker
 2020-01-01 | Dragino LHT65
 2021-08-25 | Dragino LLMS01 Leaf Moisture
@@ -92,6 +94,7 @@ Last Change | Parser Name
 2021-08-26 | Dragino LSNOK01 Soil Fertility Nutrient
 2021-08-26 | Dragino LSPH01 Soil PH Sensor
 2021-07-14 | Dragino LT22222-L I/O Controller
+2021-10-13 | Dragino LWL01 Water Leak Sensor
 2021-01-17 | DZG Node
 2021-01-17 | DZG Node
 2021-04-15 | DZG Loramod V2
@@ -198,6 +201,7 @@ Last Change | Parser Name
 2021-05-10 | Terabee Level Monitoring XL
 2020-10-29 | Tetraedre
 2021-08-24 | TrackNet Tabs
+2021-10-08 | UIT-GmbH WR-iot-compact water level sensor
 2020-12-10 | Ursalink AM100/102 and Milesight AM104/AM107
 2020-04-27 | Ursalink UC11-T1 Temperature
 2021-03-01 | VEGAPULS Air 41
