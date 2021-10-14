@@ -167,7 +167,7 @@ Last Change | Parser Name
 2020-09-29 | Parametric TCR Radar Traffic Counter
 2020-03-26 | PaulWegener Datenlogger
 2021-02-08 | PaulWegener Datenlogger
-2021-05-17 | Pepperl+Fuchs WILSEN.sonic.level
+2021-10-14 | Pepperl+Fuchs WILSEN.sonic.level
 2021-08-23 | PNI PlacePod parking sensor
 2019-05-09 | RAK Button
 2020-03-17 | RFI Remote Power Switch
