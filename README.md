@@ -165,7 +165,7 @@ Last Change | Parser Name
 2020-11-23 | NKE Watteco Pulse Sens'O
 2021-05-12 | NKE Watteco Smart Plug
 2021-09-07 | Parametric PCR2 People Counter Radar
-2020-09-29 | Parametric TCR Radar Traffic Counter
+2021-09-22 | Parametric TCR Radar Traffic Counter
 2020-03-26 | PaulWegener Datenlogger
 2021-02-08 | PaulWegener Datenlogger
 2021-10-14 | Pepperl+Fuchs WILSEN.sonic.level
