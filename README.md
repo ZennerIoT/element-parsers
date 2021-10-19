@@ -54,6 +54,8 @@ Last Change | Parser Name
 2020-06-23 | ATIM Metering and Dry Contact DIND160/80/88/44
 2021-05-04 | Axioma Qalcosonic F1 - 24h mode (orHoneywell Elster)
 2021-06-29 | Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
+2021-10-19 | BARANI DESIGN MeteoHelix
+2021-10-19 | BARANI DESIGN MeteoWind IoT
 2020-11-11 | BESA M-BUS-1
 2019-01-01 | Binando Binsonic
 2019-12-10 | BOSCH Parking Sensor
@@ -143,8 +145,6 @@ Last Change | Parser Name
 2019-03-07 | LPP Cayenne
 2021-09-27 | MCF88 Multiparser
 2021-08-27 | MClimate Vicky
-2021-10-19 | MeteoHelox
-2021-10-19 | MeteoWind IoT
 2021-02-01 | Milesight and Ursalink EM300
 2021-01-28 | Milesight and Ursalink UC11xx
 2021-07-01 | Mutelcor MTC-PB01 / MTC-CO2-01 / MTC-XX-MH01 / MTC-XX-CF01
