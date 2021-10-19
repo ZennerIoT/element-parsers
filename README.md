@@ -73,7 +73,7 @@ Last Change | Parser Name
 2020-05-12 | Comtac LPN CM4
 2019-09-06 | Comtac LPN DI
 2019-09-06 | Comtac LPN Modbus easy
-2021-07-12 | Comtac Modbus Bridge Template
+2021-10-19 | Comtac Modbus Bridge Template
 2021-08-10 | Comtac TSM (Trafo Station Monitor)
 2020-04-22 | conbee HybridTag L300
 2021-09-22 | de-build.net POWER Gmbh - LoRa Protocol
