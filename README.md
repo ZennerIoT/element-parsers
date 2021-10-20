@@ -55,7 +55,7 @@ Last Change | Parser Name
 2021-05-04 | Axioma Qalcosonic F1 - 24h mode (orHoneywell Elster)
 2021-06-29 | Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
 2021-10-19 | BARANI DESIGN MeteoHelix
-2021-10-19 | BARANI DESIGN MeteoWind IoT
+2021-10-20 | BARANI DESIGN MeteoWind IoT
 2020-11-11 | BESA M-BUS-1
 2019-01-01 | Binando Binsonic
 2019-12-10 | BOSCH Parking Sensor
