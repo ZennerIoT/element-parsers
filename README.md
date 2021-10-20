@@ -147,6 +147,7 @@ Last Change | Parser Name
 2021-08-27 | MClimate Vicky
 2021-02-01 | Milesight and Ursalink EM300
 2021-01-28 | Milesight and Ursalink UC11xx
+2021-10-20 | MIROMICO FMLR IoT Button
 2021-07-01 | Mutelcor MTC-PB01 / MTC-CO2-01 / MTC-XX-MH01 / MTC-XX-CF01
 2019-12-09 | NAS ACM CM3010
 2019-01-01 | NAS CM3020
