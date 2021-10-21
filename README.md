@@ -54,7 +54,7 @@ Last Change | Parser Name
 2020-06-23 | ATIM Metering and Dry Contact DIND160/80/88/44
 2021-05-04 | Axioma Qalcosonic F1 - 24h mode (orHoneywell Elster)
 2021-06-29 | Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
-2021-10-19 | BARANI DESIGN MeteoHelix
+2021-10-20 | BARANI DESIGN MeteoHelix
 2021-10-20 | BARANI DESIGN MeteoWind IoT
 2020-11-11 | BESA M-BUS-1
 2019-01-01 | Binando Binsonic
@@ -221,4 +221,4 @@ Last Change | Parser Name
 2019-09-06 | ZIS DigitalInputSurveillance 8
 2021-07-15 | ZRI Simple EDC and PDC
 2021-08-19 | ZENNER Water Meters
-2021-10-07 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
+2021-10-21 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
