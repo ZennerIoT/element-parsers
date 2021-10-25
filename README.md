@@ -65,7 +65,7 @@ Last Change | Parser Name
 2021-03-03 | Clevercity Greenbox
 2019-09-06 | Comtac E1310 DALI Bridge
 2019-05-15 | Comtac E1323-MS3
-2021-10-14 | Comtac E1332 LPN Modbus Energy Monitoring Bridge
+2021-10-25 | Comtac E1332 LPN Modbus Energy Monitoring Bridge
 2019-01-01 | Comtac E1360-MS3
 2019-11-12 | Comtac E1374
 2021-04-15 | Comtac KLAX
