@@ -182,9 +182,9 @@ Last Change | Parser Name
 2021-09-24 | Sensingslabs Multisensor
 2019-09-06 | Sensinglabs SenLab LED
 2021-09-23 | Sensoco Loomair
-2019-10-16 | SensoNeo Quatro Sensor
-2020-12-10 | SensoNeo Single Sensor
-2020-11-17 | Sentinum APOLLON-Q
+2021-10-26 | SensoNeo Quatro Sensor
+2021-10-26 | SensoNeo Single Sensor
+2021-10-26 | Sentinum APOLLON-Q
 2021-04-30 | Sentinum FEBRIS
 2021-08-11 | Skysense SKYAGR1
 2021-07-15 | SLOC Multiparser
