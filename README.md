@@ -43,7 +43,7 @@ Last Change | Parser Name
 2021-02-04 | Adeunis ARF8180 Temperature Sensors
 2020-07-08 | Adeunis ARF8180
 2021-06-07 | Adeunis ARF8200AA
-2021-01-05 | Adeunis ARF8230AA
+2021-10-29 | Adeunis ARF8230AA
 2019-03-20 | Adeunis ARF8230
 2020-12-14 | Adeunis ARF8240
 2020-10-06 | Arad MODBUS
@@ -75,7 +75,7 @@ Last Change | Parser Name
 2020-05-12 | Comtac LPN CM4
 2019-09-06 | Comtac LPN DI
 2019-09-06 | Comtac LPN Modbus easy
-2021-10-19 | Comtac Modbus Bridge Template
+2021-10-28 | Comtac Modbus Bridge Template
 2021-08-10 | Comtac TSM (Trafo Station Monitor)
 2020-04-22 | conbee HybridTag L300
 2021-09-22 | de-build.net POWER Gmbh - LoRa Protocol
@@ -99,13 +99,13 @@ Last Change | Parser Name
 2021-10-13 | Dragino LWL01 Water Leak Sensor
 2021-01-17 | DZG Node
 2021-01-17 | DZG Node
-2021-04-15 | DZG Loramod V2
+2021-10-29 | DZG Loramod V2
 2019-09-06 | DZG loramod
 2021-08-09 | Eastron SDM630MCT Electricity Meter
 2021-06-14 | EasyMeter ESYS LR10 LoRaWAN adapter
 2020-02-03 | eBZ electricity meter
 2020-05-27 | eBZ electricity meter v2
-2020-12-15 | Elsys Multiparser
+2021-11-03 | Elsys Multiparser
 2019-06-05 | Elvaco CMa11L indoor sensor
 2021-08-04 | Elvaco CMi4110 Mbus
 2021-07-22 | Fleximodo GOSPACE Parking
@@ -121,7 +121,7 @@ Last Change | Parser Name
 2020-11-25 | Innotas LoRa Water Meter
 2021-10-15 | Integra Calec ST 3 Meter
 2021-07-14 | Integra Topas Sonic Water Meter
-2021-09-30 | InterAct - IOT Controller
+2021-10-29 | InterAct - IOT Controller
 2021-01-11 | Itron Cyble5
 2021-07-30 | Keller
 2020-12-16 | Kerlink Wanesy Wave
@@ -143,7 +143,7 @@ Last Change | Parser Name
 2019-11-21 | Lobaro Pressure Sensor 26D
 2021-01-22 | Lobaro WMBus Bridge
 2019-03-07 | LPP Cayenne
-2021-09-27 | MCF88 Multiparser
+2021-11-04 | MCF88 Multiparser
 2021-08-27 | MClimate Vicky
 2021-02-01 | Milesight and Ursalink EM300
 2021-01-28 | Milesight and Ursalink UC11xx
@@ -179,13 +179,13 @@ Last Change | Parser Name
 2021-08-03 | SEBA SlimCom IoT-LR for Dipper Datensammler
 2021-04-19 | SenseCAP
 2020-07-02 | Sensative Strips Comfort
-2021-09-24 | Sensingslabs Multisensor
+2021-10-29 | Sensingslabs Multisensor
 2019-09-06 | Sensinglabs SenLab LED
 2021-09-23 | Sensoco Loomair
 2021-10-26 | SensoNeo Quatro Sensor
 2021-10-26 | SensoNeo Single Sensor
 2021-10-26 | Sentinum APOLLON-Q
-2021-04-30 | Sentinum FEBRIS
+2021-11-03 | Sentinum FEBRIS
 2021-08-11 | Skysense SKYAGR1
 2021-07-15 | SLOC Multiparser
 2020-11-26 | Smilio Action v2
@@ -201,6 +201,7 @@ Last Change | Parser Name
 2021-03-17 | TEKTELIC Agriculture
 2020-06-16 | Tektelic Industrial GPS Asset Tracker
 2019-10-15 | Tektelic Kona home sensor
+2021-11-01 | Tektelic Smart Home Sensor
 2021-03-11 | TENEO CO2 Ampel
 2021-05-10 | Terabee Level Monitoring XL
 2020-10-29 | Tetraedre
