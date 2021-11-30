@@ -33,7 +33,7 @@ These parsers are available on request.
 
 >Wir betreiben großen Aufwand um unseren Kunden die größte und aktuellste Sammlung von Parsern für LoRaWAN-Endgeräte zur Verfügung zu stellen. Wir hätten diese Sammlung gerne weiter öffentlich zur Verfügung gestellt. Leider hat sich unser Wettbewerb komplett darauf verlassen, dass diese Parser kostenfrei zur Verfügung stehen, ohne selber zu dieser Sammlung etwas beizutragen. Da vermehrt auch die Kunden des Wettbewerbs unsere Supportkapazitäten belastet haben, können wir die Parser nicht weiter öffentlich zur Verfügung stellen. Unseren Kunden geben wir weiterhin und jederzeit sehr gerne alle Parser auf Anfrage. Zusätzlich haben wir in ELEMENT IoT direkt eine Möglichkeit geschaffen, Parser zentral für alle Mandaten bereitzustellen und werden so nach und nach die Parser über diesen Weg allen unseren Kunden bereitstellen.
 
-
+<!--START_PARSER_TABLE-->
 Last Change | Parser Name
 ------------|-------------
 2018-12-04 | abeeway Industrial Tracker
