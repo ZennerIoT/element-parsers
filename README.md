@@ -46,7 +46,6 @@ Last Change | Parser Name
 2021-10-29 | Adeunis ARF8230AA
 2019-03-20 | Adeunis ARF8230
 2021-11-30 | Adeunis ARF8240
-2021-11-15 | Airica
 2020-10-06 | Arad MODBUS
 2020-11-20 | Ascoel CO868LR / TH868LR
 2019-09-06 | Ascoel CM868LRTH Door/Window sensor
