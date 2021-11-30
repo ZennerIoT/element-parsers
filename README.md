@@ -45,7 +45,8 @@ Last Change | Parser Name
 2021-06-07 | Adeunis ARF8200AA
 2021-10-29 | Adeunis ARF8230AA
 2019-03-20 | Adeunis ARF8230
-2020-12-14 | Adeunis ARF8240
+2021-11-30 | Adeunis ARF8240
+2021-11-15 | Airica
 2020-10-06 | Arad MODBUS
 2020-11-20 | Ascoel CO868LR / TH868LR
 2019-09-06 | Ascoel CM868LRTH Door/Window sensor
@@ -169,8 +170,8 @@ Last Change | Parser Name
 2021-05-12 | NKE Watteco Smart Plug
 2021-09-07 | Parametric PCR2 People Counter Radar
 2021-09-22 | Parametric TCR Radar Traffic Counter
-2020-03-26 | PaulWegener Datenlogger
-2021-02-08 | PaulWegener Datenlogger
+2020-03-26 | PaulWegener Datenlogger ASCII
+2021-11-23 | PaulWegener Datenlogger BINARY
 2021-10-25 | Pepperl+Fuchs WILSEN.sonic.level
 2021-08-23 | PNI PlacePod parking sensor
 2019-05-09 | RAK Button
@@ -209,7 +210,7 @@ Last Change | Parser Name
 2021-10-08 | UIT-GmbH WR-iot-compact water level sensor
 2020-12-10 | Ursalink AM100/102 and Milesight AM104/AM107
 2020-04-27 | Ursalink UC11-T1 Temperature
-2021-03-01 | VEGAPULS Air 41
+2021-11-17 | VEGAPULS Air 41 and 42
 2019-05-08 | Xignal Mouse/Rat Trap
 2020-07-23 | Xter Connect people counter
 2019-09-06 | yabby GPS tracker
@@ -222,4 +223,4 @@ Last Change | Parser Name
 2019-09-06 | ZIS DigitalInputSurveillance 8
 2021-07-15 | ZRI Simple EDC and PDC
 2021-08-19 | ZENNER Water Meters
-2021-10-21 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
+2021-11-30 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
