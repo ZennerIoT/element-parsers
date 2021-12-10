@@ -38,7 +38,7 @@ Last Change | Parser Name
 ------------|-------------
 2018-12-04 | abeeway Industrial Tracker
 2019-09-06 | Adeunis ARF8046
-2021-05-27 | Adeunis ARF8123AA Field Test Device (FTD)
+2021-12-10 | Adeunis ARF8123AA Field Test Device (FTD)
 2021-02-24 | Adeunis ARF8170BA
 2021-02-04 | Adeunis ARF8180 Temperature Sensors
 2020-07-08 | Adeunis ARF8180
