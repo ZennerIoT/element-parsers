@@ -82,7 +82,7 @@ Last Change | Parser Name
 2020-12-23 | DECENTLAB DL-MBX-001/002/003 Ultrasonic Distance Sensor
 2020-03-31 | DECENTLAB DL-PR26 Pressure Sensor
 2019-07-10 | Decentlab DL-TRS12 Soil Moisture
-2020-09-10 | Diehl HRLGc G3 Water Meter
+2021-12-13 | Diehl HRLGc G3 Water Meter
 2019-08-26 | Diehl OMS
 2021-04-06 | DigitalMatter Oyster GPS
 2021-10-13 | Dragino LAQ4 Air Quality Sensor
