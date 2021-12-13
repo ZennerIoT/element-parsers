@@ -145,6 +145,7 @@ Last Change | Parser Name
 2019-03-07 | LPP Cayenne
 2021-11-04 | MCF88 Multiparser
 2021-08-27 | MClimate Vicky
+2021-12-13 | Milesight AM300 Series
 2021-02-01 | Milesight and Ursalink EM300
 2021-01-28 | Milesight and Ursalink UC11xx
 2021-10-20 | MIROMICO FMLR IoT Button
