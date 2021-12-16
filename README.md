@@ -107,7 +107,7 @@ Last Change | Parser Name
 2020-05-27 | eBZ electricity meter v2
 2021-11-03 | Elsys Multiparser
 2019-06-05 | Elvaco CMa11L indoor sensor
-2021-08-04 | Elvaco CMi41X0 Mbus
+2021-12-15 | Elvaco CMi41X0 Mbus
 2021-07-22 | Fleximodo GOSPACE Parking
 2019-01-01 | Fludia FM430
 2020-01-27 | Globalsat ls11xp indoor climate monitor
@@ -121,7 +121,7 @@ Last Change | Parser Name
 2020-11-25 | Innotas LoRa Water Meter
 2021-10-15 | Integra Calec ST 3 Meter
 2021-07-14 | Integra Topas Sonic Water Meter
-2021-10-29 | InterAct - IOT Controller
+2021-12-16 | InterAct - IOT Controller
 2021-01-11 | Itron Cyble5
 2021-07-30 | Keller
 2020-12-16 | Kerlink Wanesy Wave
