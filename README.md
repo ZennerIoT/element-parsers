@@ -189,7 +189,7 @@ Last Change | Parser Name
 2021-10-26 | Sentinum APOLLON-Q
 2021-11-03 | Sentinum FEBRIS
 2021-08-11 | Skysense SKYAGR1
-2021-07-15 | SLOC Multiparser
+2021-12-22 | SLOC Multiparser
 2020-11-26 | Smilio Action v2
 2021-01-19 | SoilNet LoRa (Jülich Forschungszentrum)
 2020-06-26 | Sontex Supercal/Superstatic
