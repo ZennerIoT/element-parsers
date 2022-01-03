@@ -224,5 +224,8 @@ Last Change | Parser Name
 2019-05-09 | ZIS Oskar 1.0
 2019-09-06 | ZIS DigitalInputSurveillance 8
 2021-07-15 | ZRI Simple EDC and PDC
+2021-01-10 | ZRI Simple EDC and PDC
+2021-09-28 | ZRI Simple EDC and PDC
 2021-08-19 | ZENNER Water Meters
 2021-11-30 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
+2022-01-01 | ZRI CO2
