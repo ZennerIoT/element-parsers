@@ -67,7 +67,7 @@ Last Change | Parser Name
 2019-05-15 | Comtac E1323-MS3
 2021-10-25 | Comtac E1332 LPN Modbus Energy Monitoring Bridge
 2019-01-01 | Comtac E1360-MS3
-2019-11-12 | Comtac E1374
+2022-01-13 | Comtac E1374
 2021-04-15 | Comtac KLAX
 2020-01-30 | Comtac KLAX Modbus
 2020-01-13 | Comtac KLAX SML
@@ -138,7 +138,7 @@ Last Change | Parser Name
 2021-01-26 | Libelium Smart Water Xtreme
 2020-01-23 | Lobaro Environmental Sensor
 2020-12-04 | Lobaro GPS Tracker
-2021-09-23 | Lobaro Modbus Bridge v1.0
+2022-01-13 | Lobaro Modbus Bridge v1.0
 2018-01-01 | Lobaro Oscar smart waste ultrasonic sensor
 2019-10-04 | Lobaro Oskar v2
 2019-11-21 | Lobaro Pressure Sensor 26D
