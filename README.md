@@ -70,7 +70,7 @@ Last Change | Parser Name
 2019-11-12 | Comtac E1374
 2021-04-15 | Comtac KLAX
 2020-01-30 | Comtac KLAX Modbus
-2020-01-29 | Comtac KLAX SML
+2020-01-13 | Comtac KLAX SML
 2020-01-08 | Comtac LPN CM1
 2020-05-12 | Comtac LPN CM4
 2019-09-06 | Comtac LPN DI
