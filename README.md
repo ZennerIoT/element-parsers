@@ -53,7 +53,7 @@ Last Change | Parser Name
 2019-09-06 | Ascoel IT868LR Pyroelectric Motion Detector
 2020-06-23 | ATIM Metering and Dry Contact DIND160/80/88/44
 2021-05-04 | Axioma Qalcosonic F1 - 24h mode (orHoneywell Elster)
-2021-06-29 | Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
+2022-01-20 | Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
 2021-10-20 | BARANI DESIGN MeteoHelix
 2021-10-20 | BARANI DESIGN MeteoWind IoT
 2020-11-11 | BESA M-BUS-1
@@ -124,7 +124,7 @@ Last Change | Parser Name
 2021-10-15 | Integra Calec ST 3 Meter
 2021-07-14 | Integra Topas Sonic Water Meter
 2021-12-16 | InterAct - IOT Controller
-2021-01-11 | Itron Cyble5
+2022-01-19 | Itron Cyble5
 2021-07-30 | Keller
 2020-12-16 | Kerlink Wanesy Wave
 2021-01-22 | Lancier Pipesense
