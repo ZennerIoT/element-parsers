@@ -97,6 +97,7 @@ Last Change | Parser Name
 2021-08-26 | Dragino LSPH01 Soil PH Sensor
 2021-07-14 | Dragino LT22222-L I/O Controller
 2021-10-13 | Dragino LWL01 Water Leak Sensor
+2022-01-21 | Dragino LWL02 Water Leak Sensor + Dragino LDS02 Door Sensor
 2021-01-17 | DZG Node
 2021-01-17 | DZG Node
 2021-10-29 | DZG Loramod V2
