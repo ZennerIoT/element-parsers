@@ -119,7 +119,7 @@ Last Change | Parser Name
 2021-08-17 | GWF LoRaWAN module for GWF metering units
 2021-04-08 | Holley E-Meter
 2021-10-12 | Imbuildings People Counter
-2021-12-28 | IMST WMBus Bridge
+2022-02-02 | IMST WMBus Bridge
 2020-11-30 | Innotas LoRa Pulse
 2020-11-25 | Innotas LoRa EHKV
 2020-11-25 | Innotas LoRa Water Meter
