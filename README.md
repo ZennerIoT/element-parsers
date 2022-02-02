@@ -68,6 +68,7 @@ Last Change | Parser Name
 2021-10-25 | Comtac E1332 LPN Modbus Energy Monitoring Bridge
 2019-01-01 | Comtac E1360-MS3
 2022-01-13 | Comtac E1374
+2022-01-24 | Comtac E1395 CM-3 Temperature Sensor
 2021-04-15 | Comtac KLAX
 2020-01-30 | Comtac KLAX Modbus
 2020-01-13 | Comtac KLAX SML
@@ -145,7 +146,7 @@ Last Change | Parser Name
 2019-11-21 | Lobaro Pressure Sensor 26D
 2021-01-22 | Lobaro WMBus Bridge
 2019-03-07 | LPP Cayenne
-2022-01-14 | MCF88 Multiparser
+2022-02-01 | MCF88 Multiparser
 2021-12-21 | MClimate Vicky
 2021-12-13 | Milesight AM300 Series
 2021-02-01 | Milesight and Ursalink EM300
