@@ -216,13 +216,14 @@ Last Change | Parser Name
 2020-12-10 | Ursalink AM100/102 and Milesight AM104/AM107
 2020-04-27 | Ursalink UC11-T1 Temperature
 2021-11-17 | VEGAPULS Air 41 and 42
+2022-02-04 | WMBus Driver Packet Parser
 2019-05-08 | Xignal Mouse/Rat Trap
 2020-07-23 | Xter Connect people counter
 2019-09-06 | yabby GPS tracker
 2021-04-22 | Yokogawa Sushi Sensor
 2021-08-25 | ZENNER Smoke Detector D1722
 2020-02-27 | ZENNER T&H Sensor D1801
-2019-07-05 | ZENNER Water Meter
+2022-02-04 | ZENNER Water Meter
 2019-04-04 | ZENNER IoT Oskar v2 smart waste ultrasonic sensor
 2019-05-09 | ZIS Oskar 1.0
 2019-09-06 | ZIS DigitalInputSurveillance 8
