@@ -110,7 +110,7 @@ Last Change | Parser Name
 2020-05-27 | eBZ electricity meter v2
 2021-11-03 | Elsys Multiparser
 2019-06-05 | Elvaco CMa11L indoor sensor
-2021-12-15 | Elvaco CMi41X0 Mbus
+2022-02-10 | Elvaco CMi41X0 Mbus
 2021-07-22 | Fleximodo GOSPACE Parking
 2019-01-01 | Fludia FM430
 2020-01-27 | Globalsat ls11xp indoor climate monitor
