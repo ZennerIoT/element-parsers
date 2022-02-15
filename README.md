@@ -51,7 +51,7 @@ Last Change | Parser Name
 2019-09-06 | Ascoel CM868LRTH Door/Window sensor
 2019-09-06 | Ascoel CM868LR Magnet Contact
 2019-09-06 | Ascoel IT868LR Pyroelectric Motion Detector
-2022-02-03 | Ascoel PB868LRH PushButton
+2022-02-15 | Ascoel PB868LRH PushButton
 2020-06-23 | ATIM Metering and Dry Contact DIND160/80/88/44
 2021-05-04 | Axioma Qalcosonic F1 - 24h mode (orHoneywell Elster)
 2022-01-20 | Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
