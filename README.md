@@ -231,5 +231,5 @@ Last Change | Parser Name
 2021-01-10 | ZRI Simple EDC and PDC
 2021-09-28 | ZRI Simple EDC and PDC
 2021-08-19 | ZENNER Water Meters
-2021-11-30 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
+2022-02-16 | ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 2022-01-01 | ZRI CO2
