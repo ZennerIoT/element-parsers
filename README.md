@@ -182,6 +182,7 @@ Last Change | Parser Name
 2019-05-09 | RAK Button
 2020-03-17 | RFI Remote Power Switch
 2019-09-06 | Sagemcom Siconia
+2021-12-07 | Sagemcom Siconia WM15-L
 2021-08-03 | SEBA SlimCom IoT-LR for Dipper Datensammler
 2021-04-19 | SenseCAP
 2020-07-02 | Sensative Strips Comfort
@@ -193,7 +194,7 @@ Last Change | Parser Name
 2021-10-26 | Sentinum APOLLON-Q
 2021-11-03 | Sentinum FEBRIS
 2021-08-11 | Skysense SKYAGR1
-2021-12-22 | SLOC Multiparser
+2022-02-21 | SLOC Multiparser
 2020-11-26 | Smilio Action v2
 2021-01-19 | SoilNet LoRa (Jülich Forschungszentrum)
 2020-06-26 | Sontex Supercal/Superstatic
