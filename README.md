@@ -130,7 +130,7 @@ Last Change | Parser Name
 2021-07-30 | Keller
 2020-12-16 | Kerlink Wanesy Wave
 2021-01-22 | Lancier Pipesense
-2021-02-09 | Libelium Smart Devices All in One
+2021-01-25 | Libelium Smart Devices All in One
 2019-09-06 | Libelium Smart Agriculture
 2019-09-06 | Libelium Smart Cities
 2019-09-06 | Libelium Smart Environment
