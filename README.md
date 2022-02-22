@@ -139,6 +139,7 @@ Last Change | Parser Name
 2019-01-26 | Libelium Smart Agriculture Pro
 2021-01-28 | Libelium Smart City Pro
 2021-01-26 | Libelium Smart Water Xtreme
+2022-02-22 | Lobaro EDL21
 2020-01-23 | Lobaro Environmental Sensor
 2020-12-04 | Lobaro GPS Tracker
 2022-01-13 | Lobaro Modbus Bridge v1.0
