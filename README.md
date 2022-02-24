@@ -201,7 +201,7 @@ Last Change | Parser Name
 2021-01-19 | SoilNet LoRa (Jülich Forschungszentrum)
 2020-06-26 | Sontex Supercal/Superstatic
 2021-01-26 | Speedfreak_v4
-2021-07-12 | Strega Smart Valve
+2022-02-24 | Strega Smart Valve
 2021-07-07 | Swisscom LPN Multisense
 2019-03-28 | Swisslogix/YMATRON SLX-1307
 2019-06-25 | Tecyard Multiparser
