@@ -230,7 +230,7 @@ Last Change | Parser Name
 2019-04-04 | ZENNER IoT Oskar v2 smart waste ultrasonic sensor
 2019-05-09 | ZIS Oskar 1.0
 2019-09-06 | ZIS DigitalInputSurveillance 8
-2021-07-15 | ZRI Simple EDC and PDC
+2022-03-02 | ZRI Simple EDC and PDC
 2021-01-10 | ZRI Simple EDC and PDC
 2021-09-28 | ZRI Simple EDC and PDC
 2021-08-19 | ZENNER Water Meters
