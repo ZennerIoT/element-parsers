@@ -125,7 +125,7 @@ Last Change | Parser Name
 2020-11-25 | Innotas LoRa EHKV
 2020-11-25 | Innotas LoRa Water Meter
 2021-10-15 | Integra Calec ST 3 Meter
-2021-07-14 | Integra Topas Sonic Water Meter
+2022-03-03 | Integra Topas Sonic Water Meter
 2021-12-16 | InterAct - IOT Controller
 2022-01-19 | Itron Cyble5
 2021-07-30 | Keller
