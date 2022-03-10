@@ -47,7 +47,7 @@ Last Change | Parser Name
 2019-03-20 | Adeunis ARF8230
 2021-11-30 | Adeunis ARF8240
 2020-10-06 | Arad MODBUS
-2022-02-21 | ARBOR smart city
+2022-03-09 | ARBOR smart city
 2020-11-20 | Ascoel CO868LR / TH868LR
 2019-09-06 | Ascoel CM868LRTH Door/Window sensor
 2019-09-06 | Ascoel CM868LR Magnet Contact
