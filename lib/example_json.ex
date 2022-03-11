@@ -5,6 +5,7 @@ defmodule Parser do
   #
   # ELEMENT IoT Example parser for parsing json from a packet
   #
+  # Name: Example parser for parsing packets with json payload encoding.
   # Changelog:
   #   2020-12-10 [jb]: Initial implementation for payload_encoding=json
   #   2021-08-10 [jb]: Added handling of "utf8" payload encodings, like from MQTT driver.
