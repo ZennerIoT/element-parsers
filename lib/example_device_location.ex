@@ -5,9 +5,14 @@ defmodule Parser do
   #
   # Example parser for using device location in reading.
   #
+  # Name: Example parser for using the device location
   # Changelog:
   #   2019-09-30 [jb]: Initial implementation
   #
+
+  def preloads() do
+    [device: []]
+  end
 
   # Using matching
   def parse(<<1, 2, 3>>, %{device: %{location: %{coordinates: {lon, lat}}}} = _meta) do
