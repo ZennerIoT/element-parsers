@@ -19,7 +19,8 @@ defmodule Parser do
   # How to use the WMBus bridge:
   #   https://docs.element-iot.com/userguide/howto/de/treiber/wmbus_bridge/
   #
-  # Changelog
+  # Name: Example parser for WMBus Driver
+  # Changelog:
   #   2020-11-04 [jb]: Initial version.
   #   2021-06-01 [jb]: Added extend_reading/2 callback
   #   2021-06-23 [jb]: Processing all valid data from message_content.
