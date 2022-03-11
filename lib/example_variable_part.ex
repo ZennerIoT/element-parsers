@@ -6,6 +6,7 @@ defmodule Parser do
   #
   # Problem is a variable length of bytes in the middle of the payload that should be skipped.
   #
+  # Name: Example parser for variable payload length
   # Changelog:
   #   2018-06-07 [jb]: Initial version for demonstrating purposes.
   #
