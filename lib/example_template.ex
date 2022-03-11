@@ -5,6 +5,7 @@ defmodule Parser do
   #
   # ELEMENT IoT Parser for device EXAMPLE that will provide EXAMPLE data.
   #
+  # Name: Parser Template
   # Changelog:
   #   2019-05-09 [jb]: Initial implementation according to "Example-Payload-v1.pdf"
   #
