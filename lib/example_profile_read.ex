@@ -7,6 +7,7 @@ defmodule Parser do
   # A profile has a "technical name" and each field has its own "technical name".
   # These are needed here, NOT the display name!
   #
+  # Name: Example parser for reading profile values of device
   # Changelog:
   #   2019-09-30 [jb]: Initial implementation
 
