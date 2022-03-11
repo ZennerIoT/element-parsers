@@ -4,6 +4,7 @@ defmodule Parser do
 
   # Example parser for a floating point value (IEEE-754) as part of a LoRaWAN message.
   #
+  # Name: Example parser for parsing float payloads
   # Changelog:
   #   2019-03-04 [as]: Initial version for demonstrating purposes.
   #
