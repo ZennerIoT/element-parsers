@@ -6,6 +6,7 @@ defmodule Parser do
   #
   # This parser can be used with a "Dummy Driver" with a expected value range of 1..100
   #
+  # Name: Example parser for adding a GPS location to a reading
   # Changelog:
   #   2019-09-05 [jb]: Initial implementation supporting reading location.
   #
