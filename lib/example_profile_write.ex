@@ -7,6 +7,9 @@ defmodule Parser do
   # A profile has a "technical name" and each field has its own "technical name".
   # These are needed here, NOT the display name!
   #
+  # Name: Example parser for writing profile fields of a device
+  # Changelog:
+  #   2019-09-30 [jb]: Initial implementation
 
   # Not needed to preload a profile when writing to it.
 
