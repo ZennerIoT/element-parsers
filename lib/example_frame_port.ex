@@ -6,6 +6,7 @@ defmodule Parser do
   #
   # In the LoRaWAN protocol the fport is a value designed to differentiate types of messages.
   #
+  # Name: Example parser for matching on frame port of lorawan messages
   # Changelog:
   #   2018-06-07 [jb]: Initial version for demonstrating purposes.
   #
