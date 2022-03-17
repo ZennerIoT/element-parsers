@@ -36,6 +36,7 @@ These parsers are available on request.
 <!--START_PARSER_TABLE-->
 ### abeeway Industrial Tracker
 
+* 2022-03-17: Added collection_scan() support
 * 2022-03-04: Added support for more devices and updated for Firmware 2.2 according to "Abeeway_Trackers_Reference_Guide_FW2.2_V1.7.pdf"
 * 2018-12-04: Initial Parser for Firmware 1.7 according to "Abeeway Industrial Tracker_Reference_Guide_FW1.7.pdf"
 
@@ -777,6 +778,7 @@ These parsers are available on request.
 
 ### NKE Watteco IN'O
 
+* 2022-03-17: Added support for Node power descriptor
 * 2022-03-15: Added support for Bitmap16 attribute_type
 * 2019-05-09: Added support for ModBus device.
 * 2018-11-19: Renamed fields according to NKE docs, see tests. Added parsing of cmdid, clusterid, attrid, attrtype.
