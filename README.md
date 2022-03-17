@@ -393,6 +393,7 @@ These parsers are available on request.
 
 ### DZG Node
 
+* 2022-03-17: Update medium index
 * 2021-01-17: Also handle version 2
 * 2021-01-10: Initial version
 
