@@ -789,6 +789,10 @@ These parsers are available on request.
 * 2021-02-11: Made "rp" and "csp" optional at payload ending.
 * 2021-02-05: Initial implementation according to "http://support.nke-watteco.com/wp-content/uploads/2019/03/50-70-098_Intenso_User_Guide_1.1_Revised.pdf"
 
+### NKE Watteco Press'O
+
+* 2022-03-18: Initial implementaion
+
 ### NKE Watteco Remote Temp
 
 * 2019-11-18: Initial implementation.
