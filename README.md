@@ -778,6 +778,7 @@ These parsers are available on request.
 
 ### NKE Watteco IN'O
 
+* 2022-03-21: deleted debug messages + named field in Bitmap16
 * 2022-03-17: Added support for Node power descriptor
 * 2022-03-15: Added support for Bitmap16 attribute_type
 * 2019-05-09: Added support for ModBus device.
