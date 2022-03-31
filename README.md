@@ -245,6 +245,7 @@ These parsers are available on request.
 
 ### Comtac KLAX SML
 
+* 2022-03-28: Not adding obis values when unit="NDEF".
 * 2020-01-13: Let parser write interval and registers from packets of port 100 and 104 into profile
 * 2020-01-07: Added support for element profile parameters
 * 2020-01-29: Initial Version. Partly used old 0.2-0.4 Parser
@@ -789,6 +790,10 @@ These parsers are available on request.
 
 * 2021-02-11: Made "rp" and "csp" optional at payload ending.
 * 2021-02-05: Initial implementation according to "http://support.nke-watteco.com/wp-content/uploads/2019/03/50-70-098_Intenso_User_Guide_1.1_Revised.pdf"
+
+### NKE Watteco Monit'O
+
+* 2022-03-31: Initial implementaion
 
 ### NKE Watteco Press'O
 
