@@ -1133,6 +1133,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2022-04-01: Using reparsing_strategy=sequential, enabling profile writes using reparsing (from SP9.2 and SP9.3 packets).
 * 2022-02-16: Allow for more clock drift when calculation time of measurement (up to half for period)
 * 2021-11-30: Ignoring non binary payloads.
 * 2021-11-17: Fixed EDC SP12 channel. Added writing din_number to zri_device profile and all succeeding readings.
