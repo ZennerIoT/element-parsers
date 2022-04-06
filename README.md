@@ -460,6 +460,7 @@ These parsers are available on request.
 
 ### Elvaco CMi41X0 Mbus
 
+* 2022-04-06: Fixing error when error hex string is above 09
 * 2022-02-14: Handling CMi4140 'Heat-Intelligence message' without "cool energy e3".
 * 2022-02-10: Handling CMi4140 'Heat-Intelligence message'.
 * 2021-12-15: Updated extend_reading with meta argument. Added missing field definitions.
