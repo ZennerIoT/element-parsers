@@ -36,6 +36,7 @@ These parsers are available on request.
 <!--START_PARSER_TABLE-->
 ### abeeway Industrial Tracker
 
+* 2022-04-13: fixed position_scan(), cleanup
 * 2022-03-17: Added collection_scan() support
 * 2022-03-04: Added support for more devices and updated for Firmware 2.2 according to "Abeeway_Trackers_Reference_Guide_FW2.2_V1.7.pdf"
 * 2018-12-04: Initial Parser for Firmware 1.7 according to "Abeeway Industrial Tracker_Reference_Guide_FW1.7.pdf"
