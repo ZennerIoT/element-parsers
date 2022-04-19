@@ -651,8 +651,9 @@ These parsers are available on request.
 
 * 2019-10-04: Initial implementation according documentation provided by Lobaro
 
-### Lobaro Pressure Sensor 26D
+### Lobaro Water Level Sensor
 
+* 2022-04-19: added Profile support to calcule water depth and parse status messages on frame_port 64
 * 2019-11-21: updating parser according to firmware version 0.1.0
 * 2019-05-14: Initial implementation according to "LoRaWAN-Pressure-Manual.pdf" as provided by Lobaro
 
