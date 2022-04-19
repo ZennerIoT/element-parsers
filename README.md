@@ -562,6 +562,7 @@ These parsers are available on request.
 
 ### Keller
 
+* 2022-04-19: Handling invalid float values.
 * 2021-07-30: Added missing fields.
 * 2021-06-09: Parsing Port 4 Info messages.
 * 2021-05-18: Added do_extend_reading and formatted code.
@@ -803,6 +804,7 @@ These parsers are available on request.
 
 ### NKE Watteco Remote Temp
 
+* 2022-04-08: Updated error handling.
 * 2019-11-18: Initial implementation.
 
 ### NKE Watteco Pulse Sens'O
