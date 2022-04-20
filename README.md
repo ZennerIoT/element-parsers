@@ -302,6 +302,7 @@ These parsers are available on request.
 
 ### DECENTLAB DL-MBX-001/002/003 Ultrasonic Distance Sensor
 
+* 2022-04-20: Filter invalid measurements
 * 2020-12-23: Initial implementation
 
 ### DECENTLAB DL-PR26 Pressure Sensor
