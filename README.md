@@ -701,6 +701,10 @@ These parsers are available on request.
 
 * 2021-01-28: Initial version from uc11xx_control_protocol_en.pdf v1.4
 
+### Milesight and Ursalink WS101
+
+* 2022-04-28: Initial version according to ws101-user-guide-en.pdf
+
 ### MIROMICO FMLR IoT Button
 
 * 2021-10-20: Initial implementation according to "Miromico IoT-Button Factsheet (EN).pdf" with given example payloads
