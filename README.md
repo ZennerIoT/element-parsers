@@ -1044,7 +1044,7 @@ These parsers are available on request.
 
 * 2020-10-29: Initial implementation according to "Proposal of April 30th, 2016. Thierry Schneider, Tetraedre Sarl"
 
-### TrackNet Tabs
+### BROWAN Tabs (formerly TrackNet Tabs)
 
 * 2021-08-24: Added Sound level Sensor according to "RM_Sound Level Sensor_20200210.pdf".
 * 2021-04-21: Updated Healthy Home IAQ Sensor according to "BQW_02_0005.003".
