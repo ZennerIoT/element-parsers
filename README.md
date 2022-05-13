@@ -134,12 +134,13 @@ These parsers are available on request.
 * 2020-06-23: Added feature :append_last_digital_inputs default: false
 * 2020-06-18: Initial implementation according to "ATIM_ACW-DIND160-80-88-44_UG_EN_V1.7.pdf"
 
-### Axioma Qalcosonic F1 - 24h mode (orHoneywell Elster)
+### Axioma Qalcosonic F1 - 24h mode (or Honeywell Elster)
 
 * 2021-05-04: Initial implementation according to "Axioma Lora Payload F1 V1.8 Enhanced.pdf"
 
 ### Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
 
+* 2022-05-13: Added do_extend_reading/2 callback.
 * 2022-01-20: Keeping most of reading to support debugging when unix_difference_seconds check fails.
 * 2021-06-29: Added config key device_timezone_utc_offset. Device timestamp expected to be UTC+1.
 * 2021-05-05: Added AES decryption with key from profile qualcosonic.aes_key
