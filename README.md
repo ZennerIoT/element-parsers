@@ -1047,6 +1047,7 @@ These parsers are available on request.
 
 ### BROWAN Tabs (formerly TrackNet Tabs)
 
+* 2022-05-17: Fixed calculation mistake on ambient light sensor
 * 2021-08-24: Added Sound level Sensor according to "RM_Sound Level Sensor_20200210.pdf".
 * 2021-04-21: Updated Healthy Home IAQ Sensor according to "BQW_02_0005.003".
 * 2021-03-29: Added Water Leak Sensor from "Tabs Water Leak Datenblatt EN"
