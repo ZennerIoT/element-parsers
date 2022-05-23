@@ -1014,6 +1014,7 @@ These parsers are available on request.
 
 ### Tekelek 766 RF
 
+* 2022-05-18: Added tank.capacity profile field.
 * 2021-05-18: Added tank.sensor_distance profile field. Formatted code.
 * 2020-01-27: Fixed handling of tank.form profile field.
 * 2019-05-22: Read tank height and form from device profile. Calculate fill level depending on form.
@@ -1072,6 +1073,10 @@ These parsers are available on request.
 
 * 2020-04-27: Initial version for payload structure v1.4
 
+### Vega MBus Bridge
+
+* 2022-05-16: Initial version
+
 ### VEGAPULS Air 41 and 42
 
 * 2021-11-17: Updated implementation according to "Betriebsanleitung_VEGAPULS Air 42.pdf", handling GPS error values.
@@ -1119,6 +1124,10 @@ These parsers are available on request.
 * 2019-07-05: Added obis_code() configuration.
 * 2018-05-22: Added parsing for status bytes {9,1},{9,2}; added parsing of date and time
 * 2018-04-26: Added fields(), tests() and value_m3
+
+### Binary MBus
+
+* 2022-05-18: Initial version. Supporting Long frame with variable data structure
 
 ### ZENNER IoT Oskar v2 smart waste ultrasonic sensor
 
