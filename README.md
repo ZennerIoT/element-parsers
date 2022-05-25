@@ -832,6 +832,11 @@ These parsers are available on request.
 * 2020-08-20: Added tests, refactoring.
 * 2019-01-01: Initial Version.
 
+### Orbiwise noicesensor
+
+* 2022-05-17: fixed calculation with real data
+* 2022-05-12: Initial implementation according to provided data via E-Mail
+
 ### OXON - Oxobutton Q
 
 * 2021-11-29: Initial implementation according to "https://www.oxobutton.ch/products/oxobutton-lorawan/documentation#uplink"
