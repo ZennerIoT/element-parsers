@@ -210,6 +210,7 @@ These parsers are available on request.
 
 ### Comtac E1332 LPN Modbus Energy Monitoring Bridge
 
+* 2022-06-08: Added datatype "ignore" for skipping a datapoint
 * 2021-10-25: Added config option one_datapoint_per_reading: true
 * 2021-10-14: Fixed typo in float/float_little casting part.
 * 2021-08-05: Initial version according to "E1332-LoRa_ModbusEnergyMonitoring_Bridge_V0.01.pdf"
