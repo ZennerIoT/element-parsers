@@ -328,6 +328,7 @@ These parsers are available on request.
 
 ### DigitalMatter Oyster GPS
 
+* 2022-06-21: Updated according to "Oyster 3 LoRaWAN Integration 1.2.pdf".
 * 2021-04-06: Fixed not whitelisted function call.
 * 2021-02-09: Initial implementation according to "Oyster LoRaWAN Integration 1.8.pdf".
 
