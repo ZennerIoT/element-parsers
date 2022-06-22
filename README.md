@@ -1090,6 +1090,11 @@ These parsers are available on request.
 * 2021-11-17: Updated implementation according to "Betriebsanleitung_VEGAPULS Air 42.pdf", handling GPS error values.
 * 2021-03-01: Initial implementation according to "Betriebsanleitung_VEGAPULS Air 41.pdf"
 
+### TDW2/LDW2
+
+* 2022-06-22: Updated to version TDW2/LDW2 v0.8 and payload version: V1.1
+* 2021-08-31: Initial version
+
 ### WMBus Driver Packet Parser
 
 * 2022-02-04: Parsing all message_content and data inside.
