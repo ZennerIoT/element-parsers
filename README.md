@@ -577,6 +577,7 @@ These parsers are available on request.
 
 ### Kerlink Wanesy Wave
 
+* 2022-06-24: Fix for BLE messages without "t" timestamp.
 * 2020-12-16: Initial implementation according to payload version 1.1
 
 ### Lancier Pipesense
