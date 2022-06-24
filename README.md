@@ -558,6 +558,8 @@ These parsers are available on request.
 
 ### Itron Cyble5
 
+* 2022-06-24: Fixing measured_at for 3h/6h/12h formats last message.
+* 2022-06-22: Handling measured_at for 3h/6h/12h formats.
 * 2022-01-19: Added do_extend_reading/2 callback.
 * 2021-01-11: Fixed handling of invalid payloads in decrypt().
 * 2020-11-04: Fixed handling of negative values in interval DOB, in case of backflow. Added more fields() definitions.
