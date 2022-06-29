@@ -348,6 +348,7 @@ These parsers are available on request.
 
 ### Dragino LGT-92 LoRaWAN GPS Tracker
 
+* 2022-06-29: Added config option gps_keep_invalid=false.
 * 2021-08-13: Rewrite and updated to latest firmware v1.6.
 * 2020-02-12: Initial implementation according to Dragino TTN Parser.
 
