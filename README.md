@@ -480,6 +480,11 @@ These parsers are available on request.
 * 2019-07-02: update according to v1.3 of documentation by adding precise error messages.
 * 2018-03-21: initial version
 
+### Fast-GmbH AZA-OAD-Logger
+
+* 2022-07-05: Made pegel binary part dynamic long.
+* 2022-04-08: Initial version.
+
 ### Fleximodo GOSPACE Parking
 
 * 2021-07-22: Initial version according to "fleximodo_rawdata-payload-deciphering.pdf"
