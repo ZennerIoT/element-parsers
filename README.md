@@ -683,6 +683,8 @@ These parsers are available on request.
 
 ### MCF88 Multiparser
 
+* 2022-07-04: Added do_extend_reading callback.
+* 2022-07-01: Added time_sync_answer payload to time_sync_req.
 * 2022-03-03: Added config option timestamp_as_measured_at = false
 * 2022-02-01: Added payloads for MCF-LW13IO.
 * 2022-01-14: Added config show_all_flags with default `false`.
