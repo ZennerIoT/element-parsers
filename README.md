@@ -1103,6 +1103,7 @@ These parsers are available on request.
 
 ### TDW2/LDW2
 
+* 2022-07-15: Updated to  payload version: V1.3
 * 2022-07-12: Updated to  payload version: V1.2
 * 2022-06-22: Updated to version TDW2/LDW2 v0.8 and payload version: V1.1
 * 2021-08-31: Initial version
