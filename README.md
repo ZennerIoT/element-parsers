@@ -1188,6 +1188,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2022-07-22: Not updating existing profile keys, so values from SP9.2 and SP9.3 packets can be modified.
 * 2022-04-01: Using reparsing_strategy=sequential, enabling profile writes using reparsing (from SP9.2 and SP9.3 packets).
 * 2022-02-16: Allow for more clock drift when calculation time of measurement (up to half for period)
 * 2021-11-30: Ignoring non binary payloads.
