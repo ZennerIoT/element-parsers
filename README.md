@@ -520,6 +520,10 @@ These parsers are available on request.
 * 2021-04-08: Added new payload format.
 * 2019-09-06: Added parsing catchall for unknown payloads.
 
+### Hyquest IoTa Sensornode
+
+* 2022-07-26: Initial implementation according to "HS IoTa LoRa Data Format Guide.pdf"
+
 ### Imbuildings People Counter
 
 * 2021-10-12: fixed nameing fields for 13 byte payload.
