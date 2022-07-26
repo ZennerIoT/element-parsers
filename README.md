@@ -687,6 +687,7 @@ These parsers are available on request.
 
 ### MCF88 Multiparser
 
+* 2022-07-26: Added support for lwws001 pm data frame
 * 2022-07-04: Added do_extend_reading callback.
 * 2022-07-01: Added time_sync_answer payload to time_sync_req.
 * 2022-03-03: Added config option timestamp_as_measured_at = false
