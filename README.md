@@ -653,6 +653,10 @@ These parsers are available on request.
 * 2020-01-10: Added Payload Version 5.0.
 * 2019-09-06: Added parsing catchall for unknown payloads.
 
+### Lobaro Hybrid Pegelsonde
+
+* 2022-08-02: Initial implementation according to https://doc.lobaro.com/doc/hybrid-nb-iot-+-lora-devices/hybrid-modbus-gateway/sample-implementations
+
 ### Lobaro Modbus Bridge v1.0
 
 * 2022-01-13: Added reparsing_strategy: sequential
