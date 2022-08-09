@@ -332,6 +332,10 @@ These parsers are available on request.
 * 2021-04-06: Fixed not whitelisted function call.
 * 2021-02-09: Initial implementation according to "Oyster LoRaWAN Integration 1.8.pdf".
 
+### Dräger x-Node
+
+* 2022-08-09: Initial implementation according to "Payload Decoder_Basic_Travekom.pdf"
+
 ### Dragino LAQ4 Air Quality Sensor
 
 * 2021-10-13: fixed frame port
