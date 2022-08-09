@@ -1107,6 +1107,10 @@ These parsers are available on request.
 
 * 2020-04-27: Initial version for payload structure v1.4
 
+### Vega GM-2
+
+* 2022-08-08: Initial version according to 01-VEGA GM-2 UM_rev 06
+
 ### Vega MBus Bridge
 
 * 2022-05-16: Initial version
