@@ -526,7 +526,7 @@ These parsers are available on request.
 
 ### Hyquest IoTa Sensornode
 
-* 2022-08-08: fixed format + cleanup
+* 2022-08-10: fixed format + cleanup
 * 2022-07-29: fixed timestamp to show utc time
 * 2022-07-26: Initial implementation according to "HS IoTa LoRa Data Format Guide.pdf"
 
