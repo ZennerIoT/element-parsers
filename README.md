@@ -734,6 +734,10 @@ These parsers are available on request.
 
 * 2022-04-28: Initial version according to ws101-user-guide-en.pdf
 
+### Milesight and Ursalink WS136 & WS156
+
+* 2022-08-12: Initial version according to ws136&ws156-user-guide-en.pdf
+
 ### Milesight and Ursalink WS301
 
 * 2022-05-17: Initial version according to ws301-user-guide-en.pdf
@@ -798,6 +802,7 @@ These parsers are available on request.
 
 ### Netvox Multiparser
 
+* 2022-08-12: Added R718N360, fixed R718N
 * 2021-06-16: Added support for R311A/R718F/R311CC/R730F
 * 2021-04-15: Fixed temperature scale.
 * 2020-12-22: Added support for R718CJ2/CK2/CT2/CR2/CE2/R730CJ2/CK2/CT2/CR2/CE2 two channel temperature sensors.
