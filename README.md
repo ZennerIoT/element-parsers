@@ -869,9 +869,10 @@ These parsers are available on request.
 * 2022-05-17: fixed calculation with real data
 * 2022-05-12: Initial implementation according to provided data via E-Mail
 
-### OXON - Oxobutton Q
+### OXON - Multiparser
 
-* 2021-11-29: Initial implementation according to "https://www.oxobutton.ch/products/oxobutton-lorawan/documentation#uplink"
+* 2022-08-17: Added Buttonboard (FW version 1.2.8) according to "https://www.oxobutton.ch/products/buttonboard-lorawan/documentation#uplink"
+* 2021-11-29: Initial implementation of Oxobutton Q according to "https://www.oxobutton.ch/products/oxobutton-lorawan/documentation#uplink"
 
 ### Parametric PCR2 People Counter Radar
 
