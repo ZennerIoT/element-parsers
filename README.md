@@ -90,6 +90,7 @@ These parsers are available on request.
 
 ### Adeunis ARF8230
 
+* 2022-08-17: Recognizing frame types periodic_channel_a/b, added fields, formatting.
 * 2019-03-20: Initial Implementation.
 
 ### Adeunis ARF8240
