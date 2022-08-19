@@ -598,6 +598,10 @@ These parsers are available on request.
 * 2022-06-24: Fix for BLE messages without "t" timestamp.
 * 2020-12-16: Initial implementation according to payload version 1.1
 
+### Lancier Monitoring
+
+* 2022-08-18: Initial implementation according to "Lancier Monitoring LORA Payload Version 0.1.1"
+
 ### Lancier Pipesense
 
 * 2021-01-22: Updated according to "076264.000-03_12.20_BA_D_PipeSens.pdf"
