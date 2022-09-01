@@ -563,6 +563,7 @@ These parsers are available on request.
 
 ### Integra Calec ST 3 Meter
 
+* 2022-09-01: Fixed reading format. Added tests.
 * 2021-10-15: Initial implementation according to "CALEC_ST_III_3-140-P-LORA-DE-02.pdf".
 
 ### Integra Topas Sonic Water Meter
