@@ -317,6 +317,10 @@ These parsers are available on request.
 
 * 2019-07-10: Initial version. Code cleanup. Tests.
 
+### DEOS Teo
+
+* 2022-09-01: Initial implementation according to "Datasheet DEOS TEO_de.pdf"
+
 ### Diehl HRLGc G3 Water Meter
 
 * 2021-12-13: Added manufacturer error flag flow_persistence_3
