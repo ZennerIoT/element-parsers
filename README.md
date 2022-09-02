@@ -707,6 +707,7 @@ These parsers are available on request.
 
 ### MCF88 Multiparser
 
+* 2022-09-02: Added support for report_data revision 1.32 with config option report_data_note3_version
 * 2022-07-26: Added support for lwws001 pm data frame
 * 2022-07-04: Added do_extend_reading callback.
 * 2022-07-01: Added time_sync_answer payload to time_sync_req.
