@@ -457,6 +457,7 @@ These parsers are available on request.
 
 ### eBZ electricity meter v2
 
+* 2022-08-25: Added do_extend_reading callback.
 * 2020-05-27: Initial implementation of new version
 
 ### Elsys Multiparser
