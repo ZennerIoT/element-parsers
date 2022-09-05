@@ -319,6 +319,7 @@ These parsers are available on request.
 
 ### DEOS Teo
 
+* 2022-09-05: Increased readability
 * 2022-09-01: Initial implementation according to "Datasheet DEOS TEO_de.pdf"
 
 ### Diehl HRLGc G3 Water Meter
