@@ -98,6 +98,10 @@ These parsers are available on request.
 * 2021-11-30: Updated parser according to real device values.
 * 2020-12-14: Initial implementation according to "MODBUS_LoRaWAN_868_V2.0.0..pdf".
 
+### Aquametro Aquastream
+
+* 2022-09-15: Initial implementation according to "aquastream 9-730-PT-DE-03.pdf"
+
 ### Arad MODBUS
 
 * 2020-10-06: Refactored and added tests.
