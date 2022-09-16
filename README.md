@@ -758,6 +758,10 @@ These parsers are available on request.
 
 * 2022-05-17: Initial version according to ws301-user-guide-en.pdf
 
+### Milesight and Ursalink WS52x
+
+* 2022-09-16: Initial version according to https://github.com/Milesight-IoT/SensorDecoders/tree/master/WS_Series/WS52x
+
 ### MIROMICO FMLR IoT Button
 
 * 2021-10-20: Initial implementation according to "Miromico IoT-Button Factsheet (EN).pdf" with given example payloads
