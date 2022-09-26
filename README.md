@@ -840,6 +840,10 @@ These parsers are available on request.
 * 2020-05-04: Added config flag "config_add_last_real_time_data_to_button_press?"
 * 2020-02-28: Initial implementation according to "D678C_Insafe+_Carbon_LoRa_Technical_Guide_EN.pdf"
 
+### nke AtmO
+
+* 2022-09-27: Initial implementation according to https://support.nke-watteco.com/atmo/
+
 ### NKE Watteco - Eolane Bob Assistant
 
 * 2021-06-16: Initial implementation according to "BoB_ASSISTANT_Reference_Manual_V1.1.pdf"
