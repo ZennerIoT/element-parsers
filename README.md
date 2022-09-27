@@ -101,6 +101,7 @@ These parsers are available on request.
 ### Aquametro Aquastream
 
 * 2022-09-15: Initial implementation according to "aquastream 9-730-PT-DE-03.pdf"
+* 2022-09-27: Corrected parser according to vendor description
 
 ### Arad MODBUS
 
