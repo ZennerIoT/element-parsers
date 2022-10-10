@@ -734,8 +734,9 @@ These parsers are available on request.
 
 * 2021-12-13: Initial implementation according to "am300-series-user-guide-en.pdf"
 
-### Milesight and Ursalink EM300
+### Milesight and Ursalink EM300 / EM310-UDL
 
+* 2022-10-10: Added missing Fields for EM310 UDL from "em310-udl-user-guide-en.pdf".
 * 2021-02-01: Added undocumented payload part FF0B...
 * 2021-01-27: Initial version from em300-series-user-guide-en.pdf
 
