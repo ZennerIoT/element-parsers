@@ -938,6 +938,10 @@ These parsers are available on request.
 * 2021-04-20: Added do_extend_reading/2 and add_bosch_parking_format/1 for Bosch park sensor compatibility.
 * 2019-12-10: Initial implementation according to "PNI PlacePod Sensor - Communications Protocol.pdf"
 
+### Polysense - Multiparser
+
+* 2022-10-13: Initial Implementation according to http://pmo4d0f6d.hkpic1.websiteonline.cn/upload/PolysenseWxS8800UserGuide.pdf (13.10.2022)
+
 ### RAK Button
 
 * 2019-05-09: Added tests, fields and documentation.
