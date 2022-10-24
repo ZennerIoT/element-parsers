@@ -509,6 +509,10 @@ These parsers are available on request.
 
 * 2019-01-01: Initial implementation.
 
+### GLA intec WasteBox
+
+* 2022-10-24: Updated initial version and added profile data.
+
 ### Globalsat ls11xp indoor climate monitor
 
 * 2020-01-27: Added taupunkt calculation
@@ -930,6 +934,10 @@ These parsers are available on request.
 * 2021-10-14: added missing fields
 * 2021-05-17: Updated according to Document "tdoct7056__eng.docx", added error handling.
 * 2020-07-06: Initial implementation according to Document "TDOCT-6836__GER.docx"
+
+### SSM-AQUO
+
+* 2022-10-07: Initial implementation according to "Radio Payload_SMM-Aquo_v1_20220506.pdf"
 
 ### PNI PlacePod parking sensor
 
