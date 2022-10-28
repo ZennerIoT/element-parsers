@@ -1050,6 +1050,10 @@ These parsers are available on request.
 * 2021-01-19: Fixed optional temperature for SMT100 Sensors.
 * 2021-01-06: Initial implementation according to "SoilNet_LoRa_WSW.PDF"
 
+### LPWANminiUNI Truebner-STM100
+
+* 2021-08-27: Initial Implementation according to LPWAN_truebnerSMT100_EN.pdf (HW Version and SW Version inconsistent with testpayload, to be tested)
+
 ### Sontex Supercal/Superstatic
 
 * 2020-06-26: Using memory_address, sub_device and tariff in reading keys.
