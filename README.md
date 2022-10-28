@@ -1052,7 +1052,7 @@ These parsers are available on request.
 
 ### LPWANminiUNI Truebner-STM100
 
-* 2021-08-27: Initial Implementation according to LPWAN_truebnerSMT100_EN.pdf (HW Version and SW Version inconsistent with testpayload, to be tested)
+* 2022-10-28: Initial Implementation according to LPWAN_truebnerSMT100_EN.pdf (HW Version and SW Version inconsistent with testpayload)
 
 ### Sontex Supercal/Superstatic
 
