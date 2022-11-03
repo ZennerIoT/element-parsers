@@ -63,6 +63,13 @@ These parsers are available on request.
 * 2020-12-07: Parser REWRITE, renamed fields. Supporting ARF8170BA-B02.
 * 2019-09-06: Added parsing catchall for unknown payloads.
 
+### Adeunis ARF8170BA (v2)
+
+* 2022-11-03: Now supports V2 of ARF8170BA
+* 2021-02-24: Fixed values of channel*_state*.
+* 2020-12-07: Parser REWRITE, renamed fields. Supporting ARF8170BA-B02.
+* 2019-09-06: Added parsing catchall for unknown payloads.
+
 ### Adeunis ARF8180 Temperature Sensors
 
 * 2021-02-04: Supporting payloads with timestamp.
