@@ -740,6 +740,7 @@ These parsers are available on request.
 
 ### MClimate Vicky
 
+* 2022-11-03: Added Payloads starting with 0x28 (reply to commands)
 * 2021-12-21: Updated to latest firmware 3.5. Added Command-Code 0x81.
 * 2021-08-27: Initial Implementation of keepalive frame according to "MClimate_Vicki_LoRaWAN_Device_Communication_Protocol_1.7.pdf"
 
