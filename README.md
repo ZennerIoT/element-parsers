@@ -582,11 +582,13 @@ These parsers are available on request.
 
 ### Integra Calec ST 3 Meter
 
+* 2022-11-09: Added try catch for handling WmBus errors.
 * 2022-09-01: Fixed reading format. Added tests.
 * 2021-10-15: Initial implementation according to "CALEC_ST_III_3-140-P-LORA-DE-02.pdf".
 
 ### Integra Topas Sonic Water Meter
 
+* 2022-10-13: Using LibWmbus.parse and providing also WMBus header data like address. Added do_extend_reading callback.
 * 2022-03-03: Added new payload format according to "Topas Sonic-LW-INTG01 - V0.1.pdf".
 * 2021-07-14: Initial implementation according to "Payload Beschreibung Topas Sonic Lora.pdf".
 
@@ -1187,6 +1189,7 @@ These parsers are available on request.
 
 ### WMBus Driver Packet Parser
 
+* 2022-10-27: Added config option skip_invalid_data with default: false
 * 2022-02-04: Parsing all message_content and data inside.
 * 2021-06-01: Added extend_reading/2 callback
 * 2020-11-04: Initial version.
