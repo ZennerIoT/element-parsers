@@ -377,6 +377,7 @@ These parsers are available on request.
 
 ### Dragino LHT65
 
+* 2022-11-09: Added support for "Ext=9, E3 sensor with Unix Timestamp"
 * 2020-01-01: Added to version control.
 
 ### Dragino LLMS01 Leaf Moisture
