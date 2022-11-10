@@ -224,6 +224,7 @@ These parsers are available on request.
 
 ### Comtac E1332 LPN Modbus Energy Monitoring Bridge
 
+* 2022-11-09: Changed one_datapoint_per_reading to default: false, added fields.
 * 2022-06-08: Added datatype "ignore" for skipping a datapoint
 * 2021-10-25: Added config option one_datapoint_per_reading: true
 * 2021-10-14: Fixed typo in float/float_little casting part.
