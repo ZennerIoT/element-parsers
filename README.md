@@ -944,6 +944,7 @@ These parsers are available on request.
 
 ### Pepperl+Fuchs WILSEN.sonic.level
 
+* 2022-11-15: Added support for mm and amplitude payload design
 * 2021-10-25: Added do_extend_reading/2 Callback
 * 2021-10-14: added missing fields
 * 2021-05-17: Updated according to Document "tdoct7056__eng.docx", added error handling.
