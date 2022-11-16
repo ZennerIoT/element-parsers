@@ -519,6 +519,10 @@ These parsers are available on request.
 
 * 2019-01-01: Initial implementation.
 
+### Fludia FM432
+
+* 2022-11-10: Initial implementation (FM432ir only). To be tested
+
 ### GLA intec WasteBox
 
 * 2022-10-24: Updated initial version and added profile data.
