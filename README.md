@@ -996,11 +996,6 @@ These parsers are available on request.
 * 2021-04-19: Added field for battery + new test
 * 2021-04-15: Initial Version. Documentation: https://sensecap-docs.seeed.cc/pdf/SenseCAP%20LoRaWAN%20Sensor%20User%20Manual-V1.1.pdf
 
-### SenseCAP
-
-* 2021-04-19: Added field for battery + new test
-* 2021-04-15: Initial Version. Documentation: https://sensecap-docs.seeed.cc/pdf/SenseCAP%20LoRaWAN%20Sensor%20User%20Manual-V1.1.pdf
-
 ### Sensative Strips Comfort
 
 * 2020-07-02: Updated payload to Strips-MsLoRa-DataFrames-3.odt, ignoring frame_port=2 for now.
