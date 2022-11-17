@@ -991,6 +991,11 @@ These parsers are available on request.
 
 * 2021-08-03: Initial version according to "BA_SlimCom IoT_DE.PDF".
 
+### Seeded Studios SenseCAP
+
+* 2021-04-19: Added field for battery + new test
+* 2021-04-15: Initial Version. Documentation: https://sensecap-docs.seeed.cc/pdf/SenseCAP%20LoRaWAN%20Sensor%20User%20Manual-V1.1.pdf
+
 ### SenseCAP
 
 * 2021-04-19: Added field for battery + new test
