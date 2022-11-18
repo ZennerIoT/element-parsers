@@ -943,6 +943,7 @@ These parsers are available on request.
 
 ### PaulWegener Datenlogger BINARY
 
+* 2022-11-17: Added do_extend_reading callback.
 * 2021-12-01: Using little binary value for bytes > 1
 * 2021-11-23: Initial implementation according "BA iModem LoRaWAN-1.pdf" from Aug. 2021
 
