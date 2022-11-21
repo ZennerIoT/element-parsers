@@ -203,6 +203,7 @@ These parsers are available on request.
 
 ### Clevercity Greenbox
 
+* 2022-11-21: Using data.timestamp (if available) for config.interpolate_times, to avoid late sending problems.
 * 2022-11-01: Fixed interpolation problem with summer-winter timezone switch. Added reparsing_strategy=sequential
 * 2021-03-03: Fixing interpolated times missing and duplicate off markings.
 * 2021-02-10: Fixing interpolated times limited to today and yesterday.
