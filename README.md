@@ -906,6 +906,7 @@ These parsers are available on request.
 
 ### NKE Watteco Pulse Sens'O
 
+* 2022-11-21: Added profile support for initial meter reading and factor for each input
 * 2020-11-23: Initial implementation according to "http://support.nke-watteco.com/pulsesenso-2/#ApplicativeLayer"
 
 ### NKE Watteco Smart Plug
