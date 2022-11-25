@@ -1278,6 +1278,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2022-11-25: Renaming display names for the return temperature fields.
 * 2022-11-18: Renaming fields for SP5/6 from daily_*/monthly_* to just * (e.g. heating instead of daily_heating)
 * 2022-11-03: Added row diagnostic_seconds. Removed changeable units from fields() definition.
 * 2022-08-24: Fixed calculation of average values in SP0 packets.
