@@ -264,6 +264,7 @@ These parsers are available on request.
 
 ### Comtac KLAX SML
 
+* 2022-12-01: Added do_extend_reading callback.
 * 2022-03-28: Not adding obis values when unit="NDEF".
 * 2020-01-13: Let parser write interval and registers from packets of port 100 and 104 into profile
 * 2020-01-07: Added support for element profile parameters
@@ -456,6 +457,10 @@ These parsers are available on request.
 
 * 2019-09-06: Added parsing catchall for unknown payloads.
 * 2019-06-20: Added medium "heatcostallocator".
+
+### Eastron SDM630CT 3 Phase Electricity Meter
+
+* 2022-11-30: Initial implementation.
 
 ### Eastron SDM630MCT Electricity Meter
 
@@ -1074,6 +1079,7 @@ These parsers are available on request.
 
 ### LPWANminiUNI Truebner-STM100
 
+* 2022-11-28: Added parsing for a 3 module setup
 * 2022-10-28: Initial Implementation according to LPWAN_truebnerSMT100_EN.pdf (HW Version and SW Version inconsistent with testpayload)
 
 ### Sontex Supercal/Superstatic
