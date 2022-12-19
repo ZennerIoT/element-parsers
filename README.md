@@ -72,6 +72,7 @@ These parsers are available on request.
 
 ### Adeunis ARF8180 Temperature Sensors
 
+* 2022-12-15: Added data.transceived_at to find device time problems. Added field definitions.
 * 2021-02-04: Supporting payloads with timestamp.
 * 2021-02-02: Support for v4 payloads.
 * 2020-08-27: Added alerts for v3 payloads.
@@ -608,7 +609,7 @@ These parsers are available on request.
 
 * 2021-12-16: Added do_extend_reading callback.
 * 2021-10-29: Fixed analog raw to mA conversion.
-* 2021-09-30: Initial Version, according to "description_IOT_Controller_ruhrverband_v0.1.pdf".
+* 2021-09-30: Initial Version, according to "description_IOT_Controller_v0.1.pdf".
 
 ### Itron Cyble5
 
@@ -751,6 +752,10 @@ These parsers are available on request.
 * 2021-09-27: Added Power (ignoring timestamp of these messages)
 * 2021-09-07: Added Note 3 for MCF-LWWS00
 * 2021-02-18: Initial implementation according to "MCF88 Data Frame Format 1.24.pdf".
+
+### MClimate HT Sensor
+
+* 2022-12-14: Initial Implementation.
 
 ### MClimate Vicky
 
