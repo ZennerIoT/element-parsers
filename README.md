@@ -499,6 +499,7 @@ These parsers are available on request.
 
 ### Elvaco CMi41X0 Mbus
 
+* 2022-12-23: Added test for CMi4111 Payload.
 * 2022-04-06: Fixing error when error hex string is above 09
 * 2022-02-14: Handling CMi4140 'Heat-Intelligence message' without "cool energy e3".
 * 2022-02-10: Handling CMi4140 'Heat-Intelligence message'.
