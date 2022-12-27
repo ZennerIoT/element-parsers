@@ -818,6 +818,10 @@ These parsers are available on request.
 
 * 2019-01-01: Initial implementation according to "https://www.nasys.no/wp-content/uploads/Wehrle_Modularis_module_CM3020_3.pdf"
 
+### NAS CM3022
+
+* 2022-12-27: Initial implementation according to "NAS CM3022 2.3.x Payload Structures.pdf"
+
 ### NAS CM3030 Cyble Module
 
 * 2019-08-26: Initial version
