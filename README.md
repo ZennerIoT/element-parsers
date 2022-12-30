@@ -106,11 +106,6 @@ These parsers are available on request.
 * 2021-11-30: Updated parser according to real device values.
 * 2020-12-14: Initial implementation according to "MODBUS_LoRaWAN_868_V2.0.0..pdf".
 
-### Aquametro Aquastream
-
-* 2022-09-15: Initial implementation according to "aquastream 9-730-PT-DE-03.pdf"
-* 2022-09-27: Corrected parser according to vendor description
-
 ### Arad MODBUS
 
 * 2020-10-06: Refactored and added tests.
@@ -593,6 +588,12 @@ These parsers are available on request.
 
 * 2020-11-25: Refactoring
 * 2019-08-27: Initial version
+
+### Integra Aquastream (former Aquametro)
+
+* 2022-12-30: Updated implementation. Added options config.add_measured_at_from_timestamp and config.each_delta_as_reading.
+* 2022-09-15: Initial implementation according to "aquastream 9-730-PT-DE-03.pdf"
+* 2022-09-27: Corrected parser according to vendor description
 
 ### Integra Calec ST 3 Meter
 
