@@ -591,6 +591,7 @@ These parsers are available on request.
 
 ### Integra Aquastream (former Aquametro)
 
+* 2023-01-03: Added alarms from error bytes.
 * 2022-12-30: Updated implementation. Added options config.add_measured_at_from_timestamp and config.each_delta_as_reading.
 * 2022-09-15: Initial implementation according to "aquastream 9-730-PT-DE-03.pdf"
 * 2022-09-27: Corrected parser according to vendor description
