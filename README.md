@@ -554,6 +554,7 @@ These parsers are available on request.
 
 ### Holley E-Meter
 
+* 2023-01-04: Added do_extend_reading callback.
 * 2021-04-08: Added new payload format.
 * 2019-09-06: Added parsing catchall for unknown payloads.
 
