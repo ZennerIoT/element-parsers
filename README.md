@@ -822,6 +822,7 @@ These parsers are available on request.
 
 ### NAS CM3022
 
+* 2023-01-04: Fixed volume readings. Value is "little" encoded.
 * 2022-12-27: Initial implementation according to "NAS CM3022 2.3.x Payload Structures.pdf"
 
 ### NAS CM3030 Cyble Module
