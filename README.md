@@ -1302,7 +1302,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
-* 2023-01-03: Fixed feature config.ignore_duplicate_up_frames.
+* 2023-01-03: Added skipping duplicate next to resend payloads.
 * 2022-12-29: Added config.ignore_duplicate_up_frames=false, for skipping exact previous payloads.
 * 2022-11-25: Renaming display names for the return temperature fields.
 * 2022-11-18: Renaming fields for SP5/6 from daily_*/monthly_* to just * (e.g. heating instead of daily_heating)
