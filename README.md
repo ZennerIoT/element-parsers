@@ -785,6 +785,10 @@ These parsers are available on request.
 
 * 2021-01-28: Initial version from uc11xx_control_protocol_en.pdf v1.4
 
+### Milesight and Ursalink VS132
+
+* 2023-01-05: Initial version according to vs132-user-guide-en.pdf
+
 ### Milesight and Ursalink WS101
 
 * 2022-04-28: Initial version according to ws101-user-guide-en.pdf
