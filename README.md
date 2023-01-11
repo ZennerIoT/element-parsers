@@ -288,6 +288,7 @@ These parsers are available on request.
 
 ### Comtac Modbus Bridge Template
 
+* 2023-01-11: Added type "binary_bypass". Forwards the binary value directly. To be able to split the values later on in mapping function
 * 2022-02-03: Added type "signed16_custom_invert". Interprets incoming bytes (1,2,3,4) as (3,4,1,2) signed.
 * 2021-10-28: Added profile support. Use profile: comtac_modbus_bridge_params, with fields reg1, reg2, reg3. If no valid type found, defaulttype is used
 * 2021-10-19: Added type "float32_custom_invert". Interprets incoming bytes (1,2,3,4) as (3,4,1,2) float.
