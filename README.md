@@ -481,6 +481,7 @@ These parsers are available on request.
 
 ### Elsys Multiparser
 
+* 2022-01-12: Added dew point when temperature and humiditiy exists
 * 2021-11-03: Added support for Elsys tvoc Sensor, Adding sTypes 1C
 * 2020-12-15: Updating to Payload v1.11. Adding sTypes 00, 10, 13, 1A, 1B, 3E. Removed _unit fields. Added location.
 * 2020-04-07: Added all missing sTypes. Fixed negative temperature bugs. Removed offset=0 values.
