@@ -711,6 +711,7 @@ These parsers are available on request.
 
 ### Lobaro Hybrid Pegelsonde
 
+* 2023-01-25: Added 5,7,9 byte Payload representation according to the provided javascript parser
 * 2022-08-02: Initial implementation according to https://doc.lobaro.com/doc/hybrid-nb-iot-+-lora-devices/hybrid-modbus-gateway/sample-implementations
 
 ### Lobaro Modbus Bridge v1.0
