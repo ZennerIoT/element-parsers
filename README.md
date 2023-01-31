@@ -697,6 +697,10 @@ These parsers are available on request.
 
 * 2022-02-22: Initial implementation.
 
+### Lobaro EDL21 dzero
+
+* 2023-01-31: Initial implementation.
+
 ### Lobaro Environmental Sensor
 
 * 2020-01-23: Initial implementation according to "https://docs.lobaro.com/lorawan-sensors/environment-lorawan/index.html" as provided by Lobaro
