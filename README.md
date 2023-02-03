@@ -916,6 +916,7 @@ These parsers are available on request.
 
 ### NKE Watteco IN'O
 
+* 2023-02-03: Added switch to generate output key for each endpoint when activated
 * 2022-03-21: deleted debug messages + named field in Bitmap16
 * 2022-03-17: Added support for Node power descriptor
 * 2022-03-15: Added support for Bitmap16 attribute_type
