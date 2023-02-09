@@ -365,8 +365,9 @@ These parsers are available on request.
 * 2021-10-13: fixed frame port
 * 2021-10-12: Initial implementation according to "LAQ4_LoRaWAN_Air_Quality_Manual_v1.1.pdff"
 
-### Dragino distance sensor
+### Dragino LDDS Distance sensor
 
+* 2023-02-09: Should be compatible with LDDS45 according to manufacturer.
 * 2020-12-02: Initial implementation according to Dragino - LoRaWAN_LDDS75_User Manual_v1.1
 
 ### Dragino LDS01 Door Sensor
