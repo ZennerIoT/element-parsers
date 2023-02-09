@@ -517,6 +517,11 @@ These parsers are available on request.
 * 2019-07-02: update according to v1.3 of documentation by adding precise error messages.
 * 2018-03-21: initial version
 
+### EMU Professional II Lora
+
+* 2023-02-09: Productive version excluding CRC calculation.
+* 2023-01-31: Initial implementation.
+
 ### Fast-GmbH AZA-OAD-Logger
 
 * 2022-07-05: Made pegel binary part dynamic long.
