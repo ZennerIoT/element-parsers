@@ -290,6 +290,10 @@ These parsers are available on request.
 * 2019-09-06: Added parsing catchall for unknown payloads.
 * 2018-07-18: First implementation.
 
+### Comtac Cluey LPN KM
+
+* 2023-02-09: Initial implementation according to "KM-KurzschlussMonitor-Bedienungsanleitung-DE-V0.1.4.pdf".
+
 ### Comtac Modbus Bridge Template
 
 * 2023-01-11: Added type "binary_bypass". Forwards the binary value directly. To be able to split the values later on in mapping function
@@ -610,6 +614,11 @@ These parsers are available on request.
 * 2022-12-30: Updated implementation. Added options config.add_measured_at_from_timestamp and config.each_delta_as_reading.
 * 2022-09-15: Initial implementation according to "aquastream 9-730-PT-DE-03.pdf"
 * 2022-09-27: Corrected parser according to vendor description
+
+### Integra Aquastream Water Meter v3
+
+* 2023-02-13: Added meter_address field.
+* 2023-02-10: Initial implementation according to "integra_aquastream 9-730-PT-EN-06.pdf".
 
 ### Integra Calec ST 3 Meter
 
