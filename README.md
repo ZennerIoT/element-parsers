@@ -1337,6 +1337,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2023-02-17: Fixed a bug in parse_fw_version incorrectly detecting EHKV devices.
 * 2023-01-03: Added skipping duplicate next to resend payloads.
 * 2022-12-29: Added config.ignore_duplicate_up_frames=false, for skipping exact previous payloads.
 * 2022-11-25: Renaming display names for the return temperature fields.
