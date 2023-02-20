@@ -803,6 +803,7 @@ These parsers are available on request.
 
 ### Milesight and Ursalink EM300 / EM310-UDL
 
+* 2023-02-20: Skip empty UP payloads, occuring with link_check_req commands.
 * 2022-10-10: Added missing Fields for EM310 UDL from "em310-udl-user-guide-en.pdf".
 * 2021-02-01: Added undocumented payload part FF0B...
 * 2021-01-27: Initial version from em300-series-user-guide-en.pdf
