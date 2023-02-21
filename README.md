@@ -571,6 +571,10 @@ These parsers are available on request.
 * 2018-08-08: Parsing battery and additional function.
 * 2018-04-18: Initial version.
 
+### Herholdt Controls - ECS WL03
+
+* 2023-02-21: Initial implementation according to "IIST313-07_LoRaWAN_Instruction Manual_Apr_2022.pdf".
+
 ### Holley E-Meter
 
 * 2023-01-04: Added do_extend_reading callback.
