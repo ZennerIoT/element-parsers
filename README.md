@@ -1247,6 +1247,7 @@ These parsers are available on request.
 
 ### VEGAPULS Air 41 and 42
 
+* 2023-02-20: Added possibility to add an offset via profiles
 * 2021-11-17: Updated implementation according to "Betriebsanleitung_VEGAPULS Air 42.pdf", handling GPS error values.
 * 2021-03-01: Initial implementation according to "Betriebsanleitung_VEGAPULS Air 41.pdf"
 
