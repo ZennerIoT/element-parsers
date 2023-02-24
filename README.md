@@ -246,6 +246,7 @@ These parsers are available on request.
 
 ### Comtac KLAX
 
+* 2023-02-24: Updated fields() definition, updated tests.
 * 2021-04-15: Using new config() function.
 * 2019-12-11: Added field obis_value in all readings for MSCONS rule compatability.
 * 2019-10-30: Field server_id is now integer. Added hex string value server_id_hex.
@@ -1051,6 +1052,7 @@ These parsers are available on request.
 
 ### SEBA SlimCom IoT-LR for Dipper Datensammler
 
+* 2023-02-24: Fixed timezone to "Etc/GMT-1".
 * 2021-08-03: Initial version according to "BA_SlimCom IoT_DE.PDF".
 
 ### Seeded Studios SenseCAP
@@ -1343,6 +1345,8 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2023-02-24: Added config/profile field 'sp12_strategy' with default `multiple_readings`.
+* 2023-02-23: Corrected handling in SP12 packets around midnight. Using "Etc/UTC+1" as default_timezone.
 * 2023-02-17: Fixed a bug in parse_fw_version incorrectly detecting EHKV devices.
 * 2023-01-03: Added skipping duplicate next to resend payloads.
 * 2022-12-29: Added config.ignore_duplicate_up_frames=false, for skipping exact previous payloads.
