@@ -293,6 +293,7 @@ These parsers are available on request.
 
 ### Comtac Cluey LPN KM
 
+* 2023-03-01: Added data.single_point_Y_input1 and data.single_point_Y_input2.
 * 2023-02-09: Initial implementation according to "KM-KurzschlussMonitor-Bedienungsanleitung-DE-V0.1.4.pdf".
 
 ### Comtac Modbus Bridge Template
