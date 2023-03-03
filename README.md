@@ -248,8 +248,9 @@ These parsers are available on request.
 
 * 2022-01-24: Initial version according to "E1395-CM-3_EN_V00.02_V05.pdf"
 
-### Comtac KLAX
+### Comtac KLAX v1
 
+* 2023-03-03: Added warning when using with app_version >= 1.0.
 * 2023-02-24: Updated fields() definition, updated tests.
 * 2021-04-15: Using new config() function.
 * 2019-12-11: Added field obis_value in all readings for MSCONS rule compatability.
@@ -263,12 +264,14 @@ These parsers are available on request.
 * 2019-03-04: Skipping invalid backdated values when value==0.0; Added mode "Logarex"
 * 2019-02-13: Initial Version by Niklas, registers and interval fixed.
 
-### Comtac KLAX Modbus
+### Comtac KLAX v2 Modbus
 
+* 2023-03-03: Added warning when using with app_version < 1.0.
 * 2020-01-30: Initial Version.
 
-### Comtac KLAX SML
+### Comtac KLAX v2 SML
 
+* 2023-03-03: Added warning when using with app_version < 1.0.
 * 2022-12-01: Added do_extend_reading callback.
 * 2022-03-28: Not adding obis values when unit="NDEF".
 * 2020-01-13: Let parser write interval and registers from packets of port 100 and 104 into profile
