@@ -474,6 +474,10 @@ These parsers are available on request.
 * 2019-09-06: Added parsing catchall for unknown payloads.
 * 2019-06-20: Added medium "heatcostallocator".
 
+### Eastron SDM230 Electricity Meter
+
+* 2023-03-06: Initial implementation according to documentation Eastron_SDM230-LoRaWAN_protocol_V1.0-combined
+
 ### Eastron SDM630CT 3 Phase Electricity Meter
 
 * 2022-11-30: Initial implementation.
