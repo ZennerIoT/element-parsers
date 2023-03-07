@@ -413,6 +413,10 @@ These parsers are available on request.
 * 2021-03-17: Supporting Mode 1 and 4
 * 2020-12-22: Initial Implementation according to "LSN50_LoRa_Sensor_Node_UserManual_v1.7.1.pdf"
 
+### Dragino LSN50V2-D20
+
+* 2023-03-07: Initial Implementation according to "Dragino LSN50v2 D20 User Manual (EN).pdf"
+
 ### Dragino LSNOK01 Soil Fertility Nutrient
 
 * 2021-08-26: Initial Implementation according to "LoRaWAN_Soil_NPK_Sensor_UserManual_v1.0.pdf"
