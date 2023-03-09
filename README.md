@@ -106,6 +106,12 @@ These parsers are available on request.
 * 2021-11-30: Updated parser according to real device values.
 * 2020-12-14: Initial implementation according to "MODBUS_LoRaWAN_868_V2.0.0..pdf".
 
+### Adeunis ARF8275A
+
+* 2023-03-07: Added basic support for co2 readings
+* 2022-11-24: Split multipayloads in multiple readings
+* 2022-11-17: Updated according to documentation
+
 ### Arad MODBUS
 
 * 2020-10-06: Refactored and added tests.
