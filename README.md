@@ -250,6 +250,7 @@ These parsers are available on request.
 
 ### Comtac KLAX v1
 
+* 2023-03-08: Added try catch. Added zaehlernummer calculation. Added reparsing_strategy()
 * 2023-03-03: Added warning when using with app_version >= 1.0.
 * 2023-02-24: Updated fields() definition, updated tests.
 * 2021-04-15: Using new config() function.
@@ -271,6 +272,7 @@ These parsers are available on request.
 
 ### Comtac KLAX v2 SML
 
+* 2023-03-09: Added profile field and handling of converter_factor. Added data.zaehlernummer from server_id.
 * 2023-03-03: Added warning when using with app_version < 1.0.
 * 2022-12-01: Added do_extend_reading callback.
 * 2022-03-28: Not adding obis values when unit="NDEF".
