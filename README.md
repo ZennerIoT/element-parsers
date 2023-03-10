@@ -97,11 +97,6 @@ These parsers are available on request.
 * 2020-11-24: Added extend_reading with start and impulse extension from profile.
 * 2019-09-06: Added parsing catchall for unknown payloads.
 
-### Adeunis ARF8230
-
-* 2022-08-17: Recognizing frame types periodic_channel_a/b, added fields, formatting.
-* 2019-03-20: Initial Implementation.
-
 ### Adeunis ARF8240
 
 * 2021-11-30: Updated parser according to real device values.
