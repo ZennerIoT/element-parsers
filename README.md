@@ -89,8 +89,9 @@ These parsers are available on request.
 * 2021-06-07: Added do_extend_reading/2 callback. Added tests and formatted code.
 * 2019-09-06: Added parsing catchall for unknown payloads.
 
-### Adeunis ARF8230AA
+### Adeunis ARF8230AA Pulse
 
+* 2023-03-10: Implemented missing payloads. Added tests from 'PULSE_V4-Technical_Reference_Manual_APP_2.1-22.02.2021-1.pdf'.
 * 2021-10-29: Rewrite of parser supporting all flags and newest payload version.
 * 2021-01-05: Added support for App Version 2.0 with prepended timestamp.
 * 2020-11-24: Added extend_reading with start and impulse extension from profile.
