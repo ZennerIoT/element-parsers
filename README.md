@@ -205,6 +205,7 @@ These parsers are available on request.
 
 ### Clevabit Protocol (DEOS SAM CO2 Ampel)
 
+* 2023-03-13: Added Dew-Temperature calculation and extend_reading callback.
 * 2020-12-16: Initial implementation according to payload version 1.0
 
 ### Clevercity Greenbox
