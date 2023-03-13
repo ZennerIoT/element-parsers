@@ -563,6 +563,7 @@ These parsers are available on request.
 
 ### Fludia FM432
 
+* 2023-03-13: Renamed e_pos,... to energy_pos. Fixed scaler detection. Added do_extend_reading callback. Added fields(). Added value to 'unknown'.
 * 2023-02-16: Parsing continues after increment error, add_increments() function added
 * 2023-01-19: Added FM432e. To be tested
 * 2022-11-10: Initial implementation (FM432ir only). To be tested
