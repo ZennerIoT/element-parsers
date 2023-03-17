@@ -435,6 +435,10 @@ These parsers are available on request.
 * 2021-07-14: Added parsing for old payload format v1.3
 * 2021-05-18: Initial Implementation according to "LoRa_IO_Controller_UserManual_v1.5.5.pdf"
 
+### Dragino LTC2 LoRaWAN Temperature Sensor
+
+* 2023-03-02: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LTC2%20-%20LoRaWAN%20Temperature%20Transmitter%20User%20Manual/#H2.4A0200BUplinkPayload"
+
 ### Dragino LWL01 Water Leak Sensor
 
 * 2021-10-13: fixed frame ports
