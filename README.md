@@ -404,6 +404,10 @@ These parsers are available on request.
 * 2022-11-09: Added support for "Ext=9, E3 sensor with Unix Timestamp"
 * 2020-01-01: Added to version control.
 
+### Dragino LHT65N
+
+* 2023-03-23: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LHT65N%20LoRaWAN%20Temperature%20%26%20Humidity%20Sensor%20Manual/#H2.4UplinkPayloadA0A028Fport3D229"
+
 ### Dragino LLMS01 Leaf Moisture
 
 * 2021-08-25: Initial Implementation according to "LoRaWAN_Leaf_Moisture_Sensor_UserManual_v1.0.pdf"
