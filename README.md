@@ -1058,6 +1058,7 @@ These parsers are available on request.
 
 ### PNI PlacePod parking sensor
 
+* 2023-03-27: Added tests from PNI-Sensor-PlacePod-Communications-Protocol.pdf
 * 2021-08-23: Added known mapping for internal channel 5 and 6. Added missing fields(), formatted code.
 * 2021-08-11: Parse even with PNI internal data.
 * 2021-04-20: Added do_extend_reading/2 and add_bosch_parking_format/1 for Bosch park sensor compatibility.
