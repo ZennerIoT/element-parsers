@@ -635,6 +635,10 @@ These parsers are available on request.
 * 2021-12-28: Added parsing of status messages
 * 2021-12-27: Initial implementation.
 
+### IMST iOKE868 LoRaWAN
+
+* 2023-03-24: Initial implementation.
+
 ### Innotas LoRa Pulse
 
 * 2020-11-30: Initial implementation
