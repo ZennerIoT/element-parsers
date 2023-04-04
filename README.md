@@ -1061,6 +1061,10 @@ These parsers are available on request.
 
 * 2022-10-07: Initial implementation according to "Radio Payload_SMM-Aquo_v1_20220506.pdf"
 
+### Pipersberg Ultrimis Watermeter TESTING STATE
+
+* 2023-04-04: Initial implementation according to "ULTRIMIS V1.5 LoRa PAYLOAD.pdf"
+
 ### PNI PlacePod parking sensor
 
 * 2023-03-27: Added tests from PNI-Sensor-PlacePod-Communications-Protocol.pdf
