@@ -1189,6 +1189,10 @@ These parsers are available on request.
 * 2020-06-26: Using memory_address, sub_device and tariff in reading keys.
 * 2020-06-09: Initial implementation according to "M-Bus Frames 7x9 - LoRAWAN_20190812.pdf"
 
+### Sontex Wecount-S
+
+* 2023-04-05: Initial implementation according to "Radio-Telegram_LoRa_WECOUNT-S_Payload_0.3.4_20221121.xlsx"
+
 ### Speedfreak_v4
 
 * 2021-01-26: Initial implementation
