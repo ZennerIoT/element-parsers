@@ -1068,6 +1068,10 @@ These parsers are available on request.
 
 * 2023-04-04: Initial implementation according to "ULTRIMIS V1.5 LoRa PAYLOAD.pdf"
 
+### Plenum Kuando Busylight
+
+* 2023-04-13: Initial implementation according to "Technical Documentation kuando IoT Busylight v3.1 - LoRa.pdf"
+
 ### PNI PlacePod parking sensor
 
 * 2023-03-27: Added tests from PNI-Sensor-PlacePod-Communications-Protocol.pdf
