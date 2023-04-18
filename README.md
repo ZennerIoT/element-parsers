@@ -838,6 +838,7 @@ These parsers are available on request.
 
 ### MClimate Vicky
 
+* 2023-04-18: Writing SW-Version into vicki profile, fixed child lock statement
 * 2023-04-05: Added support for firmware 4.1 and added command support
 * 2023-01-18: Added relative valve position and fixed field names
 * 2022-11-03: Added Payloads starting with 0x28 (reply to commands)
