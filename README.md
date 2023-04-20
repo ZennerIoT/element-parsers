@@ -516,8 +516,13 @@ These parsers are available on request.
 
 ### eBZ electricity meter
 
+* 2023-04-13: Added data."1-0:1.8.0" => 2.197 in reading.
 * 2020-02-03: MSCONS compatibility and reformatting.
 * 2019-05-09: Initial implementation according to "example Payload"
+
+### eBZ electricity meter RD3 TESTING!
+
+* 2023-04-13: Initial implementation according to "RD3_app_layer_specification_V0_3_4_draft.pdf".
 
 ### eBZ electricity meter v2
 
@@ -1044,6 +1049,10 @@ These parsers are available on request.
 * 2020-09-29: Updated implementation according to https://parametric.ch/docs/tcr/tcr_payload_v2
 * 2020-07-07: Initial implementation according to https://parametric.ch/docs/tcr/tcr_payload_v1
 
+### PARKLAB - Wireless Parking Space Detection WPSD
+
+* 2023-04-20: Initial implementation according "Payloadbeschreibung PARKLAB Technologie GmbH.pdf".
+
 ### PaulWegener Datenlogger ASCII
 
 * 2020-03-26: Initial implementation according to example payload.
@@ -1066,8 +1075,9 @@ These parsers are available on request.
 
 * 2022-10-07: Initial implementation according to "Radio Payload_SMM-Aquo_v1_20220506.pdf"
 
-### Pipersberg Ultrimis Watermeter TESTING STATE
+### Pipersberg Ultrimis Watermeter
 
+* 2023-04-20: Added more tests from real device.
 * 2023-04-04: Initial implementation according to "ULTRIMIS V1.5 LoRa PAYLOAD.pdf"
 
 ### Plenum Kuando Busylight
