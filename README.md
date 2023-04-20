@@ -814,6 +814,7 @@ These parsers are available on request.
 
 ### Lobaro WMBus Bridge
 
+* 2023-04-20: Reformatted, added tests.
 * 2021-01-22: Updated device_type_to_string list.
 * 2020-07-27: Fixed temp, added format 2, added tests, added fields definition.
 * 2020-06-30: Current state, added tests.
