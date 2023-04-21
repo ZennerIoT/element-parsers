@@ -1333,6 +1333,10 @@ These parsers are available on request.
 * 2022-06-22: Updated to version TDW2/LDW2 v0.8 and payload version: V1.1
 * 2021-08-31: Initial version
 
+### PGW23.100.11
+
+* 2023-04-21: Initial implementation according to "sd_pgw23_100_en.pdf".
+
 ### WMBus Driver Packet Parser
 
 * 2022-10-27: Added config option skip_invalid_data with default: false
