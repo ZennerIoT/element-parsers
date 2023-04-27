@@ -1078,6 +1078,7 @@ These parsers are available on request.
 
 ### Pipersberg Ultrimis Watermeter
 
+* 2023-04-27: Added data.volume_previous_x values.
 * 2023-04-20: Added more tests from real device.
 * 2023-04-04: Initial implementation according to "ULTRIMIS V1.5 LoRa PAYLOAD.pdf"
 
