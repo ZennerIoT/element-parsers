@@ -1398,6 +1398,10 @@ These parsers are available on request.
 
 * 2019-09-06: Added parsing catchall for unknown payloads.
 
+### ZENNER International Gridbox
+
+* 2023-04-27: Initial implementation according to "LoRaWAN_Payload_ecolyze_2023-03-21.pdf"
+
 ### ZRI Simple EDC and PDC
 
 * 2022-03-02: Fix date calculation in SP4/8
