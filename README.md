@@ -877,6 +877,7 @@ These parsers are available on request.
 
 ### Milesight and Ursalink WS101
 
+* 2023-05-02: Corrected modes
 * 2022-04-28: Initial version according to ws101-user-guide-en.pdf
 
 ### Milesight and Ursalink WS136 & WS156
