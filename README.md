@@ -680,6 +680,7 @@ These parsers are available on request.
 
 ### Integra Topas Sonic Water Meter
 
+* 2023-05-10: Added new payload format according to "Topas Sonic-LW8-INTG01-INTG02-V1.0.002.pdf".
 * 2022-10-13: Using LibWmbus.parse and providing also WMBus header data like address. Added do_extend_reading callback.
 * 2022-03-03: Added new payload format according to "Topas Sonic-LW-INTG01 - V0.1.pdf".
 * 2021-07-14: Initial implementation according to "Payload Beschreibung Topas Sonic Lora.pdf".
@@ -1300,6 +1301,8 @@ These parsers are available on request.
 
 ### UIT-GmbH WR-iot-compact water level sensor
 
+* 2023-05-10: Changes according to DB_Bsp_LoRa-Settings-Auslieferungszustand_deu.pdf
+* 2023-05-09: added message_type 0x10 and 0x11
 * 2021-10-08: Initial implementation.
 
 ### Ursalink AM100/102 and Milesight AM104/AM107
