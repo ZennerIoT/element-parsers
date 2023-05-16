@@ -680,6 +680,7 @@ These parsers are available on request.
 
 ### Integra Topas Sonic Water Meter
 
+* 2023-05-15: Added config option `create_hourly_values=false`.
 * 2023-05-10: Added new payload format according to "Topas Sonic-LW8-INTG01-INTG02-V1.0.002.pdf".
 * 2022-10-13: Using LibWmbus.parse and providing also WMBus header data like address. Added do_extend_reading callback.
 * 2022-03-03: Added new payload format according to "Topas Sonic-LW-INTG01 - V0.1.pdf".
@@ -1080,6 +1081,7 @@ These parsers are available on request.
 
 ### Pipersberg Ultrimis Watermeter
 
+* 2023-05-15: Added config option `create_hourly_values=false`. Added OBIS "8-0:1.0.0".
 * 2023-04-27: Added data.volume_previous_x values.
 * 2023-04-20: Added more tests from real device.
 * 2023-04-04: Initial implementation according to "ULTRIMIS V1.5 LoRa PAYLOAD.pdf"
