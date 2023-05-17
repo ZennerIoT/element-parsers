@@ -524,6 +524,10 @@ These parsers are available on request.
 
 * 2023-04-13: Initial implementation according to "RD3_app_layer_specification_V0_3_4_draft.pdf".
 
+### eBZ electricity meter RD3 TESTING!
+
+* 2023-05-17: Initial implementation according to "RD3_Nachrichten-Protokoll_Spezifikation_1_0_1.pdf"
+
 ### eBZ electricity meter v2
 
 * 2022-08-25: Added do_extend_reading callback.
