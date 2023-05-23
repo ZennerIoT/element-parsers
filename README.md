@@ -1180,11 +1180,15 @@ These parsers are available on request.
 * 2021-10-26: Added do_extend_reading/2 Callback
 * 2020-11-17: Initial implementation according to "Apollon_A4_Payload_Beschreibung.pdf"
 
-### Sentinum FEBRIS
+### Sentinum FEBRIS Co2
 
 * 2021-11-03: Fixed newer minor versions and battery unit.
 * 2021-04-30: Fixed temperature and typos.
 * 2021-04-20: Initial implementation according to "Febris_A4_Payload_Beschreibung.pdf"
+
+### Sentinum FEBRIS SCW
+
+* 2023-05-23: Initial implementation according to "SCW.decoder.sub2.js".
 
 ### Skysense SKYAGR1
 
