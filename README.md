@@ -1266,6 +1266,7 @@ These parsers are available on request.
 
 ### TEKTELIC Agriculture
 
+* 2023-05-23: Updated according to "T0005978_TRM_Kiwi_Clover_ver2.0.pdf"
 * 2022-04-06: Added watermark*_kpa_raw values not normalized to 24° if no temperature is available.
 * 2021-03-17: Fixed negative values for ambient temperature and added roundings for watermark and temperatures
 * 2020-11-09: Initial implementation according to "T0005978_TRM_Agriculture_Sensor_ver1_4.pdf"
