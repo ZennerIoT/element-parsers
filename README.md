@@ -859,6 +859,10 @@ These parsers are available on request.
 * 2021-12-21: Updated to latest firmware 3.5. Added Command-Code 0x81.
 * 2021-08-27: Initial Implementation of keepalive frame according to "MClimate_Vicki_LoRaWAN_Device_Communication_Protocol_1.7.pdf"
 
+### Milesight AM100 Series
+
+* 2021-12-15: Initial implementation according to "am100-series-user-guide-en.pdf"
+
 ### Milesight AM300 Series
 
 * 2021-12-13: Initial implementation according to "am300-series-user-guide-en.pdf"
