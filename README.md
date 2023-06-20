@@ -1004,6 +1004,10 @@ These parsers are available on request.
 
 * 2020-10-15: Initial implementation according to "Clos'O_50-70-108-000_SPG_V0_9 EN _1_.pdf".
 
+### NKE Watteco Flash'O
+
+* 2023-06-30: Initial implementaion
+
 ### NKE Watteco IN'O
 
 * 2023-02-03: Added switch to generate output key for each endpoint when activated
