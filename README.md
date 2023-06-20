@@ -972,6 +972,7 @@ These parsers are available on request.
 
 ### Netvox Multiparser
 
+* 2023-06-20: Added R718MBB Activity Event Counter.
 * 2023-03-29: Added R718G Light Sensor.
 * 2022-08-12: Added R718N360, fixed R718N
 * 2021-06-16: Added support for R311A/R718F/R311CC/R730F
