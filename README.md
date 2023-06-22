@@ -1357,6 +1357,10 @@ These parsers are available on request.
 * 2021-11-17: Updated implementation according to "Betriebsanleitung_VEGAPULS Air 42.pdf", handling GPS error values.
 * 2021-03-01: Initial implementation according to "Betriebsanleitung_VEGAPULS Air 41.pdf"
 
+### Wehrle Wecount-S
+
+* 2023-06-22: Initial implementation according to "Radio-Telegram_LoRa_WECOUNT-S_Payload_0.3.4_20221121.xlsx"
+
 ### TDW2/LDW2
 
 * 2022-07-15: Updated to  payload version: V1.3
