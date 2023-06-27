@@ -1458,6 +1458,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2023-06-27: Added AP status code 0x0D dry, 0x0E frost and 0x0F backflow.
 * 2023-02-24: Added config/profile field 'sp12_strategy' with default `multiple_readings`.
 * 2023-02-23: Corrected handling in SP12 packets around midnight. Using "Etc/UTC+1" as default_timezone.
 * 2023-02-17: Fixed a bug in parse_fw_version incorrectly detecting EHKV devices.
