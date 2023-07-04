@@ -801,6 +801,7 @@ These parsers are available on request.
 
 ### Lobaro Modbus Bridge v1.0
 
+* 2023-06-28: Fixed Modbus exception code texts
 * 2022-01-13: Added reparsing_strategy: sequential
 * 2022-01-11: Fixed add_timestamp to convert all timestamp to DateTime. Added do_extend_reading/2 callback.
 * 2021-09-23: Improved handling of splitted Port 5 messages.
