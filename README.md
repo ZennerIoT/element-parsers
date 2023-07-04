@@ -72,6 +72,7 @@ These parsers are available on request.
 
 ### Adeunis ARF8180 Temperature Sensors
 
+* 2023-07-04: Added config() with option use_timestamp_from_device: false.
 * 2022-12-15: Added data.transceived_at to find device time problems. Added field definitions.
 * 2021-02-04: Supporting payloads with timestamp.
 * 2021-02-02: Support for v4 payloads.
