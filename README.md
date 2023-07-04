@@ -406,8 +406,9 @@ These parsers are available on request.
 
 ### Dragino LHT65N
 
+* 2023-07-04: Added Ext=2
 * 2023-03-27: Fixed formatting
-* 2023-03-23: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LHT65N%20LoRaWAN%20Temperature%20%26%20Humidity%20Sensor%20Manual/#H2.4UplinkPayloadA0A028Fport3D229"
+* 2023-03-23: Initial implementation (Ext=1) according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LHT65N%20LoRaWAN%20Temperature%20%26%20Humidity%20Sensor%20Manual/#H2.4UplinkPayloadA0A028Fport3D229"
 
 ### Dragino LLMS01 Leaf Moisture
 
