@@ -855,6 +855,7 @@ These parsers are available on request.
 
 ### MClimate Vicky
 
+* 2023-07-05: added command mode 0x16, 0x17, 0x29, 0x36, 0x3D, 0x3F, 0x40, 0x42
 * 2023-05-19: fixed float calculation
 * 2023-04-18: Writing SW-Version into vicki profile, fixed child lock statement
 * 2023-04-05: Added support for firmware 4.1 and added command support
