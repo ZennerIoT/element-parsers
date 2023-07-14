@@ -146,6 +146,10 @@ These parsers are available on request.
 * 2020-06-23: Added feature :append_last_digital_inputs default: false
 * 2020-06-18: Initial implementation according to "ATIM_ACW-DIND160-80-88-44_UG_EN_V1.7.pdf"
 
+### Axioma Qalcosonic E3/E4
+
+* 2023-07-13: Initial implementation according to "LoRa functional description for E3_E4_V01_20221108.pdf"
+
 ### Axioma Qalcosonic F1 - 24h mode (or Honeywell Elster)
 
 * 2021-05-04: Initial implementation according to "Axioma Lora Payload F1 V1.8 Enhanced.pdf"
