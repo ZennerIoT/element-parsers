@@ -888,6 +888,10 @@ These parsers are available on request.
 
 * 2022-04-21: Initial version according to em500-series-communication-protocol-en.pdf
 
+### Milesight and Ursalink UC100
+
+* 2023-07-20: Initial version according to uc100-user-guide-en.pdf
+
 ### Milesight and Ursalink UC11xx
 
 * 2021-01-28: Initial version from uc11xx_control_protocol_en.pdf v1.4
@@ -1153,11 +1157,6 @@ These parsers are available on request.
 
 * 2023-02-24: Fixed timezone to "Etc/GMT-1".
 * 2021-08-03: Initial version according to "BA_SlimCom IoT_DE.PDF".
-
-### Seeded Studios SenseCAP
-
-* 2021-04-19: Added field for battery + new test
-* 2021-04-15: Initial Version. Documentation: https://sensecap-docs.seeed.cc/pdf/SenseCAP%20LoRaWAN%20Sensor%20User%20Manual-V1.1.pdf
 
 ### Seeed Studio SenseCAP S210X
 
