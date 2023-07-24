@@ -890,6 +890,7 @@ These parsers are available on request.
 
 ### Milesight and Ursalink UC100
 
+* 2023-07-24: Added profile support to configure byteorder
 * 2023-07-20: Initial version according to uc100-user-guide-en.pdf
 
 ### Milesight and Ursalink UC11xx
