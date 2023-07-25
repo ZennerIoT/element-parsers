@@ -579,6 +579,10 @@ These parsers are available on request.
 * 2023-02-09: Productive version excluding CRC calculation.
 * 2023-01-31: Initial implementation.
 
+### Squid V2
+
+* 2023-07-25: Initial implementation according to "https://ewattch-documentation.com/?page_id=11345&lang=en"
+
 ### Fast-GmbH AZA-OAD-Logger
 
 * 2022-07-05: Made pegel binary part dynamic long.
