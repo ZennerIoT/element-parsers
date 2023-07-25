@@ -905,6 +905,10 @@ These parsers are available on request.
 
 * 2023-01-05: Initial version according to vs132-user-guide-en.pdf
 
+### Milesight and Ursalink VS133
+
+* 2023-07-24: Initial version according to "https://github.com/Milesight-IoT/SensorDecoders/blob/main/VS_Series/VS133/README.md"
+
 ### Milesight and Ursalink WS101
 
 * 2023-05-02: Corrected modes
