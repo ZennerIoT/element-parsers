@@ -465,6 +465,10 @@ These parsers are available on request.
 
 * 2023-03-15: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/SW3L%20LoRaWAN%20Outdoor%20Flow%20Sensor/#H2.3UplinkPayload"
 
+### Dragino TrackerD
+
+* 2023-08-08: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/TrackerD/#HFLAG:"
+
 ### DZG Node
 
 * 2021-01-17: Also handle version 2
