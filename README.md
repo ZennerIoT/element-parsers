@@ -467,6 +467,7 @@ These parsers are available on request.
 
 ### Dragino TrackerD
 
+* 2023-08-10: Added support for 11 Byte Port 5 Payload according to vendor
 * 2023-08-08: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/TrackerD/#HFLAG:"
 
 ### DZG Node
