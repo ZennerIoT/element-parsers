@@ -894,6 +894,10 @@ These parsers are available on request.
 * 2021-02-01: Added undocumented payload part FF0B...
 * 2021-01-27: Initial version from em300-series-user-guide-en.pdf
 
+### Milesight and Ursalink EM400
+
+* 2023-08-15: Initial version according to em400-mud-user-guide-en.pdf
+
 ### Milesight and Ursalink EM500
 
 * 2022-04-21: Initial version according to em500-series-communication-protocol-en.pdf
