@@ -1434,6 +1434,7 @@ These parsers are available on request.
 
 ### ZENNER Smoke Detector D1722
 
+* 2023-08-29: Fixed firmware_version, added device_identity.
 * 2022-03-10: Added extend_reading. Added status_summary bitmap for SP9.1 packets.
 * 2021-08-25: Added german Field-Display Names
 * 2021-04-28: Added AP 0x19 "smoke_alarm_released" for scenario 206.
