@@ -398,6 +398,11 @@ These parsers are available on request.
 * 2021-10-13: fixed frame port and tests + added support for versions 1.3 and lower
 * 2021-10-12: Initial implementation according to "LDS01_LoRaWAN_Door_Sensor_UserManual_v1.4.0.pdf"
 
+### LDS03A - Outdoor LoRaWAN Open/Close Door Sensor
+
+* 2023-08-30: Addedd support for FPORT 4, 2, 3.
+* 2023-08-25: Initial implementation according to Dragino wiki page: wiki.dragino.com
+
 ### Dragino LGT-92 LoRaWAN GPS Tracker
 
 * 2022-06-29: Added config option gps_keep_invalid=false.
