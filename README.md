@@ -152,6 +152,7 @@ These parsers are available on request.
 
 ### Axioma Qalcosonic F1 - 24h mode (or Honeywell Elster)
 
+* 2023-08-31: Added AES decryption with key from profile qualcosonic.aes_key
 * 2021-05-04: Initial implementation according to "Axioma Lora Payload F1 V1.8 Enhanced.pdf"
 
 ### Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
@@ -1110,6 +1111,11 @@ These parsers are available on request.
 * 2021-09-22: Updated implementation according to https://parametric.ch/docs/tcr/tcr_payload_v3
 * 2020-09-29: Updated implementation according to https://parametric.ch/docs/tcr/tcr_payload_v2
 * 2020-07-07: Initial implementation according to https://parametric.ch/docs/tcr/tcr_payload_v1
+
+### Parametric TCR Radar Traffic Counter Gen 2
+
+* 2023-08-30: Added support for counter payload according to docu.
+* 2023-08-25: Implementation of firmware V2.2 according to https://docs.parametric-analytics.com/tcr/manuals/lora_payload/
 
 ### PARKLAB - Wireless Parking Space Detection WPSD
 
