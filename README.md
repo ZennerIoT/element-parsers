@@ -544,6 +544,7 @@ These parsers are available on request.
 
 ### eBZ electricity meter RD3 TESTING!
 
+* 2023-09-12: Added missing units
 * 2023-09-12: Fixes and added support according to "RD3_app_msg_protocol_specification_1_0_1"
 * 2023-06-26: Minor fixes, added get_resp (0x02) support, added set_resp(0x04) support"
 * 2023-05-17: Initial implementation according to "RD3_Nachrichten-Protokoll_Spezifikation_1_0_1.pdf"
