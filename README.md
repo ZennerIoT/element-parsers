@@ -1376,7 +1376,7 @@ These parsers are available on request.
 * 2020-09-23: Added support for new Healthy Home Sensor version (with indoor-air-quality)
 * 2019-04-04: Initial version, combining 5 TrackNet Tabs devices.
 
-### Treesense Treesense LoRaWAn
+### Treesense LoRaWAn
 
 * 2023-09-15: Initial implementation according to the vendor provided information
 
