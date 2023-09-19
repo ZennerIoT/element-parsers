@@ -1067,6 +1067,10 @@ These parsers are available on request.
 * 2021-02-11: Made "rp" and "csp" optional at payload ending.
 * 2021-02-05: Initial implementation according to "http://support.nke-watteco.com/wp-content/uploads/2019/03/50-70-098_Intenso_User_Guide_1.1_Revised.pdf"
 
+###  NKE Watteco ModBus
+
+* 2023-09-19: Initial implementation according to https://support.watteco.com/modbus/
+
 ### NKE Watteco Monit'O
 
 * 2022-03-31: Initial implementaion
