@@ -544,6 +544,7 @@ These parsers are available on request.
 
 ### eBZ electricity meter RD3 TESTING!
 
+* 2023-09-25: Corrected voltage factors of u_l1_avg, u_l2_avg, u_l3_avg due to real data
 * 2023-09-12: Added missing units
 * 2023-09-12: Fixes and added support according to "RD3_app_msg_protocol_specification_1_0_1"
 * 2023-06-26: Minor fixes, added get_resp (0x02) support, added set_resp(0x04) support"
