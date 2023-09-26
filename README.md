@@ -901,8 +901,9 @@ These parsers are available on request.
 
 * 2021-12-13: Initial implementation according to "am300-series-user-guide-en.pdf"
 
-### Milesight and Ursalink EM300 / EM310-UDL
+### Milesight and Ursalink EM300 Series
 
+* 2023-09-26: Added EM320-Tilt support according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/EM_Series/EM300_Series/EM320-TILT
 * 2023-08-03: Added EM320-TH support according to "em320-th-user-guide-en.pdf"
 * 2023-02-20: Skip empty UP payloads, occuring with link_check_req commands.
 * 2022-10-10: Added missing Fields for EM310 UDL from "em310-udl-user-guide-en.pdf".
