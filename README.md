@@ -834,6 +834,10 @@ These parsers are available on request.
 * 2021-07-14: Fixed a bug in add_timestamp
 * 2021-03-23: Supporting bridge firmware version from v1.0, and verbose format.
 
+### Multi Temperature Sensor Box
+
+* 2023-09-26: Initial implementation according documentation https://doc.lobaro.com/doc/products/discontinued-products/multi-temperature-sensor-box-lorawan#MultiTemperatureSensorBox(LoRaWAN)-Payload
+
 ### Lobaro Oscar smart waste ultrasonic sensor
 
 * 2018-01-01: Initial implementation
