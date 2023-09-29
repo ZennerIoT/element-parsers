@@ -966,6 +966,10 @@ These parsers are available on request.
 
 * 2022-09-16: Initial version according to https://github.com/Milesight-IoT/SensorDecoders/tree/master/WS_Series/WS52x
 
+### Mioty metering
+
+* 2023-09-29: Initial version.
+
 ### MIROMICO FMLR IoT Button
 
 * 2021-10-20: Initial implementation according to "Miromico IoT-Button Factsheet (EN).pdf" with given example payloads
