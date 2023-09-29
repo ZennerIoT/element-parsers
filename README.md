@@ -141,6 +141,10 @@ These parsers are available on request.
 * 2022-02-03: Added support for hardware_revision
 * 2022-02-02: Initial implementation according to "PB868LRH and PB868LRI Push button sensors programming manual.pdf"
 
+### Atim Cloud Wireless Sensor
+
+* 2023-09-29: Initial implementation according to "https://www.atim.com/wp-content/uploads/documentation/ACW/ACW-THAQ/ENGLISH/ATIM_ACW-THAQ_UG_EN.pdf"
+
 ### ATIM Metering and Dry Contact DIND160/80/88/44
 
 * 2020-06-23: Added feature :append_last_digital_inputs default: false
