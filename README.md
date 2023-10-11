@@ -359,6 +359,10 @@ These parsers are available on request.
 * 2020-03-31: Allowing all device_ids now
 * 2019-01-07: Initial implementation for 359=KELLER_I2C_PRESSURE_SENSOR
 
+### DL-PR36
+
+* 2023-10-10: Initial implementation according to "https://cdn.decentlab.com/download/datasheets/Decentlab-DL-PR36-datasheet.pdf"
+
 ### Decentlab DL-TRS12 Soil Moisture
 
 * 2019-07-10: Initial version. Code cleanup. Tests.
