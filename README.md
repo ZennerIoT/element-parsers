@@ -582,6 +582,7 @@ These parsers are available on request.
 
 ### Elvaco CMi41X0 Mbus
 
+* 2023-10-11: Added energy cold and energy heat from tariff 1-2 of scheduled extended+ mode of CMi4110
 * 2023-07-05: Added extend_dib_naming_schema for custom renaming dibs. Added max_ and min_ prefix next to unprefixed "current" functions_fields.
 * 2022-12-23: Added test for CMi4111 Payload.
 * 2022-04-06: Fixing error when error hex string is above 09
