@@ -388,6 +388,10 @@ These parsers are available on request.
 * 2021-04-06: Fixed not whitelisted function call.
 * 2021-02-09: Initial implementation according to "Oyster LoRaWAN Integration 1.8.pdf".
 
+### DNIL LHI110 LORA HAN INTERFACE
+
+* 2023-10-13: Initial implementation according to "LHi110 Manual 1.0 2023-09-28.pdf"
+
 ### Dräger x-Node
 
 * 2022-08-09: Initial implementation according to "Payload Decoder_Basic_Travekom.pdf"
