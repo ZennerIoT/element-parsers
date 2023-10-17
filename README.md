@@ -941,6 +941,10 @@ These parsers are available on request.
 
 * 2021-01-28: Initial version from uc11xx_control_protocol_en.pdf v1.4
 
+### Milesight and Ursalink UC50x
+
+* 2023-10-16: Initial version according https://github.com/Milesight-IoT/SensorDecoders/tree/main/UC_Series/UC50x
+
 ### Milesight and Ursalink VS121
 
 * 2023-06-14: Initial version according to vs121-user-guide-en.pdf
