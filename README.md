@@ -390,6 +390,7 @@ These parsers are available on request.
 
 ### DNIL LHI110 LORA HAN INTERFACE
 
+* 2023-10-19: Corrected voltage, power and current calculcations"
 * 2023-10-13: Initial implementation according to "LHi110 Manual 1.0 2023-09-28.pdf"
 
 ### Dräger x-Node
