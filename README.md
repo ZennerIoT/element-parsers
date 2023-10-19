@@ -897,7 +897,7 @@ These parsers are available on request.
 
 * 2022-12-14: Initial Implementation.
 
-### MClimate Vicky
+### MClimate Vicki
 
 * 2023-10-19: Added command response 0x2B.
 * 2023-07-05: added command mode 0x16, 0x17, 0x29, 0x36, 0x3D, 0x3F, 0x40, 0x42
