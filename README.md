@@ -1070,6 +1070,10 @@ These parsers are available on request.
 * 2020-05-04: Added config flag "config_add_last_real_time_data_to_button_press?"
 * 2020-02-28: Initial implementation according to "D678C_Insafe+_Carbon_LoRa_Technical_Guide_EN.pdf"
 
+### Nexelec D770A Air Lora
+
+* 2023-10-19: Initial implementation according to "D770A_Air_Lora_Technical_Guide_EN_V5.7_public.pdf"
+
 ### nke AtmO
 
 * 2022-09-27: Initial implementation according to https://support.nke-watteco.com/atmo/
