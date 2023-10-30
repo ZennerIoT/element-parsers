@@ -1505,6 +1505,7 @@ These parsers are available on request.
 
 ### ZENNER T&H Sensor D1801
 
+* 2023-10-25: Added dew point calculation and SP12_3.
 * 2020-02-27: Parsing Packets SP50, SP92 and SP93 too.
 * 2020-02-10: Initial implementation according to "D1801-TH-Sensor-LoRa-userguide.pdf"
 
