@@ -1043,6 +1043,10 @@ These parsers are available on request.
 * 2019-05-07: Updated with information from 0.7.0 document. Fix rssi and medium_type mapping.
 * 2018-09-04: Added tests. Handling Configuration request on port 49
 
+### NAS UM3110
+
+* 2023-12-06: Initial implementation according to "NAS UM3110 4.0.x Payload.pdf" (Supporting usage_packet, status_packet and general_configuration_packet)
+
 ### NetOp Multiparser
 
 * 2020-10-06: Added support for ambient light sensor (v1.9)
