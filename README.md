@@ -1195,7 +1195,8 @@ These parsers are available on request.
 
 ### Pipersberg Ultrimis Watermeter
 
-* 2023-11-08: Fixed tests for 32bit volume_start value. Ignoring delta volume values FFFF and after.
+* 2023-11-13: Fixed bug for 'Ignoring delta volume values FFFF and after' with create_hourly_values=true.
+* 2023-11-08: Fixed tests for 32bit volume_start value.
 * 2023-10-30: Corrected volume_start is 32bit not 16bit.
 * 2023-05-15: Added config option `create_hourly_values=false`. Added OBIS "8-0:1.0.0".
 * 2023-04-27: Added data.volume_previous_x values.
