@@ -899,6 +899,7 @@ These parsers are available on request.
 
 ### MClimate Vicki
 
+* 2023-11-21: removed duplicate rel_hum calculation
 * 2023-10-19: Added command response 0x2B.
 * 2023-07-05: added command mode 0x16, 0x17, 0x29, 0x36, 0x3D, 0x3F, 0x40, 0x42
 * 2023-05-19: fixed float calculation
