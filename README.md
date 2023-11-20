@@ -1016,6 +1016,7 @@ These parsers are available on request.
 
 ### NAS CM3060 BK-G Pulse Reader
 
+* 2023-11-06: Update according to "BK_G_Pulse_Reader_cm3060-1.pdf"
 * 2019-08-26: Initial version
 
 ### NAS PULSER BK-G CM3061
