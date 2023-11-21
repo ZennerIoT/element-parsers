@@ -1252,6 +1252,7 @@ These parsers are available on request.
 
 ### Sensative Strips Comfort
 
+* 2023-11-21: Corrected avg temperature due to LoRa-Strips-Payload-formats-2
 * 2020-07-02: Updated payload to Strips-MsLoRa-DataFrames-3.odt, ignoring frame_port=2 for now.
 * 2019-11-05: Fixed order of temperature/humidity in 1.1.17, 1.1.18 and 1.1.19.
 * 2019-09-10: Initial implementation according to "Sensative_LoRa-Strips-Manual-Alpha-2.pdf"
