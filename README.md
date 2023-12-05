@@ -205,6 +205,10 @@ These parsers are available on request.
 * 2019-09-19: Ignoring locations where GPS lat=0 and lon=0.
 * 2019-06-05: Initial implementation according to "Traci-FramepayloadProtocol_V1.5.pdf"
 
+### WEP 5
+
+* 2023-12-05: Initial implementation according to "Example-Payload-v1.pdf"
+
 ### Browan Tabs TBSL100 Sound Level
 
 * 2023-03-03: Initial implementation according to "Tabs TBSL100 Sound Level Sensor User Manual (EN).pdf".
