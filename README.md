@@ -990,6 +990,10 @@ These parsers are available on request.
 
 * 2021-10-20: Initial implementation according to "Miromico IoT-Button Factsheet (EN).pdf" with given example payloads
 
+### Miromico Insight
+
+* 2023-12-04: Initial implementation according to https://docs.miromico.ch/iot-devices/miro-insight-lorawan/payload/
+
 ### Mutelcor MTC-PB01 / MTC-CO2-01 / MTC-XX-MH01 / MTC-XX-CF01
 
 * 2021-07-01: Added Manhole and Customer Feedback sensor.
