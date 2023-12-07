@@ -207,7 +207,7 @@ These parsers are available on request.
 
 ### WEP 5
 
-* 2023-12-05: Initial implementation according to "Example-Payload-v1.pdf"
+* 2023-12-05: Initial implementation according to "WEP5.pdf"
 
 ### Browan Tabs TBSL100 Sound Level
 
