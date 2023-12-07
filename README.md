@@ -1203,8 +1203,13 @@ These parsers are available on request.
 
 * 2022-10-07: Initial implementation according to "Radio Payload_SMM-Aquo_v1_20220506.pdf"
 
+### Pipersberg Octave Watermeter
+
+* 2023-12-06: Initial implementation according to "OCTAVE XTR_LoRa_Nachricht 0x80_WT Log Beacon.pdf" and "TTN Parser 0x80+9B Beacons WT Log Frame & Alarm.js".
+
 ### Pipersberg Ultrimis Watermeter
 
+* 2023-12-07: Added config allow_negative_delta: true
 * 2023-11-13: Fixed bug for 'Ignoring delta volume values FFFF and after' with create_hourly_values=true.
 * 2023-11-08: Fixed tests for 32bit volume_start value.
 * 2023-10-30: Corrected volume_start is 32bit not 16bit.
