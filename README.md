@@ -1494,6 +1494,10 @@ These parsers are available on request.
 
 * 2023-04-21: Initial implementation according to "sd_pgw23_100_en.pdf".
 
+### wio  FieldTester
+
+* 2023-12-12: Initial implementation
+
 ### WMBus Driver Packet Parser
 
 * 2022-10-27: Added config option skip_invalid_data with default: false
