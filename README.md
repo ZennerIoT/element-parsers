@@ -657,6 +657,7 @@ These parsers are available on request.
 
 ### GWF LoRaWAN module for GWF metering units
 
+* 2023-12-13: Added support for message type 0x32
 * 2021-08-17: Added extend_reading function and missing fields.
 * 2021-04-15: Using new config() function.
 * 2019-07-04: Added support for message type 0x02.
