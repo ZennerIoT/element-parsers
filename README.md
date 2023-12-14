@@ -1004,6 +1004,10 @@ These parsers are available on request.
 * 2021-07-01: Added Manhole and Customer Feedback sensor.
 * 2020-12-11: Initial version.
 
+### Mutelcor MTC-XX-AU01/02/03/04
+
+* 2023-12-14: Initial version.
+
 ### NAS ACM CM3010
 
 * 2019-12-09: Fixed boot message for newer longer payloads.
