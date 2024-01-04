@@ -224,6 +224,7 @@ These parsers are available on request.
 
 ### Clevercity Greenbox
 
+* 2023-12-27: Fixed calculation of k1_running_since/k2 using data.timestamp.
 * 2022-11-21: Using data.timestamp (if available) for config.interpolate_times, to avoid late sending problems.
 * 2022-11-01: Fixed interpolation problem with summer-winter timezone switch. Added reparsing_strategy=sequential
 * 2021-03-03: Fixing interpolated times missing and duplicate off markings.
@@ -904,6 +905,7 @@ These parsers are available on request.
 
 ### MClimate Vicki
 
+* 2023-12-20: Added command 0x44 (get external temperature), 0x1b (Get uplink messages type command explanation).
 * 2023-11-21: removed duplicate rel_hum calculation
 * 2023-10-19: Added command response 0x2B.
 * 2023-07-05: added command mode 0x16, 0x17, 0x29, 0x36, 0x3D, 0x3F, 0x40, 0x42
@@ -1069,6 +1071,7 @@ These parsers are available on request.
 
 ### Netvox Multiparser
 
+* 2023-12-18: Fixed multiplier logic - multiplier packet arrives after the packets with currents
 * 2023-06-20: Added R718MBB Activity Event Counter.
 * 2023-03-29: Added R718G Light Sensor.
 * 2022-08-12: Added R718N360, fixed R718N
@@ -1404,6 +1407,7 @@ These parsers are available on request.
 
 ### TEKTELIC Agriculture
 
+* 2024-01-04: Added dew_point calculation
 * 2023-09-12: Corrected temperature calculation of voltage input 3 and 4"
 * 2023-05-23: Updated according to "T0005978_TRM_Kiwi_Clover_ver2.0.pdf"
 * 2022-04-06: Added watermark*_kpa_raw values not normalized to 24° if no temperature is available.
@@ -1430,6 +1434,10 @@ These parsers are available on request.
 ### Terabee Level Monitoring XL
 
 * 2021-05-10: Initial implementation according to "LoRa-Level-Monitoring-XL-User-Manual-MAR-2021.pdf"
+
+### Terabee People Counter
+
+* 2024-01-04: Initial implementation according to "Terabee+People+Counting+L-XL+-+User+Manual+-+EN+v3.2+(3)-1.pdf"
 
 ### Tetraedre
 
