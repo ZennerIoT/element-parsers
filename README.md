@@ -562,6 +562,7 @@ These parsers are available on request.
 
 ### eBZ electricity meter RD3 TESTING!
 
+* 2024-01-18: Fixed that firmware in combination with other pushes was not possible
 * 2023-09-27: Corrected firmware
 * 2023-09-25: Corrected voltage factors of u_l1_avg, u_l2_avg, u_l3_avg due to real data
 * 2023-09-12: Added missing units
