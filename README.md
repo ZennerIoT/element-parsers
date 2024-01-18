@@ -556,11 +556,11 @@ These parsers are available on request.
 * 2020-02-03: MSCONS compatibility and reformatting.
 * 2019-05-09: Initial implementation according to "example Payload"
 
-### eBZ electricity meter RD3 TESTING!
+### eBZ electricity meter RD3 Version 0.3.4!
 
 * 2023-04-13: Initial implementation according to "RD3_app_layer_specification_V0_3_4_draft.pdf".
 
-### eBZ electricity meter RD3 TESTING!
+### eBZ electricity meter RD3 Version 1.0.1!
 
 * 2024-01-18: Fixed that firmware in combination with other pushes was not possible
 * 2023-09-27: Corrected firmware
