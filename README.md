@@ -1411,6 +1411,7 @@ These parsers are available on request.
 
 ### TEKTELIC Agriculture
 
+* 2024-01-25: Fixed muc_temperature calculation according to "T0005978_TRM v. 2.1.1"
 * 2024-01-04: Added dew_point calculation
 * 2023-09-12: Corrected temperature calculation of voltage input 3 and 4"
 * 2023-05-23: Updated according to "T0005978_TRM_Kiwi_Clover_ver2.0.pdf"
