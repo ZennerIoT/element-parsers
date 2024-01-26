@@ -1100,8 +1100,9 @@ These parsers are available on request.
 
 * 2023-10-19: Initial implementation according to "D770A_Air_Lora_Technical_Guide_EN_V5.7_public.pdf"
 
-### nke AtmO
+### nke AtmO / nke Remote Temperature and Humidity
 
+* 2024-01-26: Added nke Remote temperature according to https://support.watteco.com/remot_th/
 * 2022-09-27: Initial implementation according to https://support.nke-watteco.com/atmo/
 
 ### NKE Watteco - Eolane Bob Assistant
