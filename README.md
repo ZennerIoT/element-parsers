@@ -379,6 +379,7 @@ These parsers are available on request.
 
 ### Diehl HRLGc G3 Water Meter
 
+* 2024-01-15: Fixed DS51_A Payload
 * 2021-12-13: Added manufacturer error flag flow_persistence_3
 * 2020-09-10: Reformatted. Added extend_reading and first tests. Fixed utc_now usage.
 
@@ -593,6 +594,7 @@ These parsers are available on request.
 
 ### Elvaco CMi41X0 Mbus
 
+* 2024-01-30: Added previous energy value when memory_address is 2, Filtered special unit (Part of simple billing format) (CMi4111 v1.3)
 * 2023-10-11: Added energy cold and energy heat from tariff 1-2 of scheduled extended+ mode of CMi4110
 * 2023-07-05: Added extend_dib_naming_schema for custom renaming dibs. Added max_ and min_ prefix next to unprefixed "current" functions_fields.
 * 2022-12-23: Added test for CMi4111 Payload.
@@ -1402,13 +1404,14 @@ These parsers are available on request.
 
 * 2019-06-04: Initial implementation according to "RattenSchockSenderHHWasser.pdf"
 
-### Tekelek 766 RF
+### Tekelek Multiparser
 
+* 2024-01-26: Added TEK 893(Atex) - TO BE TESTED - and changed to multiparser.
 * 2022-05-18: Added tank.capacity profile field.
 * 2021-05-18: Added tank.sensor_distance profile field. Formatted code.
 * 2020-01-27: Fixed handling of tank.form profile field.
 * 2019-05-22: Read tank height and form from device profile. Calculate fill level depending on form.
-* 2018-11-29: Initial version of parser
+* 2018-11-29: Initial version of parser CF-5004-01 TEK 766 Payload Data Structure R1.xlsx
 
 ### TEKTELIC Agriculture
 
