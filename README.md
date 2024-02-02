@@ -1048,6 +1048,8 @@ These parsers are available on request.
 
 ### NAS PULSER BK-G CM3061
 
+* 2024-02-02: Added conditional parts of payload
+* 2024-01-29: Update according to "https://www.nasys.no/wp-content/uploads/CM3061-2.3.x-Payload-Structures.pdf"
 * 2020-04-17: Initial version
 
 ### NAS Luminaire v0.6
