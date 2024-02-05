@@ -960,6 +960,7 @@ These parsers are available on request.
 
 ### Milesight UC300 Series
 
+* 2024-02-02: Added Modbus to parser
 * 2024-01-29: Initial implementation according to "https://github.com/Milesight-IoT/SensorDecoders/tree/main/UC_Series/UC300"
 
 ### Milesight and Ursalink UC50x
@@ -1620,6 +1621,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2024-02-05: Added config.overwrite_profile=false. Handling packets with empty payload or frame_port=0.
 * 2023-11-27: Fixed SP9.2 and SP9.3 of IUW devices. Added field data.device_summary_type.
 * 2023-06-27: Added AP status code 0x0D dry, 0x0E frost and 0x0F backflow.
 * 2023-02-24: Added config/profile field 'sp12_strategy' with default `multiple_readings`.
