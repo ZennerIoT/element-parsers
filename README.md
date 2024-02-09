@@ -1182,7 +1182,7 @@ These parsers are available on request.
 
 ### OXON - Multiparser
 
-* 2024-02-09: Added Oxobuton 2  according to "Oxobutton_2_Manual" - Not tested
+* 2024-02-09: Added Oxobutton 2  according to "Oxobutton_2_Manual" - Not tested
 * 2022-08-17: Added Buttonboard (FW version 1.2.8) according to "https://www.oxobutton.ch/products/buttonboard-lorawan/documentation#uplink"
 * 2021-11-29: Initial implementation of Oxobutton Q according to "https://www.oxobutton.ch/products/oxobutton-lorawan/documentation#uplink"
 
