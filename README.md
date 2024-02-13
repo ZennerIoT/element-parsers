@@ -1005,6 +1005,10 @@ These parsers are available on request.
 
 * 2022-09-16: Initial version according to https://github.com/Milesight-IoT/SensorDecoders/tree/master/WS_Series/WS52x
 
+### Milesight and Ursalink WT101
+
+* 2024-02-13: Initial version according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/WT_Series/WT101
+
 ### Mioty metering
 
 * 2023-09-29: Initial version.
