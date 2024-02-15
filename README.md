@@ -192,6 +192,10 @@ These parsers are available on request.
 
 * 2019-01-01: Initial implementation.
 
+### Bitgear IO-Guard
+
+* 2024-02-14: Initial implementation according to "IO-Guard Device uplink messages.pdf"
+
 ### BOSCH Parking Sensor
 
 * 2019-12-10: Fixed mapping in reset_cause/1
@@ -1153,6 +1157,7 @@ These parsers are available on request.
 
 ###  NKE Watteco ModBus
 
+* 2024-02-13: Removed debug function
 * 2023-09-19: Initial implementation according to https://support.watteco.com/modbus/
 
 ### NKE Watteco Monit'O
