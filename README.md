@@ -1184,6 +1184,10 @@ These parsers are available on request.
 * 2020-08-20: Added tests, refactoring.
 * 2019-01-01: Initial Version.
 
+###  NKE Watteco Multiparser (In Progress)
+
+* 2024-02-23: Initial implementation (In Progress)
+
 ### Orbiwise noicesensor
 
 * 2022-05-17: fixed calculation with real data
