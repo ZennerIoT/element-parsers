@@ -1301,6 +1301,7 @@ These parsers are available on request.
 
 ### Seeed Studio SenseCAP S210X
 
+* 2024-02-27: fixed a bug in temperature calculation
 * 2023-07-20: added support for most SenseCAP S210X sensors
 * 2021-04-19: Added field for battery + new test
 * 2021-04-15: Initial Version. Documentation: https://sensecap-docs.seeed.cc/pdf/SenseCAP%20LoRaWAN%20Sensor%20User%20Manual-V1.1.pdf
