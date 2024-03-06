@@ -1007,6 +1007,7 @@ These parsers are available on request.
 
 ### Milesight and Ursalink WS52x
 
+* 2023-07-13: Added "Channel 3F, Outage".
 * 2022-09-16: Initial version according to https://github.com/Milesight-IoT/SensorDecoders/tree/master/WS_Series/WS52x
 
 ### Milesight and Ursalink WT101
