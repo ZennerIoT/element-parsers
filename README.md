@@ -997,6 +997,10 @@ These parsers are available on request.
 
 * 2022-08-12: Initial version according to ws136&ws156-user-guide-en.pdf
 
+### Milesight and Ursalink W201
+
+* 2024-03-08: Initial version according to milesight_ws201_smart fill level monitoring sensor_user guide-v1.0_en.pdf
+
 ### Milesight and Ursalink WS301
 
 * 2022-05-17: Initial version according to ws301-user-guide-en.pdf
