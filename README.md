@@ -957,6 +957,10 @@ These parsers are available on request.
 
 * 2022-04-21: Initial version according to em500-series-communication-protocol-en.pdf
 
+### Milesight and Ursalink GS301
+
+* 2024-03-08: Initial version according to gs301-user-guide-en.pdf
+
 ### Milesight and Ursalink UC100
 
 * 2023-07-24: Added profile support to configure byteorder
@@ -997,7 +1001,7 @@ These parsers are available on request.
 
 * 2022-08-12: Initial version according to ws136&ws156-user-guide-en.pdf
 
-### Milesight and Ursalink W201
+### Milesight and Ursalink WS201
 
 * 2024-03-08: Initial version according to milesight_ws201_smart fill level monitoring sensor_user guide-v1.0_en.pdf
 
