@@ -1290,6 +1290,10 @@ These parsers are available on request.
 
 * 2022-10-13: Initial Implementation according to http://pmo4d0f6d.hkpic1.websiteonline.cn/upload/PolysenseWxS8800UserGuide.pdf (13.10.2022)
 
+### Quandify Cubic Meter
+
+* 2024-03-11: Initial implementation according to cm2-decoder-light
+
 ### RAK Button
 
 * 2019-05-09: Added tests, fields and documentation.
