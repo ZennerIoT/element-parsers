@@ -1202,6 +1202,10 @@ These parsers are available on request.
 
 * 2024-02-23: Initial implementation (In Progress)
 
+### NKE Watteco Ventil'O
+
+* 2024-02-26: Initial implementation according to "https://support.watteco.com/ventilo/"
+
 ### Orbiwise noicesensor
 
 * 2022-05-17: fixed calculation with real data
