@@ -1036,6 +1036,7 @@ These parsers are available on request.
 
 ### Miromico Insight
 
+* 2024-04-03: fixed temperature calculation
 * 2023-12-04: Initial implementation according to https://docs.miromico.ch/iot-devices/miro-insight-lorawan/payload/
 
 ### Mutelcor MTC-PB01 / MTC-CO2-01 / MTC-XX-MH01 / MTC-XX-CF01
