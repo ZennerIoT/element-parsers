@@ -1523,8 +1523,9 @@ These parsers are available on request.
 * 2020-09-23: Added support for new Healthy Home Sensor version (with indoor-air-quality)
 * 2019-04-04: Initial version, combining 5 TrackNet Tabs devices.
 
-### Treesense LoRaWAn
+### Treesense LoRaWAN
 
+* 2024-04-09: Updated parser according to TTN decoder: Pulse R (v1.0), Pulse S (v1.1)
 * 2023-09-15: Initial implementation according to the vendor provided information
 
 ### UIT-GmbH WR-iot-compact water level sensor
