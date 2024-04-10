@@ -318,6 +318,10 @@ These parsers are available on request.
 
 * 2019-09-06: Added parsing catchall for unknown payloads.
 
+### Comtac LPN DO
+
+* 2024-04-10: Initial implementation according to E1347-LPN_DO_EN_V0.10.pdf
+
 ### Comtac LPN Modbus easy
 
 * 2019-09-06: Added parsing catchall for unknown payloads.
