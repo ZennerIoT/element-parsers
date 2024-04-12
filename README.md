@@ -1213,6 +1213,7 @@ These parsers are available on request.
 
 ###  NKE Watteco Multiparser (In Progress)
 
+* 2024-03-25: Initial implementation Triphas'o
 * 2024-03-19: Progress
 * 2024-02-23: Initial implementation (In Progress)
 
