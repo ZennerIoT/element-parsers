@@ -412,6 +412,10 @@ These parsers are available on request.
 
 * 2022-08-09: Initial implementation according to "Payload Decoder_Basic_Travekom.pdf"
 
+### Dragino CPL01
+
+* 2024-04-12: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/CPL01%20LoRaWAN%20Outdoor%20PulseContact%20%20Sensor%20Manual/#H2.3UplinkPayload"
+
 ### Dragino D2x-LB/LS
 
 * 2024-04-04: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/D20-LBD22-LBD23-LB_LoRaWAN_Temperature_Sensor_User_Manual/#HAlarmFlag26MOD26LevelofPA8:"
