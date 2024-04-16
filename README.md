@@ -1274,8 +1274,9 @@ These parsers are available on request.
 * 2021-05-17: Updated according to Document "tdoct7056__eng.docx", added error handling.
 * 2020-07-06: Initial implementation according to Document "TDOCT-6836__GER.docx"
 
-### SSM-AQUO
+### Pietro Fiorentini SSM-AQUO
 
+* 2024-04-16: Fixed alarm interpretation due to documentation v1.1
 * 2022-10-07: Initial implementation according to "Radio Payload_SMM-Aquo_v1_20220506.pdf"
 
 ### Pipersberg Octave Watermeter
