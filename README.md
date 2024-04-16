@@ -1522,6 +1522,10 @@ These parsers are available on request.
 
 * 2020-10-29: Initial implementation according to "Proposal of April 30th, 2016. Thierry Schneider, Tetraedre Sarl"
 
+### Thermokon Multiparser
+
+* 2024-04-16: Initial implementation according to "LoRaWAN_Schnittstellenbeschreibung_de.pfd" Revision B
+
 ### BROWAN Tabs (formerly TrackNet Tabs)
 
 * 2022-05-17: Fixed calculation mistake on ambient light sensor
