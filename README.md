@@ -1455,6 +1455,10 @@ These parsers are available on request.
 * 2019-09-06: Added parsing catchall for unknown payloads.
 * 2018-09-13: Initial version.
 
+### SuMiDen Devices
+
+* 2024-04-18: Initial version according to "SuMiDen Device Data Parsing"
+
 ### Swisscom LPN Multisense
 
 * 2021-07-07: Added do_extend_reading/2 callback and added field definition.
