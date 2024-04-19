@@ -1639,6 +1639,7 @@ These parsers are available on request.
 
 ### ZENNER T&H Sensor D1801
 
+* 2024-04-19: Added signed to temperatures in sp SP12_3 packets.
 * 2023-11-28: Corrected sp SP12_3 packets
 * 2023-10-25: Added dew point calculation and SP12_3.
 * 2020-02-27: Parsing Packets SP50, SP92 and SP93 too.
