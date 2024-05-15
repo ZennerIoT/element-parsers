@@ -773,6 +773,10 @@ These parsers are available on request.
 * 2021-10-29: Fixed analog raw to mA conversion.
 * 2021-09-30: Initial Version, according to "description_IOT_Controller_v0.1.pdf".
 
+### Isarsoft Perception Edge Bundle
+
+* 2024-05-14: Initial implementation according to example payload given by manufacturer
+
 ### Itron Cyble5
 
 * 2022-06-24: Fixing measured_at for 3h/6h/12h formats last message.
