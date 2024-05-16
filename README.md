@@ -418,6 +418,7 @@ These parsers are available on request.
 
 ### Dragino D2x-LB/LS
 
+* 2024-05-16: Fixed mod calculation according to ttn parser
 * 2024-04-24: Fixed alarm detection
 * 2024-04-04: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/D20-LBD22-LBD23-LB_LoRaWAN_Temperature_Sensor_User_Manual/#HAlarmFlag26MOD26LevelofPA8:"
 
