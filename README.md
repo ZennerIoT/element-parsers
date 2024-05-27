@@ -1701,6 +1701,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2024-05-27: Fixed status code "backflow" (0F).
 * 2024-04-24: Added profile field din_number2 used by PDC devices. Added config.ignore_din_numbers with EDC/PDC default din_number values.
 * 2024-02-05: Added config.overwrite_profile=false. Handling packets with empty payload or frame_port=0.
 * 2023-11-27: Fixed SP9.2 and SP9.3 of IUW devices. Added field data.device_summary_type.
