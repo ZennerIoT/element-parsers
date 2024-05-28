@@ -982,6 +982,10 @@ These parsers are available on request.
 
 * 2022-04-21: Initial version according to em500-series-communication-protocol-en.pdf
 
+### Milesight and Ursalink GS101
+
+* 2024-05-28: Initial version according to "Milesight GS101 User Manual (EN).pdf".
+
 ### Milesight and Ursalink GS301
 
 * 2024-03-08: Initial version according to gs301-user-guide-en.pdf
