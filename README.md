@@ -399,6 +399,7 @@ These parsers are available on request.
 
 ### Diehl Hydrus 2.0 LoRaWAN
 
+* 2024-05-28: Added test, removed comments
 * 2024-05-27: Initial implementation
 
 ### DigitalMatter Oyster GPS
