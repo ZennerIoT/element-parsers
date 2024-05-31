@@ -810,6 +810,11 @@ These parsers are available on request.
 * 2022-06-24: Fix for BLE messages without "t" timestamp.
 * 2020-12-16: Initial implementation according to payload version 1.1
 
+### Laird Sentrius RS1xx LoRa Protocol
+
+* 2024-05-30: Reworked parser and updated according to "CS-AN-RS1xx-LoRa-Protocol v2_12_1.pdf"
+* 2024-05-29: Initial implementation according to "4444_CS-AN-RS1xx-LoRa-Protocol_v2_10.pdf"
+
 ### Lancier Monitoring
 
 * 2022-08-18: Added Port 100 message according to "Lancier Monitoring LORA Payload Version 0.1.2"
