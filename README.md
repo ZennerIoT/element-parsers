@@ -1040,6 +1040,10 @@ These parsers are available on request.
 
 * 2024-03-08: Initial version according to milesight_ws201_smart fill level monitoring sensor_user guide-v1.0_en.pdf
 
+### Milesight WS202
+
+* 2024-06-10: Initial version according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/WS_Series/WS202
+
 ### Milesight and Ursalink WS301
 
 * 2022-05-17: Initial version according to ws301-user-guide-en.pdf
