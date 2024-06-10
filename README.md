@@ -755,6 +755,7 @@ These parsers are available on request.
 
 ### Integra Aquastream Water Meter v3
 
+* 2024-06-07: Added mbus_manufacturer field in case it transmitted over mbus
 * 2024-05-03: Corrected alarms. Using alarm definitions (4.4) instead of error flags (3.3)
 * 2023-02-13: Added meter_address field.
 * 2023-02-10: Initial implementation according to "integra_aquastream 9-730-PT-EN-06.pdf".
