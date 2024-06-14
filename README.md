@@ -403,6 +403,10 @@ These parsers are available on request.
 * 2024-05-28: Added test, removed comments
 * 2024-05-27: Initial implementation
 
+### DigitalMatter G62 LoRaWAN
+
+* 2024-06-14: Initial implementation according to "1693355424527-G62+LoRaWAN+Integration+1.3.pdf".
+
 ### DigitalMatter Oyster GPS
 
 * 2022-06-21: Updated according to "Oyster 3 LoRaWAN Integration 1.2.pdf".
