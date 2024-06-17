@@ -977,6 +977,10 @@ These parsers are available on request.
 
 * 2021-12-13: Initial implementation according to "am300-series-user-guide-en.pdf"
 
+### Milesight and Ursalink CT10x
+
+* 2024-06-17: https://github.com/Milesight-IoT/SensorDecoders/tree/main/CT_Series/CT101
+
 ### Milesight and Ursalink EM300 Series
 
 * 2023-09-26: Added EM320-Tilt support according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/EM_Series/EM300_Series/EM320-TILT
