@@ -747,6 +747,7 @@ These parsers are available on request.
 
 ### Innotas LoRa Water Meter
 
+* 2024-06-16: Added hardcoded unit as reading
 * 2020-11-25: Refactoring
 * 2019-08-27: Initial version
 
