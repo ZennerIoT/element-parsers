@@ -984,6 +984,11 @@ These parsers are available on request.
 
 ### Milesight and Ursalink EM300 Series
 
+* 2024-07-02: Added EM300-Di support according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/EM_Series/EM300_Series/EM300-DI
+
+### Milesight and Ursalink EM300 Series
+
+* 2024-07-02: Added EM300-Di support according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/EM_Series/EM300_Series/EM300-DI
 * 2023-09-26: Added EM320-Tilt support according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/EM_Series/EM300_Series/EM320-TILT
 * 2023-08-03: Added EM320-TH support according to "em320-th-user-guide-en.pdf"
 * 2023-02-20: Skip empty UP payloads, occuring with link_check_req commands.
