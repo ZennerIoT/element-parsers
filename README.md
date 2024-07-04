@@ -1030,6 +1030,10 @@ These parsers are available on request.
 
 * 2023-10-16: Initial version according https://github.com/Milesight-IoT/SensorDecoders/tree/main/UC_Series/UC50x
 
+### Milesight and Ursalink UC51x
+
+* 2024-07-02: Initial implementation according to "https://github.com/Milesight-IoT/SensorDecoders/blob/main/UC_Series/UC51X/README.md"
+
 ### Milesight and Ursalink VS121
 
 * 2023-06-14: Initial version according to vs121-user-guide-en.pdf
