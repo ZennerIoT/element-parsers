@@ -474,6 +474,10 @@ These parsers are available on request.
 
 * 2021-08-25: Initial Implementation according to "LoRaWAN_Leaf_Moisture_Sensor_UserManual_v1.0.pdf"
 
+### LMDS120 - LoRaWAN Microwave Radar Distance
+
+* 2024-07-10: Initial implementation according to "SonoMeter40-LoRa_Payload_Nordic_Heating.pdf"
+
 ### Dragino LSE01 Soil Sensor
 
 * 2020-12-22: Initial Implementation according to "LoRaWAN_Soil_Moisture_%26_EC_Sensor_UserManual_v1.3.pdf"
