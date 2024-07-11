@@ -687,6 +687,7 @@ These parsers are available on request.
 
 ### GLA intec WasteBox
 
+* 2024-07-11: Allow distance to be 0 for ullage calculation.
 * 2022-10-24: Updated initial version and added profile data.
 
 ### Globalsat ls11xp indoor climate monitor
