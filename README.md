@@ -476,7 +476,7 @@ These parsers are available on request.
 
 ### LMDS120 - LoRaWAN Microwave Radar Distance
 
-* 2024-07-10: Initial implementation according to "SonoMeter40-LoRa_Payload_Nordic_Heating.pdf"
+* 2024-07-10: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LMDS120%20-%20LoRaWAN%20Microwave%20Radar%20Distance%20%20Sensor%20User%20Manual/"
 
 ### Dragino LSE01 Soil Sensor
 
