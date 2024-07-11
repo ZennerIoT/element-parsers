@@ -356,6 +356,10 @@ These parsers are available on request.
 * 2019-03-20: Fixed "Humidity Sensor" for real payload.
 * 2018-08-23: Initial version implemented using HybridTAG-L300-Infosheet_06-18-2.pdf
 
+### SonoMeter40
+
+* 2024-07-10: Initial implementation according to "SonoMeter40-LoRa_Payload_Nordic_Heating.pdf"
+
 ### de-build.net POWER Gmbh - LoRa Protocol
 
 * 2021-09-22: Added units from profile.
