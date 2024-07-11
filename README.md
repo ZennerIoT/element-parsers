@@ -1493,6 +1493,10 @@ These parsers are available on request.
 
 * 2024-03-12: Initial implementation according to "JSParserSQ1MbusFrameLoRa.txt", "M-Bus frames SQ1.pdf" and "AN_SQ1 LoRaWAN_V01_2207_en.pdf"
 
+### Sontex Supercal 5
+
+* 2024-07-11: Initial implementation according to "CSMDE-Supercal 5 LoRaWAN Configuration & payload setting-030624-112721.pdf"
+
 ### Sontex Wecount-S
 
 * 2023-04-05: Initial implementation according to "Radio-Telegram_LoRa_WECOUNT-S_Payload_0.3.4_20221121.xlsx"
