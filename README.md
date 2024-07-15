@@ -152,6 +152,7 @@ These parsers are available on request.
 
 ### Axioma Qalcosonic E3/E4
 
+* 2024-07-15: Changed AES decryption profile to a generalized name
 * 2024-01-31: Added AES decryption with key from profile from_ttn.aes_key
 * 2023-07-13: Initial implementation according to "LRa functional description for E3_E4_V01_20221108.pdf"
 
