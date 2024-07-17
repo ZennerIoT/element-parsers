@@ -638,6 +638,7 @@ These parsers are available on request.
 
 ### Elvaco CMi41X0 Mbus
 
+* 2024-07-17: Added errors for DIEHL SHARKY 775 and SCYLAR INT8 according to "Error Payload datarecord definition.pdf"
 * 2024-01-30: Added previous energy value when memory_address is 2, Filtered special unit (Part of simple billing format) (CMi4111 v1.3)
 * 2023-10-11: Added energy cold and energy heat from tariff 1-2 of scheduled extended+ mode of CMi4110
 * 2023-07-05: Added extend_dib_naming_schema for custom renaming dibs. Added max_ and min_ prefix next to unprefixed "current" functions_fields.
