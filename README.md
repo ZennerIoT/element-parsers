@@ -45,6 +45,10 @@ These parsers are available on request.
 
 * 2018-12-04: Initial Parser for Firmware 1.7 according to "Abeeway Industrial Tracker_Reference_Guide_FW1.7.pdf"
 
+### Acrios Systems LoRaWAN to MBus Bridge
+
+* 2024-07-18: Initial version
+
 ### Adeunis ARF8046
 
 * 2019-09-06: Added parsing catchall for unknown payloads.
@@ -1717,6 +1721,10 @@ These parsers are available on request.
 ### Binary MBus
 
 * 2022-05-18: Initial version. Supporting Long frame with variable data structure
+
+### Binary MBus with Lib
+
+* 2024-07-18: Initial version. Using wMBus Lib
 
 ### ZENNER IoT Oskar v2 smart waste ultrasonic sensor
 
