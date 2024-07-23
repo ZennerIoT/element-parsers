@@ -1259,6 +1259,7 @@ These parsers are available on request.
 
 ### NKE Watteco Remote Temp
 
+* 2024-07-23: Allow to add key for each endpoint and to rename it.
 * 2022-04-08: Updated error handling.
 * 2019-11-18: Initial implementation.
 
