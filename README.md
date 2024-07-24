@@ -435,6 +435,10 @@ These parsers are available on request.
 
 * 2024-04-12: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/CPL01%20LoRaWAN%20Outdoor%20PulseContact%20%20Sensor%20Manual/#H2.3UplinkPayload"
 
+### Dragino CPL03
+
+* 2024-07-17: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/CPL03-LB_LoRaWAN_Outdoor_PulseContact%20_Sensor_User_Manual/#H2.3.3CPL01:Real-TimeOpen2FCloseStatus2CUplinkFPORT3D2"
+
 ### Dragino D2x-LB/LS
 
 * 2024-05-16: Fixed mod calculation according to ttn parser
