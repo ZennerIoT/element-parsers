@@ -534,6 +534,10 @@ These parsers are available on request.
 * 2022-01-22: fixed format, added support for 9byte Payloads from LWL01
 * 2022-01-21: Initial implementation according to "lds01_02_payload_ttn_v1.5.txt" since PL descriptions doesnt fit
 
+### Dragino PS-LB/LS
+
+* 2024-07-22: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/PS-LB%20--%20LoRaWAN%20Pressure%20Sensor/#H2.3200BUplinkPayload"
+
 ### Dragino S31x-LB Temperature and Humidity
 
 * 2024-03-07: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/S31-LB_S31B-LB/".
