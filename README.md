@@ -593,6 +593,10 @@ These parsers are available on request.
 
 * 2023-03-06: Initial implementation according to documentation Eastron_SDM230-LoRaWAN_protocol_V1.0-combined
 
+### Eastron SDM530 3 Phase Electricity Meter
+
+* 2024-07-24: Initial implementation.
+
 ### Eastron SDM630CT 3 Phase Electricity Meter
 
 * 2022-11-30: Initial implementation.
@@ -650,6 +654,7 @@ These parsers are available on request.
 
 ### Elvaco CMi41X0 Mbus
 
+* 2024-07-24: Changend SHARKY errors to single string
 * 2024-07-17: Added errors for DIEHL SHARKY 775 and SCYLAR INT8 according to "Error Payload datarecord definition.pdf"
 * 2024-01-30: Added previous energy value when memory_address is 2, Filtered special unit (Part of simple billing format) (CMi4111 v1.3)
 * 2023-10-11: Added energy cold and energy heat from tariff 1-2 of scheduled extended+ mode of CMi4110
