@@ -736,6 +736,10 @@ These parsers are available on request.
 
 * 2023-02-21: Initial implementation according to "IIST313-07_LoRaWAN_Instruction Manual_Apr_2022.pdf".
 
+### Herz Messtechnik P8 (RC82)
+
+* 2024-07-29: initial version according to P8 (RC82) LoRaWAN Data protocol(Flommit)-V1.2_20240229(2).pdf
+
 ### Holley E-Meter
 
 * 2023-04-12: Added a check if 1.8.0 and 2.8.0 do sum up from .1 + .2
