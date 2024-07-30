@@ -807,6 +807,7 @@ These parsers are available on request.
 
 ### Integra Topas Sonic Water Meter
 
+* 2024-07-30: Added Payload version 2: Histogram (IMDE02) according to TOPAS_SONIC_RUBIN_SONIC_Payload_1-000-PT-EN-05-1.pdf
 * 2023-05-15: Added config option `create_hourly_values=false`.
 * 2023-05-10: Added new payload format according to "Topas Sonic-LW8-INTG01-INTG02-V1.0.002.pdf".
 * 2022-10-13: Using LibWmbus.parse and providing also WMBus header data like address. Added do_extend_reading callback.
