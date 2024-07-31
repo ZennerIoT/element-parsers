@@ -1783,6 +1783,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2024-07-30: Added v7.2.5 workaround for average temperature in SP0.1 package for wmz devices. Also firmware version is now written to the profile.
 * 2024-05-27: Fixed status code "backflow" (0F) and broken AP1 timestamps from IUW.
 * 2024-04-24: Added profile field din_number2 used by PDC devices. Added config.ignore_din_numbers with EDC/PDC default din_number values.
 * 2024-02-05: Added config.overwrite_profile=false. Handling packets with empty payload or frame_port=0.
