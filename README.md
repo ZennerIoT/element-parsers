@@ -752,6 +752,10 @@ These parsers are available on request.
 * 2022-08-12: Added measurement_ID and value count
 * 2022-07-26: Initial implementation according to "HS IoTa LoRa Data Format Guide.pdf"
 
+### IMBUILDINGS Multiparser
+
+* 2024-07-30: Initial version according to https://support.imbuildings.com/docs/#/./reference-guide/payload-definitions/
+
 ### Imbuildings People Counter
 
 * 2021-10-12: fixed nameing fields for 13 byte payload.
