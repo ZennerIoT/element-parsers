@@ -427,6 +427,10 @@ These parsers are available on request.
 * 2023-10-19: Corrected voltage, power and current calculcations"
 * 2023-10-13: Initial implementation according to "LHi110 Manual 1.0 2023-09-28.pdf"
 
+### dnt Innovations LoRaWAN Asset Tracker Solar
+
+* 2024-07-30: Parser in progress. Not finished
+
 ### Dräger x-Node
 
 * 2022-08-09: Initial implementation according to "Payload Decoder_Basic_Travekom.pdf"
