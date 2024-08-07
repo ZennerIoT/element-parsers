@@ -487,6 +487,10 @@ These parsers are available on request.
 * 2023-03-27: Fixed formatting
 * 2023-03-23: Initial implementation (Ext=1) according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LHT65N%20LoRaWAN%20Temperature%20%26%20Humidity%20Sensor%20Manual/#H2.4UplinkPayloadA0A028Fport3D229"
 
+### LLDS40-LoRaWAN LiDAR ToF Distance Sensor
+
+* 2024-08-07: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LLDS40-LoRaWAN%20LiDAR%20ToF%20Distance%20Sensor%20User%20Manual/#H3.A0LiDARToFMeasurement"
+
 ### Dragino LLMS01 Leaf Moisture
 
 * 2021-08-25: Initial Implementation according to "LoRaWAN_Leaf_Moisture_Sensor_UserManual_v1.0.pdf"
