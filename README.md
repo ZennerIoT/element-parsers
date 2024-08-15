@@ -482,6 +482,7 @@ These parsers are available on request.
 
 ### Dragino LHT65N
 
+* 2024-08-15: Added Ext=6, 11, 4, 8
 * 2024-05-07: Added field for temperature_temp117
 * 2023-07-04: Added Ext=2
 * 2023-03-27: Fixed formatting
@@ -663,7 +664,9 @@ These parsers are available on request.
 
 ### Elvaco CMi41X0 Mbus
 
-* 2024-07-24: Changend SHARKY errors to single string
+* 2024-08-02: Corrected SHARKY 775 errors due to new documentation: Definition error codes and status bytes SHARKY 775
+* 2024-07-29: Renamed strings for SHARKY errors
+* 2024-07-24: Changend SHARKY 775 errors to single string
 * 2024-07-17: Added errors for DIEHL SHARKY 775 and SCYLAR INT8 according to "Error Payload datarecord definition.pdf"
 * 2024-01-30: Added previous energy value when memory_address is 2, Filtered special unit (Part of simple billing format) (CMi4111 v1.3)
 * 2023-10-11: Added energy cold and energy heat from tariff 1-2 of scheduled extended+ mode of CMi4110
