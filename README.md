@@ -1499,6 +1499,10 @@ These parsers are available on request.
 
 * 2023-05-23: Initial implementation according to "SCW.decoder.sub2.js".
 
+### Sentinum Hyperion
+
+* 2024-08-22: Initial implementation according to "https://docs.sentinum.de/en/lorawan-interface"
+
 ### Senzemo Microclimate 3.0
 
 * 2024-08-06: Untested - Initial implementation according to "https://senzemo.com/wp-content/uploads/2022/12/Senstick_SMC30-HWv3.0_FWv1.0-LoRaWAN_Protocol_v1.9.pdf"
