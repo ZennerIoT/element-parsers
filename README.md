@@ -500,6 +500,10 @@ These parsers are available on request.
 
 * 2024-07-10: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LMDS120%20-%20LoRaWAN%20Microwave%20Radar%20Distance%20%20Sensor%20User%20Manual/"
 
+### LMDS200 - LoRaWAN Microwave Radar Distance
+
+* 2024-08-27: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LMDS200%20-%20LoRaWAN%20Microwave%20Radar%20Distance%20%20Sensor%20User%20Manual/#H3.3SetAlarmDistance280xA229"
+
 ### Dragino LSE01 Soil Sensor
 
 * 2020-12-22: Initial Implementation according to "LoRaWAN_Soil_Moisture_%26_EC_Sensor_UserManual_v1.3.pdf"
