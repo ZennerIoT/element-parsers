@@ -1292,6 +1292,10 @@ These parsers are available on request.
 
 * 2022-03-31: Initial implementaion
 
+### NKE Watteco Movee
+
+* 2024-08-30: Initial implementation according to "UserGuide_-_Movee-v2.01_nke_watteco.pdf"
+
 ### NKE Watteco Press'O
 
 * 2022-03-18: Initial implementaion
