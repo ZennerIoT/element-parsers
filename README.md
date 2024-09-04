@@ -1340,6 +1340,11 @@ These parsers are available on request.
 * 2022-08-17: Added Buttonboard (FW version 1.2.8) according to "https://www.oxobutton.ch/products/buttonboard-lorawan/documentation#uplink"
 * 2021-11-29: Initial implementation of Oxobutton Q according to "https://www.oxobutton.ch/products/oxobutton-lorawan/documentation#uplink"
 
+### paramair aura co2
+
+* 2024-09-04: Added support for payload versions v3, v4a, v4b
+* 2024-08-19: Initial implementation according to "eLichens_Aura-CO2_UserManual-19_10_02_082023_EN.pdf"
+
 ### Parametric PCR2 People Counter Radar
 
 * 2021-09-07: added pcr2_ods device type 5
