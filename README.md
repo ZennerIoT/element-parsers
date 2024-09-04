@@ -669,6 +669,7 @@ These parsers are available on request.
 
 ### Elvaco CMi41X0 Mbus
 
+* 2024-09-04: Added missing fields
 * 2024-08-02: Corrected SHARKY 775 errors due to new documentation: Definition error codes and status bytes SHARKY 775
 * 2024-07-29: Renamed strings for SHARKY errors
 * 2024-07-24: Changend SHARKY 775 errors to single string
@@ -1294,7 +1295,7 @@ These parsers are available on request.
 
 ### NKE Watteco Movee
 
-* 2024-08-30: Initial implementation according to "UserGuide_-_Movee-v2.01_nke_watteco.pdf"
+* 2024-09-03: Initial implementation according to "UserGuide_-_Movee-v2.01_nke_watteco.pdf"
 
 ### NKE Watteco Press'O
 
@@ -1675,6 +1676,10 @@ These parsers are available on request.
 * 2023-05-10: Changes according to DB_Bsp_LoRa-Settings-Auslieferungszustand_deu.pdf
 * 2023-05-09: added message_type 0x10 and 0x11
 * 2021-10-08: Initial implementation.
+
+### DFM-Bodenfeuchte-Profilsonde
+
+* 2024-03-09: Initial implementation according to "UP_DFM_Profilsonden.pdf"
 
 ### Ursalink AM100/102 and Milesight AM104/AM107
 
