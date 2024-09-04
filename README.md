@@ -1588,6 +1588,10 @@ These parsers are available on request.
 
 * 2019-03-28: Initial version of parser, according to DOC_1074_01_A_InterfaceLoRaFillLevelSensorSLX_1307_V1_1.pdf
 
+### Synetica enlink Air X
+
+* 2024-09-04: Initial implementation according to https://github.com/synetica/enlink-decoder?tab=readme-ov-fil
+
 ### Tecyard Multiparser
 
 * 2019-06-25: return mV instead of V for voltage.
