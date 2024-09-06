@@ -550,6 +550,7 @@ These parsers are available on request.
 
 ### Dragino PS-LB/LS
 
+* 2024-09-05: added profiles and calculations, currently only for cubic tanks.
 * 2024-07-22: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/PS-LB%20--%20LoRaWAN%20Pressure%20Sensor/#H2.3200BUplinkPayload"
 
 ### Dragino S31x-LB Temperature and Humidity
