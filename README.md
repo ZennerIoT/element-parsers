@@ -1354,8 +1354,9 @@ These parsers are available on request.
 * 2020-07-07: Implemented v3 according to https://parametric.ch/docs/pcr2/pcr2_app_payloads_v3, renamed field temperature to cpu_temp
 * 2020-06-09: Initial implementation according to https://parametric.ch/docs/pcr2/pcr2_app_payloads_v2
 
-### Parametric TCR Radar Traffic Counter
+### Parametric PMX TCR Radar Traffic Counter
 
+* 2024-09-06: Updated implementation according to "PMX TCR LoRaWAN Payload Description.pdf" and changed name to "Parametric PMX"
 * 2021-09-22: Updated implementation according to https://parametric.ch/docs/tcr/tcr_payload_v3
 * 2020-09-29: Updated implementation according to https://parametric.ch/docs/tcr/tcr_payload_v2
 * 2020-07-07: Initial implementation according to https://parametric.ch/docs/tcr/tcr_payload_v1
