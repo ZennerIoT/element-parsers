@@ -429,7 +429,7 @@ These parsers are available on request.
 
 ### dnt Innovations LoRaWAN Asset Tracker Solar
 
-* 2024-07-30: Parser in progress. Not finished
+* 2024-09-12: Initial implementation according to "https://www.dnt.de/media/73/84/28/1674658420/dnt-LW-ATS-web_230119.pdf"
 
 ### Dräger x-Node
 
@@ -1356,6 +1356,7 @@ These parsers are available on request.
 
 ### Parametric PMX TCR Radar Traffic Counter
 
+* 2024-09-12: Added Category depending on Frame_Port and fixed Voltage calc
 * 2024-09-06: Updated implementation according to "PMX TCR LoRaWAN Payload Description.pdf" and changed name to "Parametric PMX"
 * 2021-09-22: Updated implementation according to https://parametric.ch/docs/tcr/tcr_payload_v3
 * 2020-09-29: Updated implementation according to https://parametric.ch/docs/tcr/tcr_payload_v2
