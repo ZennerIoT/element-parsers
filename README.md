@@ -435,6 +435,10 @@ These parsers are available on request.
 
 * 2022-08-09: Initial implementation according to "Payload Decoder_Basic_Travekom.pdf"
 
+### Dragino AQS01-L
+
+* 2024-09-12: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/AQS01-L_LoRaWAN_Indoor_CO2_Sensor_User_Manual/#H2.3200BUplinkPayload"
+
 ### Dragino CPL01
 
 * 2024-04-12: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/CPL01%20LoRaWAN%20Outdoor%20PulseContact%20%20Sensor%20Manual/#H2.3UplinkPayload"
