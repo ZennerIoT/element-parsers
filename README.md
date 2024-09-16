@@ -199,6 +199,7 @@ These parsers are available on request.
 
 ### Bitgear IO-Guard
 
+* 2024-09-16: Increades readability and fixed port 22 Payloads
 * 2024-02-14: Initial implementation according to "IO-Guard Device uplink messages.pdf"
 
 ### BOSCH Parking Sensor
