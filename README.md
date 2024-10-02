@@ -387,6 +387,10 @@ These parsers are available on request.
 
 * 2023-10-10: Initial implementation according to "https://cdn.decentlab.com/download/datasheets/Decentlab-DL-PR36-datasheet.pdf"
 
+###   DECENTLAB DL-SHT35 Air, Remperature and Humidity Sensor
+
+* 2024-09-30: Initial implementation according to "Decentlab-DL-SHT35-datasheet.pdf"
+
 ### Decentlab DL-TRS12 Soil Moisture
 
 * 2019-07-10: Initial version. Code cleanup. Tests.
@@ -1042,6 +1046,10 @@ These parsers are available on request.
 ### Milesight AM300 Series
 
 * 2021-12-13: Initial implementation according to "am300-series-user-guide-en.pdf"
+
+### Milesight AT101
+
+* 2024-10-02: Initial implementation according to "https://github.com/Milesight-IoT/SensorDecoders/tree/main/AT_Series/AT101"
 
 ### Milesight and Ursalink CT10x
 
