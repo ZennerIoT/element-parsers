@@ -1751,6 +1751,7 @@ These parsers are available on request.
 
 ### PGW23.100.11
 
+* 2024-10-08: Added Gauge values to 0x01 and 0x02 payloads in of existing min/max values in profile
 * 2023-04-21: Initial implementation according to "sd_pgw23_100_en.pdf".
 
 ### wio  FieldTester
