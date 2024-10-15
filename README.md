@@ -1024,6 +1024,7 @@ These parsers are available on request.
 
 ### MClimate Vicki
 
+* 2024-10-15: Added command 0x1D from TTN Parser
 * 2024-01-25: Fixed error in dew point calculation when humidity is zero. Added reading dew_point_error in this case.
 * 2024-01-23: Updated mapping list
 * 2024-01-17: Fixed Typos, added switch for writing relevant readings into fields, added support for 0x46 command response, fixed 0x13
