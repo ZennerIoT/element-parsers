@@ -1050,6 +1050,7 @@ These parsers are available on request.
 
 ### Milesight AT101
 
+* 2024-10-16: Changed Location handling and WiFI Scans Output
 * 2024-10-02: Initial implementation according to "https://github.com/Milesight-IoT/SensorDecoders/tree/main/AT_Series/AT101"
 
 ### Milesight and Ursalink CT10x
