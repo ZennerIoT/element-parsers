@@ -866,7 +866,7 @@ These parsers are available on request.
 * 2020-08-27: Added DOBJ 150 "FDR 12 Delta S16". Removed OBIS field adding.
 * 2020-08-12: Initial implementation according to "Cyble 5 Lora Data decoding v0.5.pdf" and "DOBJ Table.xlsx".
 
-### LD-System
+### Juenemann LD-System, Gas pressure sensor
 
 * 2024-11-03: Initial implementation according to "LoRa-Kommunikationsprotokoll.pdf" provided by Juenemann: https://juenemann-instruments.de/wp-content/uploads/LoRa-Kommunikationsprotokoll.pdf
 
