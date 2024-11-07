@@ -1744,6 +1744,10 @@ These parsers are available on request.
 * 2021-11-17: Updated implementation according to "Betriebsanleitung_VEGAPULS Air 42.pdf", handling GPS error values.
 * 2021-03-01: Initial implementation according to "Betriebsanleitung_VEGAPULS Air 41.pdf"
 
+### Von Roll Klappe mit Tell, fireplug lid sensor
+
+* 2024-11-07: Initial implementation according to "190116_Application_Layer_Alert_Data_Specification.pdf" provided by Von Roll
+
 ### Wehrle Wecount-S
 
 * 2023-06-22: Initial implementation according to "Radio-Telegram_LoRa_WECOUNT-S_Payload_0.3.4_20221121.xlsx"
