@@ -1738,6 +1738,7 @@ These parsers are available on request.
 
 ### VEGAPULS Air 41 and 42
 
+* 2024-11-08: Added possibility to add an offset via profiles when unit is given by device, fixed typo in field name
 * 2023-11-24: Added support for packet types 12
 * 2023-10-29: Added support for vega air 23 and packet types 8,9,16,17
 * 2023-02-20: Added possibility to add an offset via profiles
