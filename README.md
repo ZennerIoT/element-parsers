@@ -557,6 +557,10 @@ These parsers are available on request.
 * 2022-01-22: fixed format, added support for 9byte Payloads from LWL01
 * 2022-01-21: Initial implementation according to "lds01_02_payload_ttn_v1.5.txt" since PL descriptions doesnt fit
 
+### Dragino LWL03A
+
+* 2024-11-14: Initial implementation according to "https://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LWL03A%20%E2%80%93%20LoRaWAN%20None-Position%20Rope%20Type%20Water%20Leak%20Controller%20User%20Manual/#H2.3A0200BUplinkPayload"
+
 ### Dragino PS-LB/LS
 
 * 2024-09-05: added profiles and calculations, currently only for cubic tanks.
