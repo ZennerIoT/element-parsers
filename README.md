@@ -1173,6 +1173,10 @@ These parsers are available on request.
 
 * 2024-02-13: Initial version according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/WT_Series/WT101
 
+### Milesight WT30x
+
+* 2024-11-15: Initial version according to wt30x-user-guide-en.pdf
+
 ### Mioty metering
 
 * 2023-09-29: Initial version.
