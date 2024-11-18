@@ -1769,6 +1769,10 @@ These parsers are available on request.
 * 2022-06-22: Updated to version TDW2/LDW2 v0.8 and payload version: V1.1
 * 2021-08-31: Initial version
 
+### PEU-20/21
+
+* 2024-04-21: Initial implementation according to "sd_LPWAN_PEU_20_PEU_21.pdf".
+
 ### PEW-1000
 
 * 2024-02-12: Initial implementation according to "sd_pew_1000_en.pdf".
