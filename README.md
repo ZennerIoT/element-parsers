@@ -717,6 +717,7 @@ These parsers are available on request.
 
 ### Fast-GmbH AZA-OAD-Logger
 
+* 2024-11-22: Updated payload according to "2024-09-05_Data-set_BIDI-LoRA_EN.docx". Starting pegel index with 1 instead of 0.
 * 2022-07-05: Made pegel binary part dynamic long.
 * 2022-04-08: Initial version.
 
