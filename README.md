@@ -879,8 +879,9 @@ These parsers are available on request.
 
 * 2024-09-18: Initial implementation according to Noah Payloads.pdf
 
-### flowIQ2200 module 73
+### Kamstrup flowIQ2200 module 73
 
+* 2024-12-03: Fixed output name
 * 2024-11-06: Initial implementation with no encryption according to "FILE100003266_D_EN.pdf"
 
 ### Keller
