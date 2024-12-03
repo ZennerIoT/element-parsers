@@ -915,8 +915,9 @@ These parsers are available on request.
 * 2021-01-22: Updated according to "076264.000-03_12.20_BA_D_PipeSens.pdf"
 * 2020-10-06: Initial implementation according to "PipeSensLora payload vorab.pdf"
 
-### uh40 lora interface
+### landis+gyr uh40 lora interface
 
+* 2024-12-03: Added units.
 * 2024-11-27: Initial implementation with no encryption according to "TKB3554_UH40_LoRa_EN_.pdf"
 
 ### Libelium Smart Devices All in One
