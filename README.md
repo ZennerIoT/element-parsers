@@ -248,6 +248,10 @@ These parsers are available on request.
 * 2019-06-20: Added GPS position in reading metadata. Fixed invalid GPS values. Fixed city/country names.
 * 2018-01-06: Initial implementation according to PDF.
 
+###  Greenbox v2
+
+* 2024-12-05: Initial implementation according to documentation
+
 ### Comtac E1310 DALI Bridge
 
 * 2019-09-06: Added parsing catchall for unknown payloads.
