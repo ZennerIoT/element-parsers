@@ -233,6 +233,11 @@ These parsers are available on request.
 * 2023-03-13: Added Dew-Temperature calculation and extend_reading callback.
 * 2020-12-16: Initial implementation according to payload version 1.0
 
+###  Clever City Greenbox v2
+
+* 2024-12-09: Updated name and documentation
+* 2024-12-05: Initial implementation according to documentation "GreenBox Bedienungsanleitung, de, V2.44.pdf"
+
 ### Clevercity Greenbox
 
 * 2023-12-27: Fixed calculation of k1_running_since/k2 using data.timestamp.
