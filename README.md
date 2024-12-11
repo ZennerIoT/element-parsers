@@ -253,10 +253,6 @@ These parsers are available on request.
 * 2019-06-20: Added GPS position in reading metadata. Fixed invalid GPS values. Fixed city/country names.
 * 2018-01-06: Initial implementation according to PDF.
 
-###  Greenbox v2
-
-* 2024-12-05: Initial implementation according to documentation
-
 ### Comtac E1310 DALI Bridge
 
 * 2019-09-06: Added parsing catchall for unknown payloads.
@@ -1852,10 +1848,12 @@ These parsers are available on request.
 
 ### Binary MBus
 
+* 2024-12-11: Added zeropadding zu checksum
 * 2022-05-18: Initial version. Supporting Long frame with variable data structure
 
 ### Binary MBus with Lib
 
+* 2024-12-11: Added zeropadding zu checksum
 * 2024-07-18: Initial version. Using wMBus Lib
 
 ### ZENNER IoT Oskar v2 smart waste ultrasonic sensor
