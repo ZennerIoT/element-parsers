@@ -770,6 +770,10 @@ These parsers are available on request.
 * 2018-08-08: Parsing battery and additional function.
 * 2018-04-18: Initial version.
 
+### GWF RCM H200
+
+* 2024-12-18: Initial version according to "lora3: current Value Volume 8 Digit.png"
+
 ### Herholdt Controls - ECS WL03
 
 * 2023-02-21: Initial implementation according to "IIST313-07_LoRaWAN_Instruction Manual_Apr_2022.pdf".
