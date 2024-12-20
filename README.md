@@ -882,7 +882,7 @@ These parsers are available on request.
 
 ### Jooby Analog (Test Version)
 
-* 2024-12-19: Initial version according to "https://github.com/jooby-dev/jooby-docs/blob/main/docs/analog"
+* 2024-12-19: Initial version according to "https://github.com/jooby-dev/jooby-docs/blob/main/docs/analog" supporting HourMC only.
 
 ### Juenemann LD-System, Gas pressure sensor
 
