@@ -800,6 +800,7 @@ These parsers are available on request.
 
 ### Imbuildings People Counter
 
+* 2025-01-13: Fixed Battery value for 23 byte payload.
 * 2021-10-12: fixed nameing fields for 13 byte payload.
 * 2021-10-04: Updated parser to match payloads with 13 byte payload.
 * 2020-12-10: Corrected parser due to faulty payload description
