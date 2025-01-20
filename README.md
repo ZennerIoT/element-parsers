@@ -1902,6 +1902,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2025-01-20: Improve timeshift for SP12
 * 2024-07-30: Added v7.2.5 workaround for average temperature in SP0.1 package for wmz devices. Also firmware version is now written to the profile.
 * 2024-05-27: Fixed status code "backflow" (0F) and broken AP1 timestamps from IUW.
 * 2024-04-24: Added profile field din_number2 used by PDC devices. Added config.ignore_din_numbers with EDC/PDC default din_number values.
