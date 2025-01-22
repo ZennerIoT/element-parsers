@@ -847,6 +847,7 @@ These parsers are available on request.
 
 ### Integra Calec ST 3 Meter
 
+* 2025-01-21: Corrected usage of Lib
 * 2023-09-01: Manually parsing status byte from payload
 * 2022-11-09: Added try catch for handling WmBus errors.
 * 2022-09-01: Fixed reading format. Added tests.
