@@ -884,6 +884,7 @@ These parsers are available on request.
 
 ### Jooby Analog (Test Version)
 
+* 2025-01-22: Implementation of LastEVent, battery alarm and SetTime2000.
 * 2024-12-19: Initial version according to "https://github.com/jooby-dev/jooby-docs/blob/main/docs/analog" supporting HourMC only.
 
 ### Juenemann LD-System, Gas pressure sensor
