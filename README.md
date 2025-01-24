@@ -1400,6 +1400,10 @@ These parsers are available on request.
 * 2022-08-17: Added Buttonboard (FW version 1.2.8) according to "https://www.oxobutton.ch/products/buttonboard-lorawan/documentation#uplink"
 * 2021-11-29: Initial implementation of Oxobutton Q according to "https://www.oxobutton.ch/products/oxobutton-lorawan/documentation#uplink"
 
+### Palas AQ Guard Smart
+
+* 2025-01-24: Initial implementation according to 2025-01-21_payload_description.xlsx
+
 ### paramair aura co2
 
 * 2024-09-04: Added support for payload versions v3, v4a, v4b
