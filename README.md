@@ -1057,6 +1057,10 @@ These parsers are available on request.
 
 * 2022-12-14: Initial Implementation.
 
+### MClimate 16ASPM
+
+* 2025-01-27: Initial Implementation.
+
 ### MClimate Vicki
 
 * 2024-11-12: Added command 0x19 and 0x1F from TTN Parser
