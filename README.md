@@ -1528,6 +1528,10 @@ These parsers are available on request.
 * 2021-04-19: Added field for battery + new test
 * 2021-04-15: Initial Version. Documentation: https://sensecap-docs.seeed.cc/pdf/SenseCAP%20LoRaWAN%20Sensor%20User%20Manual-V1.1.pdf
 
+### Seeed Studio SenseCAP S2120
+
+* 2025-01-29: Initial Version. Documentation: SenseCAP S2120 LoRaWAN 8-in-1 Weather Station User Guide.pdf
+
 ### Sensative Strips Comfort
 
 * 2023-11-21: Corrected avg temperature due to LoRa-Strips-Payload-formats-2
