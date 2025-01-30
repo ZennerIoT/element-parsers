@@ -1575,6 +1575,10 @@ These parsers are available on request.
 * 2018-09-17: fixed position value, was switched
 * 2018-09-13: Initial version.
 
+### Sensoterra Probe
+
+* 2024-01-30: Initial implementation with no encryption according to "2410-Local-Mode-Technical-Documentation.pdf" (Testversion)
+
 ### Sentinum APOLLON-Q
 
 * 2021-10-26: Added do_extend_reading/2 Callback
