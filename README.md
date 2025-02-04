@@ -1740,6 +1740,10 @@ These parsers are available on request.
 
 * 2024-04-16: Initial implementation according to "LoRaWAN_Schnittstellenbeschreibung_de.pfd" Revision B
 
+### TIP SINUS LoRaWAN
+
+* 2025-01-29: Initial implementation according to "Kurzbedienungsanleitung_SINUS_Zähler_LoRaWAN_V5.pdf"
+
 ### BROWAN Tabs (formerly TrackNet Tabs)
 
 * 2022-05-17: Fixed calculation mistake on ambient light sensor
