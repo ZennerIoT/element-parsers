@@ -1603,6 +1603,10 @@ These parsers are available on request.
 
 * 2024-08-06: Untested - Initial implementation according to "https://senzemo.com/wp-content/uploads/2022/12/Senstick_SMC30-HWv3.0_FWv1.0-LoRaWAN_Protocol_v1.9.pdf"
 
+### Sewerin Leckage Sensor
+
+* 2025-02-07: Initial implementation according to document "Message Items.pdf"
+
 ### Skysense SKYAGR1
 
 * 2021-08-11: Initial Version, according to "SKYAGR1.pdf" version 1.0.7.
