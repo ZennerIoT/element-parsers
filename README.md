@@ -789,6 +789,10 @@ These parsers are available on request.
 * 2021-04-08: Added new payload format.
 * 2019-09-06: Added parsing catchall for unknown payloads.
 
+### Honeywell R110 (Testversion)
+
+* 2025-02-12: Initial implementation (testversion) according to "pmt-hps-r110-lorawan-payload-formats.pdf"
+
 ### Hyquest IoTa Sensornode
 
 * 2022-08-12: Added measurement_ID and value count
