@@ -1935,6 +1935,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2025-02-13: Added a mapping for din_number manufacturer "{SI" to "ZRI".
 * 2025-01-20: Improve timeshift for SP12
 * 2024-07-30: Added v7.2.5 workaround for average temperature in SP0.1 package for wmz devices. Also firmware version is now written to the profile.
 * 2024-05-27: Fixed status code "backflow" (0F) and broken AP1 timestamps from IUW.
