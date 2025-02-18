@@ -672,7 +672,7 @@ These parsers are available on request.
 
 ### Elsys Multiparser
 
-* 2025-02-18: Added dedicated add_low_battery boolean
+* 2025-02-18: Added dedicated add_battery_low boolean
 * 2023-06-09: Added dedicated add_dew_point.
 * 2022-01-12: Added dew point when temperature and humiditiy exist
 * 2021-11-03: Added support for Elsys tvoc Sensor, Adding sTypes 1C
