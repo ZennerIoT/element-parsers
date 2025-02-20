@@ -543,7 +543,8 @@ These parsers are available on request.
 
 ### Dragino LT22222-L and LT33222-L I/O Controller
 
-* 2024-06-19: Added & 0x3F calculation to each mod identification according to ttn parser and added hardawre type
+* 2025-02-20: Added MOD6
+* 2024-06-19: Added & 0x3F calculation to each mod identification according to ttn parser and added hardware type
 * 2021-07-14: Added parsing for old payload format v1.3
 * 2021-05-18: Initial Implementation according to "LoRa_IO_Controller_UserManual_v1.5.5.pdf"
 
