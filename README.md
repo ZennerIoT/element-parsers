@@ -1611,6 +1611,7 @@ These parsers are available on request.
 
 ### Sewerin Leckage Sensor
 
+* 2025-02-07: Fixed Recursion
 * 2025-02-07: Initial implementation according to document "Message Items.pdf"
 
 ### Skysense SKYAGR1
