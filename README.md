@@ -1584,7 +1584,7 @@ These parsers are available on request.
 
 ### Sensoterra Probe
 
-* 2025-01-30: Initial implementation according to "2410-Local-Mode-Technical-Documentation.pdf" (Testversion)
+* 2025-02-28: Initial implementation according to "2410-Local-Mode-Technical-Documentation.pdf" (Testversion)
 
 ### Sentinum APOLLON-Q
 
