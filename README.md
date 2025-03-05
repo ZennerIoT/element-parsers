@@ -1542,6 +1542,10 @@ These parsers are available on request.
 
 * 2025-01-29: Initial Version. Documentation: SenseCAP S2120 LoRaWAN 8-in-1 Weather Station User Guide.pdf
 
+### Seeed Studio SenseCAP Tracker T1000-A/B
+
+* 2025-03-04: Initial Implementation according to: SenseCAP_Tracker_T1000-AB_User_Guide_EN.pdf
+
 ### Sensative Strips Comfort
 
 * 2023-11-21: Corrected avg temperature due to LoRa-Strips-Payload-formats-2
