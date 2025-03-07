@@ -1049,7 +1049,7 @@ These parsers are available on request.
 
 ### MCF88 Multiparser
 
-* 2024-02-05: Added support for 1.3, 1.7, 1.7.1, 1.9.1, 1.10, 1.12, 1.14, 1.16, 1.17  and updated support for 1.1
+* 2025-02-05: Added support for 1.3, 1.7, 1.7.1, 1.9.1, 1.10, 1.12, 1.14, 1.16, 1.17  and updated support for 1.1
 * 2022-09-02: Added support for report_data revision 1.32 with config option report_data_note3_version
 * 2022-07-26: Added support for lwws001 pm data frame
 * 2022-07-04: Added do_extend_reading callback.
