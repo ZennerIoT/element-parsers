@@ -496,6 +496,7 @@ These parsers are available on request.
 
 ### Dragino LHT65N
 
+* 2025-03-14: Added Ext=0x0E (should have been 0x0A according to documentation)
 * 2024-08-15: Added Ext=6, 11, 4, 8
 * 2024-05-07: Added field for temperature_temp117
 * 2023-07-04: Added Ext=2
