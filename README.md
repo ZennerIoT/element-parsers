@@ -282,6 +282,10 @@ These parsers are available on request.
 
 * 2022-01-24: Initial version according to "E1395-CM-3_EN_V00.02_V05.pdf"
 
+### Comtac JSON Parser
+
+* 2025-03-11: Initial implementation
+
 ### Comtac KLAX v1
 
 * 2023-03-08: Added try catch. Added zaehlernummer calculation. Added reparsing_strategy()
