@@ -1513,6 +1513,10 @@ These parsers are available on request.
 
 * 2024-03-11: Initial implementation according to cm2-decoder-light
 
+### Rainbow 7in1 LoRaWAN soil sensor
+
+* 2025-04-09: Initial version according to Lorawan_7_in_1_soil_sensor.pdf and correction of manufacturer
+
 ### RAK Button
 
 * 2019-05-09: Added tests, fields and documentation.
