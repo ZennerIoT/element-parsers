@@ -936,6 +936,7 @@ These parsers are available on request.
 
 ### Lancier Monitoring
 
+* 2025-04-15: Added possibility to separate channel values into different data points: set "add_channel_to_key()" to true
 * 2022-08-18: Added Port 100 message according to "Lancier Monitoring LORA Payload Version 0.1.2"
 * 2022-08-18: Initial implementation according to "Lancier Monitoring LORA Payload Version 0.1.1"
 
