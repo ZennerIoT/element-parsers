@@ -1853,6 +1853,10 @@ These parsers are available on request.
 
 * 2024-02-12: Initial implementation according to "sd_pew_1000_en.pdf".
 
+### PEW-1000 mioty
+
+* 2025-04-17: Initial implementation according to "sd_pew_1000_en.co.pdf".
+
 ### PGW23.100.11
 
 * 2024-10-08: Added Gauge values to 0x01 and 0x02 payloads in of existing min/max values in profile
