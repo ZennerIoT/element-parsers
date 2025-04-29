@@ -253,6 +253,10 @@ These parsers are available on request.
 * 2019-06-20: Added GPS position in reading metadata. Fixed invalid GPS values. Fixed city/country names.
 * 2018-01-06: Initial implementation according to PDF.
 
+### Comtac Cluey XX LR
+
+* 2025-04-29: Work in progress according to "https://drive.google.com/file/d/1Sm4nzc04rnuNk1l6yI_d-gqUT6sHS8po/view"
+
 ### Comtac E1310 DALI Bridge
 
 * 2019-09-06: Added parsing catchall for unknown payloads.
@@ -1438,6 +1442,7 @@ These parsers are available on request.
 
 ### Parametric PMX TCR Radar Traffic Counter
 
+* 2025-04-23: Corrected speed categories for counter payload
 * 2024-09-12: Added Category depending on Frame_Port and fixed Voltage calc
 * 2024-09-06: Updated implementation according to "PMX TCR LoRaWAN Payload Description.pdf" and changed name to "Parametric PMX"
 * 2021-09-22: Updated implementation according to https://parametric.ch/docs/tcr/tcr_payload_v3
