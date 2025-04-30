@@ -255,7 +255,7 @@ These parsers are available on request.
 
 ### Comtac Cluey XX LR
 
-* 2025-04-29: Work in progress according to "https://drive.google.com/file/d/1Sm4nzc04rnuNk1l6yI_d-gqUT6sHS8po/view"
+* 2025-04-29: Initial implementation according to Cluey_XX_LR_Payload-Beschreibung[DE_V02.04].pdf.
 
 ### Comtac E1310 DALI Bridge
 
