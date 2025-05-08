@@ -354,9 +354,10 @@ These parsers are available on request.
 
 ### Comtac Modbus Bridge Template
 
+* 2025-05-08: Added Port 5 for Modbusbridge EM, corrected reg to dp as key and profile names
 * 2023-01-11: Added type "binary_bypass". Forwards the binary value directly. To be able to split the values later on in mapping function
 * 2022-02-03: Added type "signed16_custom_invert". Interprets incoming bytes (1,2,3,4) as (3,4,1,2) signed.
-* 2021-10-28: Added profile support. Use profile: comtac_modbus_bridge_params, with fields reg1, reg2, reg3. If no valid type found, defaulttype is used
+* 2021-10-28: Added profile support. Use profile: comtac_modbus_bridge_params, with fields dp1, dp2, dp3. If no valid type found, defaulttype is used
 * 2021-10-19: Added type "float32_custom_invert". Interprets incoming bytes (1,2,3,4) as (3,4,1,2) float.
 * 2021-07-12: Added type "binary"
 * 2021-06-15: Added Port 100 again correctly, DPext0 and DPext1 possible
