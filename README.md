@@ -1607,6 +1607,7 @@ These parsers are available on request.
 
 ### Sensoterra Probe
 
+* 2025-05-08: Merged rows in case of multi mode
 * 2025-02-28: Initial implementation according to "2410-Local-Mode-Technical-Documentation.pdf" (Testversion)
 
 ### Sentinum APOLLON-Q
