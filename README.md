@@ -428,6 +428,7 @@ These parsers are available on request.
 
 ### Diehl Hydrus 2.0 LoRaWAN
 
+* 2025-05-02: Added error codes according to 20241001_HYDRUS_2.0_Fehlerbeschreibungen.pdf
 * 2024-05-30: Fixed bug in parser using a too long oms tpl
 * 2024-05-28: Added test, removed comments
 * 2024-05-27: Initial implementation
@@ -1608,8 +1609,9 @@ These parsers are available on request.
 
 ### Sensoterra Probe
 
+* 2025-05-09: Corrected calculations
 * 2025-05-08: Merged rows in case of multi mode
-* 2025-02-28: Initial implementation according to "2410-Local-Mode-Technical-Documentation.pdf" (Testversion)
+* 2025-02-28: Initial implementation according to "2410-Local-Mode-Technical-Documentation.pdf"
 
 ### Sentinum APOLLON-Q
 
