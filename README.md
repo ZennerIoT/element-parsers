@@ -1493,6 +1493,7 @@ These parsers are available on request.
 
 ### Pipersberg Ultrimis Watermeter
 
+* 2025-05-12: Added Payload Version 0x8001
 * 2025-05-02: Filter not documented payload (Payload Version 0x80)
 * 2025-02-26: Changed start_volume to signed
 * 2023-12-07: Added config allow_negative_delta: true
