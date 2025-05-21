@@ -1974,8 +1974,8 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
-* 2025-05-21: Moved Port 0 packets from readings to logger
-* 2025-05-20: Removed unused channel from SP6 and SP7 when wmz configured as single channel
+* 2025-05-21: Moved Port 0 packets from readings to logger, added code 1D to AP1.
+* 2025-05-20: Removed unused channel from SP6 and SP7 when wmz configured as single channel.
 * 2025-02-13: Added a mapping for din_number manufacturer "{SI" to "ZRI".
 * 2025-01-20: Improve timeshift for SP12
 * 2024-07-30: Added v7.2.5 workaround for average temperature in SP0.1 package for wmz devices. Also firmware version is now written to the profile.
