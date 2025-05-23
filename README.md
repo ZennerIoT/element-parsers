@@ -701,6 +701,7 @@ These parsers are available on request.
 
 ### Elvaco CMi41X0 Mbus
 
+* 2025-05-23: Add _error to key, when function_field is error_value
 * 2025-04-30: Fixed Typo and allowed to use tariff naming scheme: set use_energy_tariff_naming() to true
 * 2024-09-04: Added missing fields
 * 2024-08-02: Corrected SHARKY 775 errors due to new documentation: Definition error codes and status bytes SHARKY 775
