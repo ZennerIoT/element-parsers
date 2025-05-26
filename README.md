@@ -1575,20 +1575,6 @@ These parsers are available on request.
 * 2019-11-05: Fixed order of temperature/humidity in 1.1.17, 1.1.18 and 1.1.19.
 * 2019-09-10: Initial implementation according to "Sensative_LoRa-Strips-Manual-Alpha-2.pdf"
 
-### Sensingslabs Multisensor
-
-* 2021-12-09: Fixed current_value_state for senlab D
-* 2021-10-29: Added Datalog-Format for Temp/hum
-* 2021-09-24: Added SenlabH tests and taupunkt calculation.
-* 2021-04-06: Fixed parse functions due to real data
-* 2021-03-01: Added Catchall and fixed parse function
-* 2019-05-16: Initial implementation
-
-### Sensinglabs SenLab LED
-
-* 2019-09-06: Added parsing catchall for unknown payloads.
-* 2019-01-01: Initial implementation.
-
 ### Sensoco Loomair
 
 * 2021-09-23: Initial Version, according to "Sensoco Loomair M Payload Structure v1.0.pdf".
