@@ -1828,6 +1828,7 @@ These parsers are available on request.
 
 ### Vistron RLS100
 
+* 2025-06-02: Removed scaling due to manufacturer hint.
 * 2025-04-10: Initial version according to RLS100_Integration Guide_FUOTA.pdf
 
 ### Von Roll Klappe mit Tell, fireplug lid sensor
