@@ -833,6 +833,7 @@ These parsers are available on request.
 
 ### IMST iOKE868 LoRaWAN
 
+* 2025-03-03: Fixed Port 5 payload
 * 2025-03-03: Fixed Segmentation of Port 69 according to real data.
 * 2023-03-24: Initial implementation.
 
