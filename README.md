@@ -1847,6 +1847,10 @@ These parsers are available on request.
 * 2022-06-22: Updated to version TDW2/LDW2 v0.8 and payload version: V1.1
 * 2021-08-31: Initial version
 
+### Wika Netris 1
+
+* 2025-05-28: Initial implementation according to "sd_netris1_lpwan_en_co.pdf"
+
 ### PEU-20/21
 
 * 2024-04-21: Initial implementation according to "sd_LPWAN_PEU_20_PEU_21.pdf".
