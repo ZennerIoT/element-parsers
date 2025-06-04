@@ -1476,6 +1476,7 @@ These parsers are available on request.
 
 ### Pepperl+Fuchs WILSEN.sonic.level
 
+* 2025-06-04: Added water level for UC7000-Model
 * 2024-07-18: Updated due to Beschreibung der Payload für WILSEN.node WSN-*-F406-B41-*-02 (payloadbeschreibung.pdf)
 * 2023-05-17: Checked compatibility with "20221024_tdoct7056mod_eng_for_distance_draft.docx".
 * 2022-11-15: Added support for mm and amplitude payload design
