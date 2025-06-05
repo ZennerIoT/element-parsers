@@ -1033,6 +1033,10 @@ These parsers are available on request.
 * 2021-07-14: Fixed a bug in add_timestamp
 * 2021-03-23: Supporting bridge firmware version from v1.0, and verbose format.
 
+### Lobaro MQTT Bridged Device Driver
+
+* 2025-06-05: Initial version
+
 ### Multi Temperature Sensor Box
 
 * 2023-09-26: Initial implementation according documentation https://doc.lobaro.com/doc/products/discontinued-products/multi-temperature-sensor-box-lorawan#MultiTemperatureSensorBox(LoRaWAN)-Payload
@@ -1930,6 +1934,10 @@ These parsers are available on request.
 
 * 2024-12-11: Added zeropadding zu checksum
 * 2024-07-18: Initial version. Using wMBus Lib
+
+### Binary wMBus
+
+* 2025-06-05: Initial version. Using wMBus Lib
 
 ### ZENNER IoT Oskar v2 smart waste ultrasonic sensor
 
