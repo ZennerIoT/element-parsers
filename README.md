@@ -47,6 +47,7 @@ These parsers are available on request.
 
 ### Acrios Systems LoRaWAN to MBus Bridge
 
+* 2025-06-10: Added direct forwarding, when complete MBus message is sent
 * 2024-07-18: Initial version
 
 ### Adeunis ARF8046
