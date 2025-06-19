@@ -1776,6 +1776,7 @@ These parsers are available on request.
 
 ### Thermokon Multiparser
 
+* 2025-06-19: Added downlink packets
 * 2024-04-16: Initial implementation according to "LoRaWAN_Schnittstellenbeschreibung_de.pfd" Revision B
 
 ### TIP SINUS LoRaWAN
