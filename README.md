@@ -563,7 +563,7 @@ These parsers are available on request.
 
 ### Dragino LTC2-LB LoRaWAN Temperature Transmitter
 
-* 2025-08-16: Initial implementation according to "https://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LTC2-LB--LoRaWAN_Temperature_Transmitter_User_Manual/"
+* 2025-06-18: Initial implementation according to "https://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LTC2-LB--LoRaWAN_Temperature_Transmitter_User_Manual/"
 
 ### Dragino LTC2 LoRaWAN Temperature Sensor
 
