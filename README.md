@@ -501,6 +501,10 @@ These parsers are available on request.
 * 2021-08-13: Rewrite and updated to latest firmware v1.6.
 * 2020-02-12: Initial implementation according to Dragino TTN Parser.
 
+### Dragino LHT52 LoRaWAN Temperature Sensor
+
+* 2025-06-19: Initial implementation according to https://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LHT52%20-%20LoRaWAN%20Temperature%20%26%20Humidity%20Sensor%20User%20Manual/#H2.4A0UplinkPayload"
+
 ### Dragino LHT65
 
 * 2022-11-09: Added support for "Ext=9, E3 sensor with Unix Timestamp"
