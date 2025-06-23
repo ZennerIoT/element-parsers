@@ -155,6 +155,10 @@ These parsers are available on request.
 * 2020-06-23: Added feature :append_last_digital_inputs default: false
 * 2020-06-18: Initial implementation according to "ATIM_ACW-DIND160-80-88-44_UG_EN_V1.7.pdf"
 
+### AVK SMART WATER VIDI DEVICES
+
+* 2025-06-20: Initial implementation according to "Technical Description_LoRaWAN setup Rev 03_PATOJE.pdf"
+
 ### Axioma Qalcosonic E3/E4
 
 * 2024-07-15: Changed AES decryption profile to a generalized name
