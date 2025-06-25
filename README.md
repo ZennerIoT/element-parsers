@@ -550,6 +550,10 @@ These parsers are available on request.
 * 2021-03-17: Supporting Mode 1 and 4
 * 2020-12-22: Initial Implementation according to "LSN50_LoRa_Sensor_Node_UserManual_v1.7.1.pdf"
 
+### Dragino LSN50V2
+
+* 2025-06-23: Initial Implementation according to https://github.com/dragino/dragino-end-node-decoder/blob/main/LSN50%20%26%20LSN50-v2/LSN50V2_v1.8.0_Decoder_TTN.txt
+
 ### Dragino LSN50V2-D20
 
 * 2023-03-07: Initial Implementation according to "Dragino LSN50v2 D20 User Manual (EN).pdf"
