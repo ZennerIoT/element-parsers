@@ -1193,6 +1193,7 @@ These parsers are available on request.
 
 ### Milesight and Ursalink UC50x
 
+* 2025-06-26: Fixed wrong data type selection
 * 2023-10-16: Initial version according https://github.com/Milesight-IoT/SensorDecoders/tree/main/UC_Series/UC50x
 
 ### Milesight and Ursalink UC51x
