@@ -1204,14 +1204,15 @@ These parsers are available on request.
 
 * 2023-06-14: Initial version according to vs121-user-guide-en.pdf
 
-### Milesight and Ursalink VS132
-
-* 2023-07-25: fixed parse_parts function
-* 2023-01-05: Initial version according to vs132-user-guide-en.pdf
-
 ### Milesight and Ursalink VS133
 
 * 2023-07-24: Initial version according to "https://github.com/Milesight-IoT/SensorDecoders/blob/main/VS_Series/VS133/README.md"
+
+### Milesight and Ursalink VS13x Series
+
+* 2026-06-27: Added suppport for VS133 + VS 135
+* 2023-07-25: fixed parse_parts function
+* 2023-01-05: Initial version according to vs132-user-guide-en.pdf
 
 ### Milesight and Ursalink WS101
 
