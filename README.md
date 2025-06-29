@@ -1210,7 +1210,8 @@ These parsers are available on request.
 
 ### Milesight and Ursalink VS13x Series
 
-* 2026-06-27: Added suppport for VS133 + VS 135
+* 2026-06-29: added filter for empty payloads
+* 2026-06-27: Added suppport for VS133 + VS
 * 2023-07-25: fixed parse_parts function
 * 2023-01-05: Initial version according to vs132-user-guide-en.pdf
 
