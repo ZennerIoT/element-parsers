@@ -433,6 +433,7 @@ These parsers are available on request.
 
 ### Diehl Hydrus 2.0 LoRaWAN
 
+* 2025-07-04: Filter errorcodes containing only 0, allow detailed error description
 * 2025-05-02: Added error codes according to 20241001_HYDRUS_2.0_Fehlerbeschreibungen.pdf
 * 2024-05-30: Fixed bug in parser using a too long oms tpl
 * 2024-05-28: Added test, removed comments
@@ -854,6 +855,8 @@ These parsers are available on request.
 
 ### IMST iOKE868 LoRaWAN
 
+* 2025-07-03: Added profile support so save firmware version to parse firmware dependent payloads
+* 2025-07-03: Added support for Port 8, 32 and 48 according to iOKE868_LoRaWAN_AN035_RadioProtocol_V1.3.pdf
 * 2025-03-03: Fixed Port 5 payload
 * 2025-03-03: Fixed Segmentation of Port 69 according to real data.
 * 2023-03-24: Initial implementation.
@@ -1408,7 +1411,8 @@ These parsers are available on request.
 
 ### NKE Watteco Monit'O
 
-* 2022-03-31: Initial implementaion
+* 2025-07-08: Added command id: Alarm
+* 2022-03-31: Initial implementation
 
 ### NKE Watteco Movee
 
