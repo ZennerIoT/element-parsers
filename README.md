@@ -191,6 +191,8 @@ These parsers are available on request.
 
 ### BARANI DESIGN MeteoWind IoT
 
+* 2025-08-12: Added Pro Gen 2 payload (before 2023) according to https://github.com/barani-design/P_SRC_device_decoders/tree/main/Lora_and_SigFox_Devices/MeteoWind_IoT_Pro_Gen2
+* 2025-08-12: Added Pro payload according to https://github.com/barani-design/P_SRC_device_decoders/tree/main/Lora_and_SigFox_Devices/MeteoWind_IoT_Pro
 * 2021-10-20: added sensor error or sensor n/a
 * 2021-10-19: Initial implementation according to "https://www.baranidesign.com/iot-wind-open-message-format"
 
