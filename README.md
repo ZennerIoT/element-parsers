@@ -753,6 +753,10 @@ These parsers are available on request.
 * 2019-07-02: update according to v1.3 of documentation by adding precise error messages.
 * 2018-03-21: initial version
 
+### Elvaco Report Template 3102
+
+* 2025-09-01: Initial implementation according to "https://support.elvaco.com/hc/en-us/articles/17393396377885-HTTP-Report-Templates"
+
 ### EMU Professional II Lora
 
 * 2023-02-09: Productive version excluding CRC calculation.
