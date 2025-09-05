@@ -1701,6 +1701,7 @@ These parsers are available on request.
 
 ### Sontex Supercal/Superstatic
 
+* 2025-09-05: Add function to support 878 HKV
 * 2020-06-26: Using memory_address, sub_device and tariff in reading keys.
 * 2020-06-09: Initial implementation according to "M-Bus Frames 7x9 - LoRAWAN_20190812.pdf"
 
