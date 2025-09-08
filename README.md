@@ -114,6 +114,10 @@ These parsers are available on request.
 * 2022-11-24: Split multipayloads in multiple readings
 * 2022-11-17: Updated according to documentation
 
+### Adeunis ARF8373xRA
+
+* 2025-09-02: Initial implementation.
+
 ### Arad MODBUS
 
 * 2020-10-06: Refactored and added tests.
@@ -1699,7 +1703,7 @@ These parsers are available on request.
 * 2022-11-28: Added parsing for a 3 module setup
 * 2022-10-28: Initial Implementation according to LPWAN_truebnerSMT100_EN.pdf (HW Version and SW Version inconsistent with testpayload)
 
-### Sontex Supercal/Superstatic
+### Sontex M-Bus
 
 * 2025-09-05: Add function to support 878 HKV
 * 2020-06-26: Using memory_address, sub_device and tariff in reading keys.
