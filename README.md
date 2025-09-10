@@ -824,6 +824,10 @@ These parsers are available on request.
 
 * 2024-12-18: Initial version according to "lora3: current Value Volume 8 Digit.png"
 
+### Hager TG563a
+
+* 2025-09-09: Initial implementation according to "SE000304A_A3_Payload_description_for_TG563A.pdf"
+
 ### Herholdt Controls - ECS WL03
 
 * 2023-02-21: Initial implementation according to "IIST313-07_LoRaWAN_Instruction Manual_Apr_2022.pdf".
