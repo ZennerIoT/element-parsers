@@ -1213,6 +1213,7 @@ These parsers are available on request.
 
 ### Milesight and Ursalink UC50x
 
+* 2025-09-12: Fixed endianess for 0x05E2 payloads
 * 2025-06-26: Fixed wrong data type selection
 * 2023-10-16: Initial version according https://github.com/Milesight-IoT/SensorDecoders/tree/main/UC_Series/UC50x
 
@@ -1651,6 +1652,10 @@ These parsers are available on request.
 * 2025-05-15: Corrected calculations due to manufactures explanation
 * 2025-05-08: Merged rows in case of multi mode
 * 2025-02-28: Initial implementation according to "2410-Local-Mode-Technical-Documentation.pdf"
+
+### Sensus IPerl
+
+* 2025-09-15: Initial version according 2025-08-08 - LoRa Payload-Beschreibung.pdf
 
 ### Sentinum APOLLON-Q
 
