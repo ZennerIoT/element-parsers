@@ -193,6 +193,10 @@ These parsers are available on request.
 
 * 2023-02-01: Initial implementation according to "https://www.baranidesign.com/meteorain-open-message-format"
 
+### BARANI DESIGN MeteoRain IoT Gen 2
+
+* 2025-09-17: Initial implementation according to https://github.com/barani-design/P_SRC_device_decoders/tree/main/Lora_and_SigFox_Devices/MeteoRain_IoT_Pro_Gen2 and Barani support
+
 ### BARANI DESIGN MeteoWind IoT
 
 * 2025-08-12: Added Pro Gen 2 payload (before 2023) according to https://github.com/barani-design/P_SRC_device_decoders/tree/main/Lora_and_SigFox_Devices/MeteoWind_IoT_Pro_Gen2
