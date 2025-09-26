@@ -729,6 +729,10 @@ These parsers are available on request.
 * 2018-07-16: Added sTypes 04, 05, 06
 * 2018-04-12: Initial implementation, not yet all sTypes implemented
 
+### ELV LW GPS1
+
+* 2025-09-25: Initial implementation according to "253152_elv_lw_gps1.pdf"
+
 ### Elvaco CMa11L indoor sensor
 
 * 2019-06-05: Initial parser according to documentation.
