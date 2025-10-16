@@ -945,6 +945,7 @@ These parsers are available on request.
 
 ### Isarsoft Perception Edge Bundle
 
+* 2025-10-16: Added lperiodx and ltotal
 * 2024-05-14: Initial implementation according to example payload given by manufacturer
 
 ### Itron Cyble5
