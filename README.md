@@ -1315,6 +1315,10 @@ These parsers are available on request.
 
 * 2023-12-14: Initial version.
 
+### Mutelcor NFC RFID - LoRa Button MTC-XX-NFC01 / NFC02
+
+* 2025-10-21: Initial version according to documentation "7788_Mutelcor LoRaWAN Payload 1.5.3.pdf"
+
 ### NAS ACM CM3010
 
 * 2019-12-09: Fixed boot message for newer longer payloads.
