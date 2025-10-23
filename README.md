@@ -1793,6 +1793,7 @@ These parsers are available on request.
 
 ### Tekelek Multiparser
 
+* 2025-10-23: Fixed handling payload with unknown tank.
 * 2024-01-26: Added TEK 893(Atex) and changed to multiparser.
 * 2022-05-18: Added tank.capacity profile field.
 * 2021-05-18: Added tank.sensor_distance profile field. Formatted code.
