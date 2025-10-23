@@ -1033,6 +1033,10 @@ These parsers are available on request.
 
 * 2019-09-06: Added parsing catchall for unknown payloads.
 
+### Libelium Smart Parking v1.2.x
+
+* 2025-10-23: Initial implementation according to Parking_decoder_for_firmware_v1.2.x.pdf
+
 ### Libelium Smart Parking
 
 * 2019-11-29: Removed all reverse engineered fields because they changed.
