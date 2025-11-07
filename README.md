@@ -2036,6 +2036,7 @@ These parsers are available on request.
 
 ### ZRI Simple EDC and PDC
 
+* 2022-11-05: Changed names of status codes according to MaaS requirements
 * 2022-03-02: Fix date calculation in SP4/8
 * 2021-07-15: Fixed tests and formatting.
 * 2021-07-14: Added ways to extend readings and set defaults
