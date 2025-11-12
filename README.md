@@ -946,6 +946,7 @@ These parsers are available on request.
 
 ### Isarsoft Perception Edge Bundle
 
+* 2025-11-12: Added sum values on frame_port 2
 * 2025-10-17: Added possibility to reset ltotal by profile
 * 2025-10-16: Added lperiodx and ltotal
 * 2024-05-14: Initial implementation according to example payload given by manufacturer
