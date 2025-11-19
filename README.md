@@ -610,6 +610,7 @@ These parsers are available on request.
 
 ### Dragino PS-LB/LS
 
+* 2025-11-19: Added calculation for remaining fill level
 * 2025-08-29: Added profiles and calculations for ball_tank and lying_cylinder
 * 2025-07-10: Added pressure probes according to documentation and provided decoder
 * 2024-09-05: added profiles and calculations, currently only for cubic tanks.
