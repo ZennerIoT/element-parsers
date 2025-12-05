@@ -1487,6 +1487,7 @@ These parsers are available on request.
 
 ###  NKE Watteco Multiparser (In Progress)
 
+* 2025-12-05: Support of payload with multiple power descriptors
 * 2024-04-17: Initial implementation of Clusters
 * 2024-03-25: Initial implementation Triphas'o
 * 2024-03-19: Progress
