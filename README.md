@@ -1485,8 +1485,9 @@ These parsers are available on request.
 * 2020-08-20: Added tests, refactoring.
 * 2019-01-01: Initial Version.
 
-###  NKE Watteco Multiparser (In Progress)
+###  NKE Watteco Multiparser
 
+* 2025-12-08: Added Multi Binary input to output for each bit
 * 2025-12-05: Support of payload with multiple power descriptors
 * 2024-04-17: Initial implementation of Clusters
 * 2024-03-25: Initial implementation Triphas'o
