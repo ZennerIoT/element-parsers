@@ -705,6 +705,7 @@ These parsers are available on request.
 
 ### eBZ electricity meter RD3 Version 1.0.1!
 
+* 2025-12-11: Added 0x15 for time
 * 2024-08-06: Added catch for empty push messages
 * 2024-01-18: Fixed that firmware in combination with other pushes was not possible
 * 2023-09-27: Corrected firmware
