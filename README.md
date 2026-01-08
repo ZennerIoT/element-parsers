@@ -1488,6 +1488,7 @@ These parsers are available on request.
 
 ###  NKE Watteco Multiparser
 
+* 2026-01-08: Fixed handling of analog input and float datatype
 * 2025-12-08: Added Multi Binary input to output for each bit
 * 2025-12-05: Support of payload with multiple power descriptors
 * 2024-04-17: Initial implementation of Clusters
