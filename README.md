@@ -47,7 +47,8 @@ These parsers are available on request.
 
 ### Acrios Systems LoRaWAN to MBus Bridge
 
-* 2026-01-16: Handle undefined 0x00 in third byte and fixed handling when mbus is complete in first packet
+* 2026-01-16: Allow to use secondary address to forward over bridged driver
+* 2026-01-16: Handle undefined 0x00 in third byte and fixed handling when MBus is complete in first packet
 * 2025-06-10: Added direct forwarding, when complete MBus message is sent
 * 2024-07-18: Initial version
 
