@@ -2019,6 +2019,7 @@ These parsers are available on request.
 
 ### Binary MBus with Lib
 
+* 2026-01-16: Added possibility to give output as single line
 * 2024-12-11: Added zeropadding zu checksum
 * 2024-07-18: Initial version. Using wMBus Lib
 
