@@ -252,6 +252,7 @@ These parsers are available on request.
 
 ###  Clever City Greenbox v2
 
+* 2025-01-20: Added handling of device information payload (0x0F)
 * 2024-12-09: Updated name and documentation
 * 2024-12-05: Initial implementation according to documentation "GreenBox Bedienungsanleitung, de, V2.44.pdf"
 
@@ -1133,6 +1134,10 @@ These parsers are available on request.
 ### LPP Cayenne
 
 * 2019-03-07: Initial implementation
+
+### Maddalena electo
+
+* 2026-01-20: Initial implementation according to "Electo-protocol-specs-v1.9.pdf"
 
 ### MCF88 Multiparser
 
