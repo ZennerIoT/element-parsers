@@ -1205,6 +1205,7 @@ These parsers are available on request.
 
 ### Milesight and Ursalink EM300 Series
 
+* 2026-01-30: Added EM310-TILT support according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/em-series/em310-tilt
 * 2024-07-02: Added EM300-Di support according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/EM_Series/EM300_Series/EM300-DI
 * 2023-09-26: Added EM320-Tilt support according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/EM_Series/EM300_Series/EM320-TILT
 * 2023-08-03: Added EM320-TH support according to "em320-th-user-guide-en.pdf"
