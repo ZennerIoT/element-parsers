@@ -888,6 +888,7 @@ These parsers are available on request.
 
 ### IMST iOKE868 LoRaWAN
 
+* 2026-02-12: Using scalar for calculations according to Chirpstack decoder
 * 2025-07-03: Added profile support so save firmware version to parse firmware dependent payloads
 * 2025-07-03: Added support for Port 8, 32 and 48 according to iOKE868_LoRaWAN_AN035_RadioProtocol_V1.3.pdf
 * 2025-03-03: Fixed Port 5 payload
@@ -1165,6 +1166,7 @@ These parsers are available on request.
 
 ### MClimate Vicki
 
+* 2025-02-18: Corrected profile description
 * 2025-11-05: Set proportional_integral as default for control_algorithm in profile above sw_version 4.3
 * 2024-11-12: Added command 0x19 and 0x1F from TTN Parser
 * 2024-10-15: Added command 0x1D from TTN Parser
