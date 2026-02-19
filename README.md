@@ -1170,7 +1170,7 @@ These parsers are available on request.
 
 ### MClimate Vicki
 
-* 2025-02-18: Corrected profile description
+* 2026-02-18: Corrected profile description
 * 2025-11-05: Set proportional_integral as default for control_algorithm in profile above sw_version 4.3
 * 2024-11-12: Added command 0x19 and 0x1F from TTN Parser
 * 2024-10-15: Added command 0x1D from TTN Parser
