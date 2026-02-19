@@ -1026,6 +1026,10 @@ These parsers are available on request.
 * 2024-12-03: Added units.
 * 2024-11-27: Initial implementation with no encryption according to "TKB3554_UH40_LoRa_EN_.pdf"
 
+### landis+gyr WM1 LoRa Interface (W270 / W370)
+
+* 2026-02-17: Initial version according to PM_TKB3569_WM1_LORA_EN_V1.2.pdf
+
 ### Libelium Smart Devices All in One
 
 * 2021-01-25: Removed duplicate prefix.
