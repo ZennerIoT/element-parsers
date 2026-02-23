@@ -2078,6 +2078,7 @@ These parsers are available on request.
 
 ### ZENNER Multiparser (EDC, EHKV, PDC and WMZ)
 
+* 2026-02-23: Switched byteorder for status summary payloads for iuws
 * 2025-05-21: Moved Port 0 packets from readings to logger, added code 1D to AP1.
 * 2025-05-20: Removed unused channel from SP6 and SP7 when wmz configured as single channel.
 * 2025-02-13: Added a mapping for din_number manufacturer "{SI" to "ZRI".
