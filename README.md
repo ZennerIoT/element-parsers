@@ -984,7 +984,7 @@ These parsers are available on request.
 
 ### Kamstrup flowIQ2200
 
-* 2025-02-26: Fixed manufacturer specific values
+* 2026-02-26: Fixed manufacturer specific values
 * 2025-01-24: Added Security Profile D, Supporting manufacturer specific
 * 2025-01-10: Added Security Profile A
 * 2024-12-03: Fixed output name
