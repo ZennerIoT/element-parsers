@@ -1728,6 +1728,10 @@ These parsers are available on request.
 
 * 2024-08-06: Untested - Initial implementation according to "https://senzemo.com/wp-content/uploads/2022/12/Senstick_SMC30-HWv3.0_FWv1.0-LoRaWAN_Protocol_v1.9.pdf"
 
+### Senzemo Rain Meter
+
+* 2026-03-04: Initial implementation according to "Senzemo_SRM10_Operating%20manual_EN.pdf"
+
 ### Sewerin Leckage Sensor
 
 * 2025-02-07: Fixed Recursion
