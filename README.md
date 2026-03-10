@@ -736,6 +736,10 @@ These parsers are available on request.
 * 2018-07-16: Added sTypes 04, 05, 06
 * 2018-04-12: Initial implementation, not yet all sTypes implemented
 
+### Elsys Multiparser JSON
+
+* 2026-03-10: Initial implementation
+
 ### ELV LW GPS1
 
 * 2025-09-25: Initial implementation according to "253152_elv_lw_gps1.pdf"
@@ -985,6 +989,7 @@ These parsers are available on request.
 
 ### Kamstrup flowIQ2200
 
+* 2026-03-05: Rewrite code for manufacturer specific values
 * 2026-02-26: Fixed manufacturer specific values
 * 2025-01-24: Added Security Profile D, Supporting manufacturer specific
 * 2025-01-10: Added Security Profile A
