@@ -495,6 +495,10 @@ These parsers are available on request.
 * 2024-04-24: Fixed alarm detection
 * 2024-04-04: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/D20-LBD22-LBD23-LB_LoRaWAN_Temperature_Sensor_User_Manual/#HAlarmFlag26MOD26LevelofPA8:"
 
+### DDS20-LB/LS
+
+* 2026-03-19: Initial implementation according to "https://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/DDS20-LB_LoRaWAN_Ultrasonic_Liquid_Level_Sensor_User_Manual/#H2.3A0200BUplinkPayload"
+
 ### Dragino_DS03A-NB-IoT
 
 * 2026-03-13: Initial implementation according to "Dragino_DS03A-NB-IoT_Outdoor Doorsensor Open-Close_User Manual_EN.pdf"
