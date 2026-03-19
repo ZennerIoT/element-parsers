@@ -632,6 +632,10 @@ These parsers are available on request.
 
 * 2024-03-07: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/S31-LB_S31B-LB/".
 
+### Dragino SE0X-LB
+
+* 2026-03-19: Initial implementation according to "https://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/DDS20-LB_LoRaWAN_Ultrasonic_Liquid_Level_Sensor_User_Manual/#H2.3A0200BUplinkPayload"
+
 ### Dragino SW3L LoRaWAN Outdoor Flow Sensor
 
 * 2023-03-15: Initial implementation according to "http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/SW3L%20LoRaWAN%20Outdoor%20Flow%20Sensor/#H2.3UplinkPayload"
