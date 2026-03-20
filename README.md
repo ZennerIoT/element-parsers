@@ -1162,6 +1162,7 @@ These parsers are available on request.
 
 ### Maddalena electo
 
+* 2026-03-20: Added Event Frame and Mixed Frame. Fixed Weekly Frame according to "Electo-protocol-specs-v1.9.1.pdf"
 * 2026-01-20: Initial implementation according to "Electo-protocol-specs-v1.9.pdf"
 
 ### MCF88 Multiparser
