@@ -473,6 +473,10 @@ These parsers are available on request.
 
 * 2024-09-12: Initial implementation according to "https://www.dnt.de/media/73/84/28/1674658420/dnt-LW-ATS-web_230119.pdf"
 
+### dnt Innovations dnt-LW-ESI
+
+* 2026-03-30: Initial implementation according to "https://dnt.de/wp-content/uploads/2026/01/Uplinkbeschreibung_dnt-LW-ESI.pdf" v1.0
+
 ### Dräger x-Node
 
 * 2022-08-09: Initial implementation according to "Payload Decoder_Basic_Travekom.pdf"
