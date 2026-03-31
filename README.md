@@ -192,6 +192,10 @@ These parsers are available on request.
 * 2021-10-20: added sensor error or sensor n/a
 * 2021-10-19: Initial implementation according to "https://www.baranidesign.com/meteohelix-message-decoder"
 
+### BARANI DESIGN MeteoHelix Gen2
+
+* 2026-03-31: Initial implementation according to "20250603_Meteohelix_IoT_Pro_Gen2_payloads_LOCKED.xlsx"
+
 ### BARANI DESIGN MeteoRain IoT
 
 * 2023-02-01: Initial implementation according to "https://www.baranidesign.com/meteorain-open-message-format"
