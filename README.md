@@ -1192,6 +1192,10 @@ These parsers are available on request.
 
 * 2022-12-14: Initial Implementation.
 
+### MClimate 16ADS
+
+* 2026-03-31: Initial Implementation according to https://docs.mclimate.eu/mclimate-lorawan-devices/devices/mclimate-16a-dry-switch-16ads/mclimate-16ads-device-communication-protocol
+
 ### MClimate 16ASPM
 
 * 2025-01-27: Initial Implementation.
