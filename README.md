@@ -194,6 +194,7 @@ These parsers are available on request.
 
 ### BARANI DESIGN MeteoHelix Gen2
 
+* 2026-04-09: Changed output format for boolean values
 * 2026-03-31: Initial implementation according to "20250603_Meteohelix_IoT_Pro_Gen2_payloads_LOCKED.xlsx"
 
 ### BARANI DESIGN MeteoRain IoT
