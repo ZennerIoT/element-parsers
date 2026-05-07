@@ -188,6 +188,11 @@ These parsers are available on request.
 * 2021-05-03: Added configuration options, skipped logged values, checking device timestamp delta.
 * 2020-02-04: Initial implementation according to "Axioma Lora Payload W1 V01.7 Extended.pdf"
 
+### Axioma Qalcosonic W1 NB-IoT
+
+* 2026-05-06: Added support for Encryption with long header
+* 2026-03-25: Initial implementation according to "W1 NB-IoT Functional Description V02 20240826.pdf"
+
 ### BARANI DESIGN MeteoHelix
 
 * 2021-10-20: added sensor error or sensor n/a
