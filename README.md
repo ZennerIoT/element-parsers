@@ -869,6 +869,7 @@ These parsers are available on request.
 
 ### GWF RCM H200
 
+* 2026-05-08: Fixed Bug in medium definition
 * 2026-03-05: Fixed round when value is not float
 * 2024-12-18: Initial version according to "lora3: current Value Volume 8 Digit.png"
 
