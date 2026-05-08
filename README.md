@@ -873,6 +873,10 @@ These parsers are available on request.
 * 2026-03-05: Fixed round when value is not float
 * 2024-12-18: Initial version according to "lora3: current Value Volume 8 Digit.png"
 
+### GWF RCM H200 v1.0
+
+* 2026-05-08: Initial version according to "Payload_description_LoRa_H200_v1.pdf"
+
 ### Hager TG563a
 
 * 2025-09-09: Initial implementation according to "SE000304A_A3_Payload_description_for_TG563A.pdf"
