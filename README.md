@@ -1283,6 +1283,10 @@ These parsers are available on request.
 
 * 2024-03-08: Initial version according to gs301-user-guide-en.pdf
 
+### Milesight TS30x
+
+* 2026-05-12: Initial version according to ts30x-user-guide-en.pdf
+
 ### Milesight and Ursalink UC100
 
 * 2023-07-24: Added profile support to configure byteorder
