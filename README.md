@@ -286,6 +286,7 @@ These parsers are available on request.
 
 ### Comtac Cluey XX LR
 
+* 2026-05-20: Added rename functionality of keys.
 * 2025-05-07: Refactor of certain parse_parameter_value functions.
 * 2025-04-29: Initial implementation according to Cluey_XX_LR_Payload-Beschreibung[DE_V02.04].pdf.
 
