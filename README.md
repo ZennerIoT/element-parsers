@@ -2007,6 +2007,10 @@ These parsers are available on request.
 * 2022-06-22: Updated to version TDW2/LDW2 v0.8 and payload version: V1.1
 * 2021-08-31: Initial version
 
+### Weptech Jonah Mioty
+
+* 2026-05-26: Initial implementation according to OMS Standard
+
 ### Wika Netris 1
 
 * 2025-05-28: Initial implementation according to "sd_netris1_lpwan_en_co.pdf"
