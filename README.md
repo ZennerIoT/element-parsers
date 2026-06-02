@@ -927,6 +927,7 @@ These parsers are available on request.
 
 ### IMST iOKE868 LoRaWAN
 
+* 2026-06-02: Converted OBIS Values to Hex in case ASCII is not printable. Added Unit for each Obis code
 * 2026-02-12: Using scalar for calculations according to Chirpstack decoder
 * 2025-07-03: Added profile support so save firmware version to parse firmware dependent payloads
 * 2025-07-03: Added support for Port 8, 32 and 48 according to iOKE868_LoRaWAN_AN035_RadioProtocol_V1.3.pdf
