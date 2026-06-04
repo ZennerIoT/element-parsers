@@ -120,6 +120,7 @@ These parsers are available on request.
 
 ### Adeunis ARF8373xRA
 
+* 2026-06-04: fixed Periodic data frame - CO2+VOC (0x6F) according to docs
 * 2025-09-02: Initial implementation.
 
 ### Arad MODBUS
