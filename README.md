@@ -928,6 +928,7 @@ These parsers are available on request.
 
 ### IMST iOKE868 LoRaWAN
 
+* 2026-06-05: Added functionality to transform 1-0:96.1.0*255 Register into readable value
 * 2026-06-02: Converted OBIS Values to Hex in case ASCII is not printable. Added Unit for each Obis code
 * 2026-02-12: Using scalar for calculations according to Chirpstack decoder
 * 2025-07-03: Added profile support so save firmware version to parse firmware dependent payloads
