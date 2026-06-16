@@ -1432,6 +1432,10 @@ These parsers are available on request.
 * 2024-01-29: Update according to "https://www.nasys.no/wp-content/uploads/CM3061-2.3.x-Payload-Structures.pdf"
 * 2020-04-17: Initial version
 
+### LoRaWAN Multical Module II IM3100 and LoRaWAN Multical Module I IM3060
+
+* 2026-06-15: Initial version
+
 ### NAS Luminaire v0.6
 
 * 2021-07-26: This parser supports v0.6, use v1.0 parser for newer hardware.
