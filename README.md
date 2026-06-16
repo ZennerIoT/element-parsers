@@ -1257,6 +1257,10 @@ These parsers are available on request.
 
 * 2024-06-17: https://github.com/Milesight-IoT/SensorDecoders/tree/main/CT_Series/CT101
 
+### Milesight CT303
+
+* 2026-06-16: Initial Version
+
 ### Milesight and Ursalink EM300 Series
 
 * 2024-07-02: Added EM300-Di support according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/EM_Series/EM300_Series/EM300-DI
@@ -1434,7 +1438,7 @@ These parsers are available on request.
 
 ### LoRaWAN Multical Module II IM3100 and LoRaWAN Multical Module I IM3060
 
-* 2026-06-15: Initial version
+* 2026-06-16: Initial version
 
 ### NAS Luminaire v0.6
 
