@@ -1923,6 +1923,10 @@ These parsers are available on request.
 
 * 2021-03-11: Initial implementation according to "Payload-documentation-CO2-stoplicht-V1.0-EN.pdf"
 
+### TENEO LoRaWAN Soil Moisture Sensor
+
+* 2026-06-17: Initial implementation
+
 ### Terabee Level Monitoring XL
 
 * 2021-05-10: Initial implementation according to "LoRa-Level-Monitoring-XL-User-Manual-MAR-2021.pdf"
