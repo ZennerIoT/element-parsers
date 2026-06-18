@@ -1261,6 +1261,7 @@ These parsers are available on request.
 
 ### Milesight CT303
 
+* 2026-06-18: Adjusted Current processing, changed Temperature to signed
 * 2026-06-16: Initial Version
 
 ### Milesight and Ursalink EM300 Series
