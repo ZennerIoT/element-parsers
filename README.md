@@ -1438,6 +1438,7 @@ These parsers are available on request.
 
 ### LoRaWAN Multical Module II IM3100 and LoRaWAN Multical Module I IM3060
 
+* 2026-06-18: Adjusted handling of Software-, Firmware- and Hardwareversions and kamstrup config, now creates a single string each. New key for battery state errors.
 * 2026-06-16: Initial version
 
 ### NAS Luminaire v0.6
