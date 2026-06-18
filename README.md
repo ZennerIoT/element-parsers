@@ -1068,6 +1068,7 @@ These parsers are available on request.
 
 ### landis+gyr uh40 lora interface
 
+* 2026-06-18: Updated due to wMBus Lib Update
 * 2024-12-03: Added units.
 * 2024-11-27: Initial implementation with no encryption according to "TKB3554_UH40_LoRa_EN_.pdf"
 
