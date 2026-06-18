@@ -439,6 +439,10 @@ These parsers are available on request.
 
 * 2024-09-30: Initial implementation according to "Decentlab-DL-SHT35-datasheet.pdf"
 
+### SOIL MOISTURE AND TEMPERATURE PROFILE SENSOR FOR LoRaWAN
+
+* 2026-06-18: Initial version
+
 ### Decentlab DL-TRS12 Soil Moisture
 
 * 2019-07-10: Initial version. Code cleanup. Tests.
