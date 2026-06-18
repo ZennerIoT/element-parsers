@@ -1931,6 +1931,7 @@ These parsers are available on request.
 
 ### TENEO LoRaWAN Soil Moisture Sensor
 
+* 2026-06-18: Added catch for moisture and temperature errors
 * 2026-06-17: Initial implementation
 
 ### Terabee Level Monitoring XL
