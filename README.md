@@ -1026,6 +1026,7 @@ These parsers are available on request.
 
 ### Kamstrup flowIQ2200
 
+* 2026-06-18: Updated due to wMBus Lib Update
 * 2026-03-05: Rewrite code for manufacturer specific values
 * 2026-02-26: Fixed manufacturer specific values
 * 2025-01-24: Added Security Profile D, Supporting manufacturer specific
