@@ -1481,6 +1481,7 @@ These parsers are available on request.
 
 ### Netvox Multiparser
 
+* 2026-06-26: Added R726 payloads according to R72624Usermanual.pdf
 * 2023-12-18: Fixed multiplier logic - multiplier packet arrives after the packets with currents
 * 2023-06-20: Added R718MBB Activity Event Counter.
 * 2023-03-29: Added R718G Light Sensor.
