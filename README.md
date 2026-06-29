@@ -1199,6 +1199,7 @@ These parsers are available on request.
 
 ### MCF88 Multiparser
 
+* 2026-06-29: Filter uv when value is 255
 * 2026-06-02: Added support for https://www.enginko.com/support/doku.php?id=data_frame_format#note4a
 * 2026-05-06: Fixed error when invalid datetime is sent by device, fixed return type in case of error
 * 2025-02-05: Added support for 1.3, 1.7, 1.7.1, 1.9.1, 1.10, 1.12, 1.14, 1.16, 1.17  and updated support for 1.1
