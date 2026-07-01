@@ -1270,7 +1270,7 @@ These parsers are available on request.
 * 2026-06-18: Adjusted Current processing, changed Temperature to signed
 * 2026-06-16: Initial Version
 
-### Milesight IoT-E-Ink-Display mit LoRaWAN
+### Milesight IoT-E-Ink-Display mit LoRaWAN DS3604
 
 * 2026-07-01: Initial implementation according to "DE_MIL-DS3604_Benutzerhandbuch_EN7.pdf"
 
