@@ -1270,6 +1270,10 @@ These parsers are available on request.
 * 2026-06-18: Adjusted Current processing, changed Temperature to signed
 * 2026-06-16: Initial Version
 
+### Milesight IoT-E-Ink-Display mit LoRaWAN
+
+* 2026-07-01: Initial implementation according to "DE_MIL-DS3604_Benutzerhandbuch_EN7.pdf"
+
 ### Milesight and Ursalink EM300 Series
 
 * 2024-07-02: Added EM300-Di support according to https://github.com/Milesight-IoT/SensorDecoders/tree/main/EM_Series/EM300_Series/EM300-DI
