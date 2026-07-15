@@ -387,6 +387,7 @@ These parsers are available on request.
 
 ### Comtac Modbus Bridge Template
 
+* 2026-07-15: pin length due to deprecation warning
 * 2025-05-08: Added Port 5 for Modbusbridge EM, corrected reg to dp as key and profile names
 * 2023-01-11: Added type "binary_bypass". Forwards the binary value directly. To be able to split the values later on in mapping function
 * 2022-02-03: Added type "signed16_custom_invert". Interprets incoming bytes (1,2,3,4) as (3,4,1,2) signed.
