@@ -181,6 +181,7 @@ These parsers are available on request.
 
 ### Axioma Qalcosonic W1 - Current and last 15 hours (Honeywell Elster)
 
+* 2026-08-10: Added meter id from profile to readings
 * 2022-05-13: Added do_extend_reading/2 callback.
 * 2022-01-20: Keeping most of reading to support debugging when unix_difference_seconds check fails.
 * 2021-06-29: Added config key device_timezone_utc_offset. Device timestamp expected to be UTC+1.
