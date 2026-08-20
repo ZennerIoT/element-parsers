@@ -1587,7 +1587,7 @@ These parsers are available on request.
 
 ###  NKE Watteco Multiparser
 
-* 2026-08-20: Initial implementation of Inclin'O Analog Input and Numbers Cluster
+* 2026-08-20: Expanded handling of analog input, initial implementation of Numbers Cluster, added handling for alarm report cmdid
 * 2026-01-08: Fixed handling of analog input and float datatype
 * 2025-12-08: Added Multi Binary input to output for each bit
 * 2025-12-05: Support of payload with multiple power descriptors
