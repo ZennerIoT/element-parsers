@@ -846,6 +846,7 @@ These parsers are available on request.
 
 ### Fludia FM432
 
+* 2026-08-31: Added FM432e ap payloads according to "User_Guide_FM432-MAN432_EN_v1_2_4.pdf"
 * 2023-04-06: Added FM432g (to be tested)
 * 2023-03-13: Renamed e_pos,... to energy_pos. Fixed scaler detection. Added do_extend_reading callback. Added fields(). Added value to 'unknown'.
 * 2023-02-16: Parsing continues after increment error, add_increments() function added
