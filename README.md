@@ -1024,8 +1024,9 @@ These parsers are available on request.
 * 2020-08-27: Added DOBJ 150 "FDR 12 Delta S16". Removed OBIS field adding.
 * 2020-08-12: Initial implementation according to "Cyble 5 Lora Data decoding v0.5.pdf" and "DOBJ Table.xlsx".
 
-### Jooby Analog (Test Version)
+### Jooby Analog
 
+* 2026-09-22: Parser revision
 * 2025-01-22: Implementation of LastEVent, battery alarm and SetTime2000.
 * 2024-12-19: Initial version according to "https://github.com/jooby-dev/jooby-docs/blob/main/docs/analog" supporting HourMC only.
 
