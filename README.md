@@ -2042,6 +2042,7 @@ These parsers are available on request.
 
 ### Wehrle Wecount-S
 
+* 2026-11-11: Added possibility to give output as single line
 * 2026-06-18: Updated due to wMBus Lib Update
 * 2023-06-22: Initial implementation according to "Radio-Telegram_LoRa_WECOUNT-S_Payload_0.3.4_20221121.xlsx"
 
