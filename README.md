@@ -1040,6 +1040,8 @@ These parsers are available on request.
 
 ### Kamstrup flowIQ2200
 
+* 2026-11-13: Added support for all manufacturer specific VIFEs (including "Infobits for MULTICAL")
+* 2026-11-12: Added support for multiple dates (undefined vife) in payload
 * 2026-06-18: Updated due to wMBus Lib Update
 * 2026-03-05: Rewrite code for manufacturer specific values
 * 2026-02-26: Fixed manufacturer specific values
@@ -1238,6 +1240,7 @@ These parsers are available on request.
 
 ### MClimate Vicki
 
+* 2026-11-12: Handle FUOTA Payload (skip) and added 0x58
 * 2026-02-18: Corrected profile description
 * 2025-11-05: Set proportional_integral as default for control_algorithm in profile above sw_version 4.3
 * 2024-11-12: Added command 0x19 and 0x1F from TTN Parser
